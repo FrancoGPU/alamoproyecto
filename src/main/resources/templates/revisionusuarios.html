@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Revisión de usuarios | Control de Asistencia</title>
+
+	<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+
+	<style>
+		:root {
+			--primary: rgb(13, 82, 242);
+			--primary-dark: rgb(0, 0, 128);
+			--gray-bg: #f3f4f6;
+			--gray-soft: #e5e7eb;
+			--gray-text: #4b5563;
+			--text-main: #111827;
+
+			--success:#10b981;
+			--danger:#ef4444;
+			--warning:#f59e0b;
+		}
+
+		* { box-sizing: border-box; }
+
+		body {
+			margin: 0;
+			font-family: "Poppins", sans-serif;
+			display: flex;
+			background: var(--gray-bg);
+		}
+
+		/* =============== Sidebar =============== */
+		.sidebar {
+			width: 240px;
+			background: #ffffff;
+			border-right: 1px solid var(--gray-soft);
+			color: var(--gray-text);
+			min-height: 100vh;
+			padding: 1.4rem 1.1rem;
+			position: fixed;
+			top: 0;
+			left: 0;
+			display: flex;
+			flex-direction: column;
+		}
+
+		.sidebar-header {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			margin-bottom: 1.7rem;
+		}
+
+		.sidebar-logo {
+			display: flex;
+			align-items: center;
+			gap: 0.55rem;
+			text-decoration: none;
+			color: var(--text-main);
+		}
+
+		.sidebar-logo-mark {
+			width: 32px;
+			height: 32px;
+			border-radius: 0.8rem;
+			background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			color: #ffffff;
+			font-size: 0.9rem;
+			font-weight: 600;
+		}
+
+		.sidebar-logo-text {
+			font-weight: 600;
+			font-size: 1.02rem;
+		}
+
+		.sidebar-env {
+			font-size: 0.7rem;
+			padding: 0.2rem 0.55rem;
+			border-radius: 999px;
+			border: 1px solid var(--gray-soft);
+			background: #f9fafb;
+			color: var(--gray-text);
+			display: inline-flex;
+			align-items: center;
+			gap: 0.3rem;
+		}
+
+		.sidebar-env i { color: var(--primary); }
+
+		.menu {
+			list-style: none;
+			padding: 0;
+			margin: 1rem 0 0;
+			flex-grow: 1;
+		}
+
+		.menu li { margin-bottom: 0.2rem; }
+
+		.menu a {
+			display: flex;
+			align-items: center;
+			gap: 0.6rem;
+			padding: 0.55rem 0.6rem;
+			border-radius: 0.6rem;
+			color: var(--gray-text);
+			text-decoration: none;
+			font-size: 0.88rem;
+			transition: background-color 0.12s ease, color 0.12s ease;
+		}
+
+		.menu a i {
+			width: 18px;
+			text-align: center;
+			font-size: 0.95rem;
+			color: var(--primary);
+		}
+
+		.menu a:hover {
+			background: #fef2f2;
+			color: var(--primary-dark);
+		}
+
+		.menu a.logout {
+			margin-top: 0.4rem;
+			border-top: 1px solid var(--gray-soft);
+			padding-top: 0.7rem;
+			color: #b91c1c;
+		}
+
+		.menu a.logout i { color: #b91c1c; }
+
+		/* =============== Contenido principal =============== */
+		.main-content {
+			margin-left: 240px;
+			padding: 1.8rem 2rem 2.4rem;
+			width: calc(100% - 240px);
+			min-height: 100vh;
+		}
+
+		@media (max-width: 768px) {
+			.main-content { margin-left: 0; width: 100%; }
+			.sidebar { display: none; }
+		}
+
+		.content-header { margin-bottom: 1.4rem; }
+
+		.content-header h1 {
+			color: var(--text-main);
+			font-size: 1.4rem;
+			margin: 0 0 0.25rem;
+			display: flex;
+			align-items: center;
+			gap: 0.5rem;
+		}
+
+		.content-header h1 i { color: var(--primary); }
+
+		.content-subtitle {
+			font-size: 0.9rem;
+			color: var(--gray-text);
+		}
+
+		/* =============== Buscador =============== */
+		.search-box { margin-bottom: 1.2rem; }
+		.search-wrapper { max-width: 420px; position: relative; }
+
+		.search-wrapper i {
+			position: absolute;
+			left: 0.8rem;
+			top: 50%;
+			transform: translateY(-50%);
+			font-size: 0.9rem;
+			color: var(--gray-text);
+		}
+
+		.search-box input {
+			width: 100%;
+			padding: 0.55rem 0.9rem 0.55rem 2.2rem;
+			border: 1px solid var(--gray-soft);
+			border-radius: 999px;
+			font-size: 0.88rem;
+			font-family: "Poppins", sans-serif;
+			background: #ffffff;
+		}
+
+		/* =============== Secciones Activo/Inactivo =============== */
+		.section-title {
+			display:flex;
+			align-items:center;
+			justify-content:space-between;
+			gap: 1rem;
+			padding: .8rem 1rem;
+			background: #fff;
+			border: 1px solid var(--gray-soft);
+			border-radius: .9rem;
+			box-shadow: 0 10px 24px rgba(15, 23, 42, 0.04);
+			margin: 1rem 0 .8rem;
+		}
+		.section-title h2{
+			margin:0;
+			font-size: 1rem;
+			color: var(--text-main);
+			display:flex;
+			align-items:center;
+			gap:.55rem;
+		}
+		.pill {
+			font-size: .78rem;
+			font-weight: 700;
+			padding: .25rem .65rem;
+			border-radius: 999px;
+			border: 1px solid var(--gray-soft);
+			background: #f9fafb;
+			color: var(--gray-text);
+			white-space: nowrap;
+		}
+		.pill-success { border-color: rgba(16,185,129,.35); background: rgba(16,185,129,.10); color: #065f46; }
+		.pill-danger  { border-color: rgba(239,68,68,.35);  background: rgba(239,68,68,.10);  color: #991b1b; }
+
+		/* =============== Cards de usuarios con Acordeón =============== */
+		.users-container {
+			display: grid;
+			grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+			gap: 1rem;
+		}
+
+		.user-card {
+			background: #ffffff;
+			border-radius: 0.9rem;
+			padding: 1rem;
+			box-shadow: 0 10px 24px rgba(15, 23, 42, 0.04);
+			border: 1px solid var(--gray-soft);
+			transition: all 0.2s ease;
+			position: relative;
+			height: fit-content;
+		}
+
+		/* ESTILOS DE CUMPLEAÑOS */
+		.user-card.birthday-alert {
+			border-color: #f59e0b;
+			box-shadow: 0 0 0 3px #fde68a;
+			background: #fffbeb;
+		}
+
+		.user-card.birthday-today {
+			background: linear-gradient(135deg, #ff4d94 0%, #ffcc00 100%);
+			color: #111827;
+			border-color: #ff0077;
+			box-shadow: 0 0 0 6px #ff69b4;
+			animation: pulse-shine 1.5s infinite;
+		}
+
+		@keyframes pulse-shine {
+			0% { box-shadow: 0 0 0 0px #ff69b4; }
+			50% { box-shadow: 0 0 0 10px rgba(255, 105, 180, 0.5); }
+			100% { box-shadow: 0 0 0 0px rgba(255, 105, 180, 0); }
+		}
+
+		.user-header {
+			display: flex;
+			align-items: center;
+			gap: 0.75rem;
+			margin-bottom: 0.5rem;
+		}
+
+		.user-avatar {
+			width: 52px;
+			height: 52px;
+			border-radius: 50%;
+			overflow: hidden;
+			flex-shrink: 0;
+			background: #fee2e2;
+			cursor: pointer;
+			transition: transform 0.2s;
+			border: 2px solid transparent;
+		}
+
+		.user-avatar:hover {
+			transform: scale(1.1);
+			border-color: var(--primary);
+		}
+
+		.user-avatar img {
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+		}
+
+		.user-header-info h3 {
+			margin: 0;
+			color: var(--text-main);
+			font-size: 0.98rem;
+			font-weight: 600;
+		}
+
+		.user-header-info p {
+			margin: 0.2rem 0 0;
+			color: var(--gray-text);
+			font-size: 0.78rem;
+		}
+
+		.status-indicator {
+			font-size: 0.75rem;
+			padding: 0.2rem 0.6rem;
+			border-radius: 999px;
+			font-weight: 600;
+			margin-left: auto;
+			white-space: nowrap;
+		}
+
+		.status-working { background: #d1fae5; color: #065f46; border: 1px solid #34d399; }
+		.status-off { background: #fee2e2; color: #991b1b; border: 1px solid #f87171; }
+
+		/* ✅ BADGE MODALIDAD (visible en header, sin abrir detalles) */
+		.modalidad-badge{
+			font-size: .72rem;
+			font-weight: 800;
+			padding: .18rem .55rem;
+			border-radius: 999px;
+			border: 1px solid var(--gray-soft);
+			background: #f9fafb;
+			color: var(--gray-text);
+			display: inline-flex;
+			align-items: center;
+			gap: .35rem;
+			line-height: 1;
+			white-space: nowrap;
+		}
+		.modalidad-virtual{
+			border-color: rgba(59,130,246,.35);
+			background: rgba(59,130,246,.10);
+			color: #1d4ed8;
+		}
+		.modalidad-presencial{
+			border-color: rgba(16,185,129,.35);
+			background: rgba(16,185,129,.10);
+			color: #065f46;
+		}
+		.modalidad-unknown{
+			border-color: rgba(148,163,184,.5);
+			background: rgba(148,163,184,.12);
+			color: #475569;
+		}
+
+		.btn-toggle-accordion {
+			width: 100%;
+			margin-top: 0.8rem;
+			padding: 0.5rem;
+			border: 1px solid var(--gray-soft);
+			background: #f9fafb;
+			border-radius: 0.6rem;
+			color: var(--primary);
+			font-size: 0.8rem;
+			font-weight: 600;
+			cursor: pointer;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			gap: 0.5rem;
+			transition: background 0.2s;
+		}
+
+		.btn-toggle-accordion:hover { background: #f1f5f9; }
+
+		.user-accordion-content {
+			display: none;
+			margin-top: 1rem;
+			padding-top: 1rem;
+			border-top: 1px dashed var(--gray-soft);
+		}
+
+		.user-info-title {
+			font-weight: 700;
+			color: var(--primary);
+			margin-bottom: 0.5rem;
+			padding: 0.25rem 0;
+			border-bottom: 1px solid var(--primary);
+			font-size: 0.85rem;
+		}
+
+		.user-info-item {
+			display: flex;
+			justify-content: space-between;
+			gap: 0.4rem;
+			padding: 0.25rem 0;
+			border-bottom: 1px solid #e5e7eb;
+		}
+
+		.user-info-label { font-weight: 600; color: var(--text-main); font-size: 0.78rem; }
+		.user-info-value { color: var(--gray-text); word-break: break-word; font-size: 0.78rem; text-align: right; }
+
+		/* =============== ESTILOS DE HORARIO =============== */
+		.schedule-container {
+			margin-top: 1rem;
+			background: #f8fafc;
+			border-radius: 0.6rem;
+			padding: 0.8rem;
+			border: 1px solid var(--gray-soft);
+		}
+
+		.schedule-grid {
+			display: grid;
+			grid-template-columns: repeat(7, 1fr);
+			gap: 4px;
+			margin-top: 0.5rem;
+		}
+
+		.day-slot {
+			background: white;
+			border: 1px solid var(--gray-soft);
+			border-radius: 0.4rem;
+			padding: 0.4rem 0.2rem;
+			text-align: center;
+		}
+
+		.day-label {
+			display: block;
+			font-size: 0.6rem;
+			font-weight: 700;
+			color: var(--primary);
+			text-transform: uppercase;
+			margin-bottom: 0.2rem;
+		}
+
+		.time-slot {
+			font-size: 0.65rem;
+			font-weight: 600;
+			color: var(--text-main);
+			line-height: 1.2;
+		}
+
+		.time-off {
+			font-size: 0.6rem;
+			color: #94a3b8;
+			font-style: italic;
+		}
+
+		.doc-section {
+			padding-top: 0.6rem;
+			margin-top: 0.7rem;
+			display: flex;
+			flex-direction: column;
+			gap: 0.4rem;
+		}
+
+		.doc-item {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			font-size: 0.78rem;
+			padding: 0.15rem 0;
+		}
+
+		.btn-download-doc {
+			padding: 0.3rem 0.6rem;
+			border-radius: 999px;
+			font-size: 0.75rem;
+			font-weight: 600;
+			text-decoration: none;
+			background: var(--primary);
+			color: #ffffff;
+			display: inline-flex;
+			align-items: center;
+			gap: 0.35rem;
+			cursor: pointer;
+			border: none;
+		}
+
+		.btn-view-doc { background: #10b981; margin-right: 4px; }
+
+		.doc-status-not-uploaded {
+			background: #fef2f2;
+			color: #b91c1c;
+			padding: 0.1rem 0.4rem;
+			border-radius: 0.4rem;
+			font-weight: 500;
+		}
+
+		/* =============== MODAL DE PREVISUALIZACIÓN CON ZOOM =============== */
+		.modal-preview {
+			display: none;
+			position: fixed;
+			z-index: 10000;
+			left: 0;
+			top: 0;
+			width: 100%;
+			height: 100%;
+			background-color: rgba(0,0,0,0.9);
+			backdrop-filter: blur(5px);
+		}
+
+		.modal-preview-content {
+			position: relative;
+			background-color: #fff;
+			margin: 1vh auto;
+			width: 95%;
+			height: 98vh;
+			border-radius: 12px;
+			display: flex;
+			flex-direction: column;
+			overflow: hidden;
+		}
+
+		.modal-preview-header {
+			padding: 15px 20px;
+			border-bottom: 1px solid var(--gray-soft);
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			background: white;
+			z-index: 10;
+		}
+
+		.modal-preview-header h2 {
+			margin: 0;
+			font-size: 1.1rem;
+			color: var(--text-main);
+		}
+
+		.close-preview {
+			font-size: 30px;
+			cursor: pointer;
+			color: var(--gray-text);
+			line-height: 1;
+		}
+
+		.close-preview:hover { color: #ef4444; }
+
+		.modal-preview-body {
+			flex-grow: 1;
+			background: #222;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			overflow: auto;
+			padding: 20px;
+			position: relative;
+		}
+
+		.modal-preview-body.scrolling-mode { align-items: flex-start; }
+
+		.modal-preview-body iframe {
+			width: 100%;
+			height: 100%;
+			border: none;
+			background: white;
+		}
+
+		#previewImage {
+			max-width: 90%;
+			height: auto;
+			transition: width 0.2s ease;
+			box-shadow: 0 5px 25px rgba(0,0,0,0.5);
+			background-color: white;
+			border-radius: 4px;
+		}
+
+		.zoom-controls {
+			position: absolute;
+			bottom: 30px;
+			right: 40px;
+			display: flex;
+			gap: 12px;
+			z-index: 100;
+		}
+
+		.btn-zoom {
+			width: 50px;
+			height: 50px;
+			border-radius: 50%;
+			background: var(--primary);
+			color: white;
+			border: none;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			cursor: pointer;
+			box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+			font-size: 1.2rem;
+			transition: transform 0.1s;
+		}
+
+		.btn-zoom:hover { background: var(--primary-dark); transform: scale(1.1); }
+		.btn-zoom:active { transform: scale(0.9); }
+	</style>
+</head>
+
+<body>
+
+	<div th:replace="~{fragmentos/sidebar :: navbar(u=${u})}"></div>
+
+	<div class="main-content">
+		<div class="content-header">
+			<h1><i class="fas fa-users"></i> Revisión de usuarios</h1>
+			<div class="content-subtitle">
+				Listado completo de usuarios registrados. Haz clic en la <b>foto</b> o en el botón para ver el detalle.
+				<br>
+				Separado por estado de cuenta (<b>ACTIVO</b> / <b>INACTIVO</b>).
+			</div>
+		</div>
+
+		<div class="search-box">
+			<div class="search-wrapper">
+				<i class="fa-solid fa-magnifying-glass"></i>
+				<input type="text" id="searchInput" placeholder="Buscar por nombre, DNI o correo..." onkeyup="filtrarUsuarios()">
+			</div>
+		</div>
+
+		<!-- ====================== ACTIVOS ====================== -->
+		<div class="section-title">
+			<h2><i class="fa-solid fa-user-check" style="color: var(--success);"></i> Activos</h2>
+			<span class="pill pill-success">Mostrando: <span id="countActivos">0</span></span>
+		</div>
+
+		<div class="users-container" id="usuariosActivos">
+			<div th:each="usuario : ${usuarios.?[#strings.toUpperCase(estado) == 'ACTIVO']}"
+				class="user-card"
+				th:attr="data-nombre=${usuario.nombres + ' ' + usuario.apellido_paterno + ' ' + usuario.apellido_materno},
+						data-dni=${usuario.dni},
+						data-correo=${usuario.correo},
+						data-birth-day=${usuario.fecha_nacimiento != null ? #temporals.day(usuario.fecha_nacimiento) : ''},
+						data-birth-month=${usuario.fecha_nacimiento != null ? #temporals.month(usuario.fecha_nacimiento) : ''}">
+
+				<div class="user-header">
+					<div class="user-avatar" title="Ver foto en grande"
+						 th:attr="onclick='openPreview(\'' + (usuario.fotoPerfil != null ? @{/perfil/foto/{filename}(filename=${usuario.fotoPerfil})} : @{/img/admin.png}) + '\', \'img\')'">
+
+						<img th:if="${usuario.fotoPerfil != null}" th:src="@{/perfil/foto/{filename}(filename=${usuario.fotoPerfil})}" />
+						<div th:unless="${usuario.fotoPerfil != null}" th:switch="${usuario.objRol.id_rol}">
+							<img th:case="2" src="img/alamito.png">
+							<img th:case="1" src="img/admin.png">
+							<img th:case="3" src="img/calcenter.png">
+							<img th:case="*" src="img/alamito.png">
+						</div>
+					</div>
+
+					<div class="user-header-info">
+						<!-- ✅ Nombre + Modalidad visible SIEMPRE -->
+						<div style="display:flex; align-items:center; gap:.5rem; flex-wrap:wrap;">
+							<h3 th:text="${usuario.nombres + ' ' + usuario.apellido_paterno}" style="margin:0;"></h3>
+
+							<span class="modalidad-badge"
+								  th:with="m=${usuario.modalidad != null ? #strings.toUpperCase(usuario.modalidad) : '—'}"
+								  th:text="${m}"
+								  th:classappend="${m == 'VIRTUAL'} ? ' modalidad-virtual' : (${m == 'PRESENCIAL'} ? ' modalidad-presencial' : ' modalidad-unknown')">
+								—
+							</span>
+						</div>
+
+						<p><span th:text="${usuario.objRol.descripcion}"></span> | ID: <span th:text="${usuario.idUsuario}"></span></p>
+					</div>
+
+					<span class="status-indicator"
+						th:with="estadoAsis=${estadosAsistencia.get(usuario.idUsuario)}"
+						th:text="${estadoAsis}"
+						th:classappend="${estadoAsis == 'Trabajando'} ? ' status-working' : ' status-off'"></span>
+				</div>
+
+				<button class="btn-toggle-accordion" th:attr="onclick=|toggleAccordion(${usuario.idUsuario})|">
+					<span th:id="'btn-text-' + ${usuario.idUsuario}">Ver más detalles</span>
+					<i class="fa-solid fa-chevron-down" th:id="'icon-' + ${usuario.idUsuario}"></i>
+				</button>
+
+				<div th:id="'accordion-' + ${usuario.idUsuario}" class="user-accordion-content">
+
+					<div class="user-info-title"><i class="fas fa-user"></i> Datos Personales y Contacto</div>
+					<div class="user-info-item"><span class="user-info-label">DNI</span><span class="user-info-value" th:text="${usuario.dni}"></span></div>
+					<div class="user-info-item"><span class="user-info-label">Fec. Nacimiento</span><span class="user-info-value" th:text="${usuario.fecha_nacimiento != null ? #temporals.format(usuario.fecha_nacimiento, 'dd/MM/yyyy') : '-'}"></span></div>
+					<div class="user-info-item"><span class="user-info-label">Sexo / E. Civil</span><span class="user-info-value" th:text="${(usuario.sexo != null ? usuario.sexo : '-') + ' / ' + (usuario.estado_civil != null ? usuario.estado_civil : '-')}"></span></div>
+					<div class="user-info-item"><span class="user-info-label">Gpo. Sanguíneo</span><span class="user-info-value" th:text="${usuario.grupo_sanguineo != null ? usuario.grupo_sanguineo : '-'}"></span></div>
+					<div class="user-info-item"><span class="user-info-label">Nacionalidad</span><span class="user-info-value" th:text="${usuario.nacionalidad != null ? usuario.nacionalidad : '-'}"></span></div>
+					<div class="user-info-item"><span class="user-info-label">Teléfono Móvil</span><span class="user-info-value" th:text="${usuario.telefono != null ? usuario.telefono : '-'}"></span></div>
+					<div class="user-info-item"><span class="user-info-label">Correo</span><span class="user-info-value" th:text="${usuario.correo != null ? usuario.correo : '-'}"></span></div>
+					<div class="user-info-item"><span class="user-info-label">Dirección</span><span class="user-info-value" th:text="${usuario.direccion != null ? usuario.direccion : '-'}"></span></div>
+
+					<!-- ✅ CAMBIO: mostrar NÚMERO de emergencia (no nombre) -->
+					<div class="user-info-item">
+						<span class="user-info-label">Contacto Emergencia</span>
+						<span class="user-info-value" th:text="${usuario.telefono_emergencia != null ? usuario.telefono_emergencia : '-'}"></span>
+					</div>
+
+					<div class="user-info-title" style="margin-top: 1rem;"><i class="fas fa-briefcase"></i> Laboral y Financiero</div>
+					<div class="user-info-item"><span class="user-info-label">Cargo</span><span class="user-info-value" th:text="${usuario.cargo != null ? usuario.cargo : '-'}"></span></div>
+					<div class="user-info-item"><span class="user-info-label">Fec. Ingreso</span><span class="user-info-value" th:text="${usuario.fecha_ingreso != null ? #temporals.format(usuario.fecha_ingreso, 'dd/MM/yyyy') : '-'}"></span></div>
+					<div class="user-info-item"><span class="user-info-label">Contrato / Modalidad</span><span class="user-info-value" th:text="${(usuario.tipo_contrato != null ? usuario.tipo_contrato : '-') + ' / ' + (usuario.modalidad != null ? usuario.modalidad : '-')}"></span></div>
+					<div class="user-info-item"><span class="user-info-label">RUC</span><span class="user-info-value" th:text="${usuario.numero_ruc != null ? usuario.numero_ruc : '-'}"></span></div>
+					<div class="user-info-item"><span class="user-info-label">Banco / Cta. Bancaria</span><span class="user-info-value" th:text="${(usuario.banco != null ? usuario.banco : '-') + ' / ' + (usuario.cuenta_bancaria != null ? usuario.cuenta_bancaria : '-')}"></span></div>
+					<div class="user-info-item"><span class="user-info-label">CCI / Banca Móvil</span><span class="user-info-value" th:text="${(usuario.cuenta_interbancaria != null ? usuario.cuenta_interbancaria : '-') + ' / ' + (usuario.banca_movil != null ? usuario.banca_movil : '-')}"></span></div>
+
+					<div class="user-info-title" style="margin-top: 1rem;"><i class="fas fa-calendar-alt"></i> Cronograma Semanal Permanente</div>
+					<div class="schedule-container">
+						<div class="schedule-grid">
+							<div th:each="diaNum : ${#numbers.sequence(1, 7)}" class="day-slot">
+								<span class="day-label" th:text="${diaNum == 1 ? 'Lun' : diaNum == 2 ? 'Mar' : diaNum == 3 ? 'Mié' : diaNum == 4 ? 'Jue' : diaNum == 5 ? 'Vie' : diaNum == 6 ? 'Sáb' : 'Dom'}"></span>
+
+								<div th:with="misHorarios=${mapaHorarios.get(usuario.idUsuario)}">
+									<th:block th:each="h : ${misHorarios}">
+										<div th:if="${h.dia == diaNum}" class="time-slot">
+											<span th:text="${#strings.substring(h.turno.entrada, 0, 5)}"></span><br>
+											<span th:text="${#strings.substring(h.turno.salida, 0, 5)}"></span>
+										</div>
+									</th:block>
+									<div th:if="${misHorarios == null || #lists.isEmpty(misHorarios.?[dia == __${diaNum}__])}">
+										<span class="time-off">OFF</span>
+									</div>
+								</div>
+
+							</div>
+						</div>
+					</div>
+
+					<div class="user-info-title" style="margin-top: 1rem;"><i class="fas fa-stethoscope"></i> Formación y Salud</div>
+					<div class="user-info-item"><span class="user-info-label">Nivel Educativo</span><span class="user-info-value" th:text="${usuario.nivel_educativo != null ? usuario.nivel_educativo : '-'}"></span></div>
+					<div class="user-info-item"><span class="user-info-label">Certificaciones</span><span class="user-info-value" th:text="${usuario.certificaciones != null ? usuario.certificaciones : '-'}"></span></div>
+					<div class="user-info-item"><span class="user-info-label">Tipo de Seguro</span><span class="user-info-value" th:text="${usuario.tipo_seguro != null ? usuario.tipo_seguro : '-'}"></span></div>
+					<div class="user-info-item"><span class="user-info-label">Fec. Creación</span><span class="user-info-value" th:text="${usuario.fecha_creacion != null ? #temporals.format(usuario.fecha_creacion, 'dd/MM/yyyy HH:mm') : '-'}"></span></div>
+
+					<div class="doc-section">
+						<div class="doc-item">
+							<span><i class="fas fa-file-pdf"></i> Currículum Vitae</span>
+							<div th:if="${usuario.rutaCV != null}">
+								<button class="btn-download-doc btn-view-doc" th:attr="onclick='openPreview(\'' + @{/cv/descargar/{id}(id=${usuario.idUsuario})} + '\', \'pdf\')'"><i class="fas fa-eye"></i> Ver</button>
+								<a th:href="@{/cv/descargar/{id}(id=${usuario.idUsuario}, download=true)}" class="btn-download-doc"><i class="fas fa-download"></i></a>
+							</div>
+							<span th:unless="${usuario.rutaCV != null}" class="doc-status-not-uploaded">Sin CV</span>
+						</div>
+
+						<div class="doc-item">
+							<span><i class="fas fa-id-card"></i> DNI Frontal</span>
+							<div th:if="${usuario.ruta_foto_id != null}">
+								<button class="btn-download-doc btn-view-doc" th:attr="onclick='openPreview(\'' + @{/cv/foto-id-frontal/descargar/{id}(id=${usuario.idUsuario})} + '\', \'img\')'"><i class="fas fa-eye"></i> Ver</button>
+								<a th:href="@{/cv/foto-id-frontal/descargar/{id}(id=${usuario.idUsuario}, download=true)}" class="btn-download-doc"><i class="fas fa-download"></i></a>
+							</div>
+							<span th:unless="${usuario.ruta_foto_id != null}" class="doc-status-not-uploaded">Faltante</span>
+						</div>
+
+						<div class="doc-item">
+							<span><i class="fas fa-id-card"></i> DNI Trasero</span>
+							<div th:if="${usuario.ruta_foto_id_trasera != null}">
+								<button class="btn-download-doc btn-view-doc" th:attr="onclick='openPreview(\'' + @{/cv/foto-id-trasera/descargar/{id}(id=${usuario.idUsuario})} + '\', \'img\')'"><i class="fas fa-eye"></i> Ver</button>
+								<a th:href="@{/cv/foto-id-trasera/descargar/{id}(id=${usuario.idUsuario}, download=true)}" class="btn-download-doc"><i class="fas fa-download"></i></a>
+							</div>
+							<span th:unless="${usuario.ruta_foto_id_trasera != null}" class="doc-status-not-uploaded">Faltante</span>
+						</div>
+					</div>
+
+				</div>
+			</div>
+		</div>
+
+		<!-- ====================== INACTIVOS ====================== -->
+		<div class="section-title">
+			<h2><i class="fa-solid fa-user-xmark" style="color: var(--danger);"></i> Inactivos</h2>
+			<span class="pill pill-danger">Mostrando: <span id="countInactivos">0</span></span>
+		</div>
+
+		<div class="users-container" id="usuariosInactivos">
+			<div th:each="usuario : ${usuarios.?[#strings.toUpperCase(estado) == 'INACTIVO']}"
+				class="user-card"
+				th:attr="data-nombre=${usuario.nombres + ' ' + usuario.apellido_paterno + ' ' + usuario.apellido_materno},
+						data-dni=${usuario.dni},
+						data-correo=${usuario.correo},
+						data-birth-day=${usuario.fecha_nacimiento != null ? #temporals.day(usuario.fecha_nacimiento) : ''},
+						data-birth-month=${usuario.fecha_nacimiento != null ? #temporals.month(usuario.fecha_nacimiento) : ''}">
+
+				<div class="user-header">
+					<div class="user-avatar" title="Ver foto en grande"
+						 th:attr="onclick='openPreview(\'' + (usuario.fotoPerfil != null ? @{/perfil/foto/{filename}(filename=${usuario.fotoPerfil})} : @{/img/admin.png}) + '\', \'img\')'">
+
+						<img th:if="${usuario.fotoPerfil != null}" th:src="@{/perfil/foto/{filename}(filename=${usuario.fotoPerfil})}" />
+						<div th:unless="${usuario.fotoPerfil != null}" th:switch="${usuario.objRol.id_rol}">
+							<img th:case="2" src="img/alamito.png">
+							<img th:case="1" src="img/admin.png">
+							<img th:case="3" src="img/calcenter.png">
+							<img th:case="*" src="img/alamito.png">
+						</div>
+					</div>
+
+					<div class="user-header-info">
+						<div style="display:flex; align-items:center; gap:.5rem; flex-wrap:wrap;">
+							<h3 th:text="${usuario.nombres + ' ' + usuario.apellido_paterno}" style="margin:0;"></h3>
+
+							<span class="modalidad-badge"
+								  th:with="m=${usuario.modalidad != null ? #strings.toUpperCase(usuario.modalidad) : '—'}"
+								  th:text="${m}"
+								  th:classappend="${m == 'VIRTUAL'} ? ' modalidad-virtual' : (${m == 'PRESENCIAL'} ? ' modalidad-presencial' : ' modalidad-unknown')">
+								—
+							</span>
+						</div>
+
+						<p><span th:text="${usuario.objRol.descripcion}"></span> | ID: <span th:text="${usuario.idUsuario}"></span></p>
+					</div>
+
+					<span class="status-indicator"
+						th:with="estadoAsis=${estadosAsistencia.get(usuario.idUsuario)}"
+						th:text="${estadoAsis}"
+						th:classappend="${estadoAsis == 'Trabajando'} ? ' status-working' : ' status-off'"></span>
+				</div>
+
+				<button class="btn-toggle-accordion" th:attr="onclick=|toggleAccordion(${usuario.idUsuario})|">
+					<span th:id="'btn-text-' + ${usuario.idUsuario}">Ver más detalles</span>
+					<i class="fa-solid fa-chevron-down" th:id="'icon-' + ${usuario.idUsuario}"></i>
+				</button>
+
+				<div th:id="'accordion-' + ${usuario.idUsuario}" class="user-accordion-content">
+					<div class="user-info-title"><i class="fas fa-user"></i> Datos</div>
+					<div class="user-info-item"><span class="user-info-label">Estado cuenta</span><span class="user-info-value" th:text="${usuario.estado}"></span></div>
+					<div class="user-info-item"><span class="user-info-label">DNI</span><span class="user-info-value" th:text="${usuario.dni}"></span></div>
+					<div class="user-info-item"><span class="user-info-label">Correo</span><span class="user-info-value" th:text="${usuario.correo != null ? usuario.correo : '-'}"></span></div>
+				</div>
+			</div>
+		</div>
+
+	</div>
+
+	<!-- MODAL -->
+	<div id="previewModal" class="modal-preview">
+		<div class="modal-preview-content">
+			<div class="modal-preview-header">
+				<h2 id="previewTitle">Vista previa</h2>
+				<span class="close-preview" onclick="closePreview()">&times;</span>
+			</div>
+			<div class="modal-preview-body" id="previewBody"></div>
+			<div class="zoom-controls" id="zoomControls" style="display: none;">
+				<button class="btn-zoom" onclick="changeZoom(50)" title="Acercar"><i class="fas fa-plus"></i></button>
+				<button class="btn-zoom" onclick="resetZoom()" style="font-size: 14px;">Reset</button>
+				<button class="btn-zoom" onclick="changeZoom(-50)" title="Alejar"><i class="fas fa-minus"></i></button>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		let currentWidth = 90;
+
+		function openPreview(url, type) {
+			const modal = document.getElementById('previewModal');
+			const body = document.getElementById('previewBody');
+			const title = document.getElementById('previewTitle');
+			const zoomControls = document.getElementById('zoomControls');
+
+			body.innerHTML = '';
+			currentWidth = 90;
+			body.classList.remove('scrolling-mode');
+
+			if (type === 'pdf') {
+				title.innerText = "Vista previa de documento";
+				zoomControls.style.display = "none";
+				const iframe = document.createElement('iframe');
+				iframe.src = url;
+				body.appendChild(iframe);
+			} else {
+				title.innerText = "Vista previa de imagen";
+				zoomControls.style.display = "flex";
+				const img = document.createElement('img');
+				img.src = url;
+				img.id = "previewImage";
+				img.style.width = currentWidth + "%";
+				body.appendChild(img);
+			}
+
+			modal.style.display = "block";
+			document.body.style.overflow = "hidden";
+		}
+
+		function changeZoom(delta) {
+			const img = document.getElementById('previewImage');
+			const body = document.getElementById('previewBody');
+			if (!img) return;
+
+			currentWidth += delta;
+			if (currentWidth < 20) currentWidth = 20;
+			if (currentWidth > 600) currentWidth = 600;
+
+			if (currentWidth > 100) body.classList.add('scrolling-mode');
+			else body.classList.remove('scrolling-mode');
+
+			img.style.width = currentWidth + "%";
+			img.style.maxWidth = "none";
+		}
+
+		function resetZoom() {
+			const img = document.getElementById('previewImage');
+			const body = document.getElementById('previewBody');
+			if (!img) return;
+
+			currentWidth = 90;
+			img.style.width = currentWidth + "%";
+			img.style.maxWidth = "90%";
+			body.classList.remove('scrolling-mode');
+		}
+
+		function closePreview() {
+			const modal = document.getElementById('previewModal');
+			modal.style.display = "none";
+			document.body.style.overflow = "auto";
+			document.getElementById('previewBody').innerHTML = '';
+		}
+
+		window.onclick = function (event) {
+			const modal = document.getElementById('previewModal');
+			if (event.target === modal) closePreview();
+		}
+
+		function toggleAccordion(idUsuario) {
+			const content = document.getElementById('accordion-' + idUsuario);
+			const icon = document.getElementById('icon-' + idUsuario);
+			const btnText = document.getElementById('btn-text-' + idUsuario);
+
+			if (!content) return;
+
+			const abierto = content.style.display === 'block';
+			content.style.display = abierto ? 'none' : 'block';
+
+			if (icon) {
+				icon.classList.remove(abierto ? 'fa-chevron-up' : 'fa-chevron-down');
+				icon.classList.add(abierto ? 'fa-chevron-down' : 'fa-chevron-up');
+			}
+			if (btnText) btnText.innerText = abierto ? "Ver más detalles" : "Ocultar detalles";
+		}
+
+		function highlightUpcomingBirthdays() {
+			const today = new Date(); today.setHours(0, 0, 0, 0);
+			document.querySelectorAll('.user-card').forEach(card => {
+				const day = parseInt(card.getAttribute('data-birth-day'));
+				const month = parseInt(card.getAttribute('data-birth-month'));
+				if (!day || !month) return;
+
+				let next = new Date(today.getFullYear(), month - 1, day);
+				if (next < today) next.setFullYear(today.getFullYear() + 1);
+
+				const diff = Math.ceil((next - today) / (1000 * 60 * 60 * 24));
+				if (diff === 0) card.classList.add('birthday-today');
+				else if (diff <= 14) card.classList.add('birthday-alert');
+			});
+		}
+
+		function updateCounters() {
+			const visiblesActivos = Array.from(document.querySelectorAll('#usuariosActivos .user-card'))
+				.filter(c => c.style.display !== 'none').length;
+			const visiblesInactivos = Array.from(document.querySelectorAll('#usuariosInactivos .user-card'))
+				.filter(c => c.style.display !== 'none').length;
+
+			document.getElementById('countActivos').textContent = visiblesActivos;
+			document.getElementById('countInactivos').textContent = visiblesInactivos;
+		}
+
+		function filtrarUsuarios() {
+			const input = (document.getElementById('searchInput').value || '').toLowerCase();
+			document.querySelectorAll('.user-card').forEach(card => {
+				const info = (
+					(card.getAttribute('data-nombre') || '') +
+					(card.getAttribute('data-dni') || '') +
+					(card.getAttribute('data-correo') || '')
+				).toLowerCase();
+
+				card.style.display = info.includes(input) ? '' : 'none';
+			});
+			updateCounters();
+		}
+
+		window.onload = function () {
+			highlightUpcomingBirthdays();
+			updateCounters();
+		};
+	</script>
+</body>
+</html>

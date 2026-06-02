@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historial Global de Servicios | Control</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+
+    <style>
+        :root {
+            --primary: rgb(13, 82, 242);
+            --primary-dark: rgb(0, 0, 128);
+            --gray-bg: #f3f4f6;
+            --gray-soft: #e5e7eb;
+            --gray-text: #4b5563;
+            --text-main: #111827;
+        }
+
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: "Poppins", sans-serif; display: flex; background: var(--gray-bg); }
+
+        /* =============== SIDEBAR (CSS ORIGINAL) =============== */
+        .sidebar {
+            width: 240px; background: #ffffff; border-right: 1px solid var(--gray-soft); color: var(--gray-text);
+            min-height: 100vh; padding: 1.4rem 1.1rem; position: fixed; top: 0; left: 0; display: flex; flex-direction: column; z-index: 100;
+        }
+        .sidebar-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.7rem; }
+        .sidebar-logo { display: flex; align-items: center; gap: 0.55rem; text-decoration: none; color: var(--text-main); }
+        .sidebar-logo-mark {
+            width: 32px; height: 32px; border-radius: 0.8rem; background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            display: flex; align-items: center; justify-content: center; color: #ffffff; font-size: 0.9rem; font-weight: 600;
+        }
+        .sidebar-logo-text { font-weight: 600; font-size: 1.02rem; }
+        .menu { list-style: none; padding: 0; margin: 1rem 0 0; flex-grow: 1; }
+        .menu li { margin-bottom: 0.2rem; }
+        .menu a {
+            display: flex; align-items: center; gap: 0.6rem; padding: 0.55rem 0.6rem;
+            border-radius: 0.6rem; color: var(--gray-text); text-decoration: none;
+            font-size: 0.88rem; transition: all 0.12s ease;
+        }
+        .menu a i { width: 18px; text-align: center; color: var(--primary); }
+        .menu a:hover, .menu a.active { background: #fef2f2; color: var(--primary-dark); font-weight: 600; }
+
+        /* =============== CONTENIDO =============== */
+        .main-content { margin-left: 240px; padding: 1.8rem 2rem 2.4rem; width: calc(100% - 240px); min-height: 100vh; }
+        @media (max-width: 768px) { .main-content { margin-left: 0; width: 100%; } .sidebar { display: none; } }
+
+        /* =============== FILTROS =============== */
+        .filter-card { background: #ffffff; padding: 1.2rem; border-radius: 1rem; margin-bottom: 1.5rem; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
+        .search-wrapper { position: relative; margin-bottom: 1rem; }
+        .search-wrapper i { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--gray-text); }
+        .search-wrapper input {
+            width: 100%; padding: 0.6rem 1rem 0.6rem 2.5rem; border: 1px solid var(--gray-soft); border-radius: 0.6rem;
+            outline: none; font-size: 0.85rem; font-family: inherit;
+        }
+
+        .filter-grid-compact { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.8rem; align-items: end; }
+        .filter-item { display: flex; flex-direction: column; gap: 0.3rem; }
+        .filter-item label { font-size: 0.65rem; font-weight: 700; color: var(--primary); text-transform: uppercase; }
+        .filter-select { padding: 0.45rem; border: 1px solid var(--gray-soft); border-radius: 0.5rem; font-size: 0.75rem; background: #fafafa; cursor: pointer; font-family: inherit; }
+
+        /* =============== BANNER TOTAL =============== */
+        .total-banner {
+            background: linear-gradient(135deg, #1e293b, #334155);
+            color: white; padding: 1.2rem 1.5rem; border-radius: 1rem; margin-bottom: 1.5rem;
+            display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .total-amount { font-size: 1.6rem; font-weight: 700; }
+
+        /* =============== TABLA =============== */
+        .card-container { background: #ffffff; border-radius: 1rem; padding: 1.2rem; box-shadow: 0 10px 24px rgba(0,0,0,0.05); overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+        th { background: #fafafa; color: var(--text-main); font-weight: 600; padding: 0.8rem; text-align: left; border-bottom: 2px solid var(--gray-soft); }
+        td { padding: 0.8rem; border-bottom: 1px solid var(--gray-soft); vertical-align: middle; }
+
+        .badge { padding: 0.2rem 0.6rem; border-radius: 999px; font-size: 0.65rem; font-weight: 600; }
+        .badge-buyer { background: #fee2e2; color: #991b1b; }
+        .badge-period { background: #e0f2fe; color: #0369a1; }
+
+        .details-row { display: none; background: #f8fafc; }
+        .grid-details { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; padding: 1.2rem; border: 1px solid var(--gray-soft); border-radius: 0.8rem; margin: 10px; background: white; }
+        .detail-box b { display: block; font-size: 0.65rem; color: var(--primary); text-transform: uppercase; margin-bottom: 2px; }
+        .detail-box span { font-weight: 500; color: var(--text-main); }
+
+        /* ✅ MINIATURAS igual a Inventario */
+        .img-stack { display: flex; gap: 4px; align-items: center; }
+        .img-thumb { width: 35px; height: 35px; object-fit: cover; border-radius: 4px; border: 1px solid var(--gray-soft); cursor: pointer; transition: transform 0.2s; }
+        .img-thumb:hover { transform: scale(1.2); z-index: 10; }
+        .img-empty { color: #cbd5e1; }
+    </style>
+</head>
+
+<body>
+    <div th:replace="~{fragmentos/sidebar :: navbar(u=${u})}"></div>
+
+    <div class="main-content">
+        <div style="margin-bottom: 1.5rem;">
+            <h1 style="font-size: 1.4rem; margin: 0; color: var(--text-main);">
+                <i class="fas fa-receipt" style="color: var(--primary);"></i> Historial Global de Servicios
+            </h1>
+            <p style="color: var(--gray-text); font-size: 0.85rem;">Consulta detallada de gastos fijos y micro-servicios.</p>
+        </div>
+
+        <div class="total-banner">
+            <div>
+                <span style="font-size: 0.85rem; opacity: 0.9;">Gasto Total Acumulado</span>
+                <div style="font-size: 0.7rem; opacity: 0.7;">Calculado según filtros aplicados</div>
+            </div>
+            <div class="total-amount" id="dynamicTotal">S/ 0.00</div>
+        </div>
+
+        <div class="filter-card">
+            <div class="search-wrapper">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Buscar por descripción, comprador o periodo..." onkeyup="applyFilters()">
+            </div>
+            <div class="filter-grid-compact">
+                <div class="filter-item">
+                    <label>👤 Pagado por</label>
+                    <select id="buyerFilter" class="filter-select" onchange="applyFilters()">
+                        <option value="">Todos</option>
+                    </select>
+                </div>
+                <div class="filter-item">
+                    <label>📅 Año</label>
+                    <select id="yearFilter" class="filter-select" onchange="applyFilters()">
+                        <option value="">Todos</option>
+                    </select>
+                </div>
+                <button onclick="resetFilters()" style="background:#fee2e2; border:1px solid #fecaca; color:#b91c1c; padding:0.45rem; border-radius:0.5rem; cursor:pointer; font-weight:600; font-size:0.75rem;">
+                    <i class="fas fa-eraser"></i> Limpiar
+                </button>
+            </div>
+        </div>
+
+        <div class="card-container">
+            <table id="servicesTable">
+                <thead>
+                    <tr>
+                        <th style="width: 40px; text-align: center;">Detalle</th>
+                        <th style="width: 90px;">Archivos</th>
+                        <th>Fecha Pago</th>
+                        <th>Periodo Ingreso</th>
+                        <th>Responsable</th>
+                        <th>Descripción</th>
+                        <th>Operativos</th>
+                        <th>Suscripciones</th>
+                        <th>Total</th>
+                        <th>Acción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <th:block th:each="s, iter : ${servicios}">
+                        <tr class="row-main"
+                            th:data-buyer="${s.comprador}"
+                            th:data-year="${#temporals.format(s.fecha, 'yyyy')}"
+                            th:data-total="${s.getTotal()}">
+                            <td style="text-align: center;">
+                                <button style="background:none; border:none; color:var(--primary); cursor:pointer; font-size: 1.1rem;"
+                                        th:attr="onclick='toggleDetails(' + ${iter.index} + ')'">
+                                    <i th:id="'icon-' + ${iter.index}" class="fas fa-plus-circle"></i>
+                                </button>
+                            </td>
+
+                            <!-- ✅ NUEVO: Miniatura comprobante -->
+                            <td>
+                                <div class="img-stack">
+                                    <div th:if="${s.fotoComprobante != null and s.fotoComprobante != ''}">
+                                        <!-- ⚠️ Ruta igual que Inventario -->
+                                        <a th:href="@{/uploads/Inventario/{file}(file=${s.fotoComprobante})}" target="_blank">
+                                            <img th:src="@{/uploads/Inventario/{file}(file=${s.fotoComprobante})}" class="img-thumb" title="Ver comprobante" />
+                                        </a>
+                                    </div>
+                                    <div th:if="${s.fotoComprobante == null or s.fotoComprobante == ''}" class="img-empty">
+                                        <i class="fas fa-image"></i>
+                                    </div>
+                                </div>
+                            </td>
+
+                            <td th:text="${#temporals.format(s.fecha, 'dd/MM/yyyy')}"></td>
+                            <td>
+                                <span class="badge badge-period"
+                                      th:text="${s.ingreso != null ? #temporals.format(s.ingreso.mes, 'MMMM yyyy') : 'S/I'}"
+                                      style="text-transform: capitalize;"></span>
+                            </td>
+                            <td><span class="badge badge-buyer" th:text="${s.comprador ?: '-'}"></span></td>
+                            <td th:text="${s.descripcion}"></td>
+                            <td th:text="'S/ ' + ${#numbers.formatDecimal((s.transporte ?: 0) + (s.comida ?: 0) + (s.gastoRestaurante ?: 0), 1, 2)}"></td>
+                            <td th:text="'S/ ' + ${#numbers.formatDecimal(s.getSuscripcionesTotal(), 1, 2)}"></td>
+                            <td style="font-weight:700; color:var(--primary);" th:text="'S/ ' + ${#numbers.formatDecimal(s.getTotal(), 1, 2)}"></td>
+                            <td>
+                                <a th:href="@{/producto(idIngreso=${s.ingreso.idIngreso}, idServicio=${s.idServicio})}" style="color: #f59e0b;">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                            </td>
+                        </tr>
+
+                        <!-- ✅ Detalle expandible: incluye link a comprobante -->
+                        <tr th:id="'details-' + ${iter.index}" class="details-row">
+                            <td colspan="10">
+                                <div class="grid-details">
+
+                                    <div class="detail-box" th:if="${s.fotoComprobante != null and s.fotoComprobante != ''}">
+                                        <b>Comprobante:</b>
+                                        <span>
+                                            <a th:href="@{/uploads/Inventario/{file}(file=${s.fotoComprobante})}" target="_blank"
+                                               style="color: var(--primary-dark); text-decoration: none; font-weight:600;">
+                                                <i class="fas fa-paperclip"></i> Ver / Descargar
+                                            </a>
+                                        </span>
+                                    </div>
+                                    <div class="detail-box" th:if="${s.fotoComprobante == null or s.fotoComprobante == ''}">
+                                        <b>Comprobante:</b><span>Sin archivo</span>
+                                    </div>
+
+                                    <div class="detail-box"><b>Transporte:</b><span th:text="'S/ ' + ${s.transporte ?: 0}"></span></div>
+                                    <div class="detail-box"><b>Comida:</b><span th:text="'S/ ' + ${s.comida ?: 0}"></span></div>
+                                    <div class="detail-box"><b>Restaurante:</b><span th:text="'S/ ' + ${s.gastoRestaurante ?: 0}"></span></div>
+                                    <div class="detail-box"><b>ChatGPT:</b><span th:text="'S/ ' + ${s.chatgpt ?: 0}"></span></div>
+                                    <div class="detail-box"><b>Canva:</b><span th:text="'S/ ' + ${s.canva ?: 0}"></span></div>
+                                    <div class="detail-box"><b>iCloud:</b><span th:text="'S/ ' + ${s.icloud ?: 0}"></span></div>
+                                    <div class="detail-box"><b>Google Capa:</b><span th:text="'S/ ' + ${s.googleCapa ?: 0}"></span></div>
+                                    <div class="detail-box"><b>OneDrive:</b><span th:text="'S/ ' + ${s.oneDrive ?: 0}"></span></div>
+                                    <div class="detail-box"><b>Servidor/Otros:</b><span th:text="'S/ ' + ${(s.servidor ?: 0) + (s.otros ?: 0)}"></span></div>
+                                </div>
+                            </td>
+                        </tr>
+                    </th:block>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        function populateDynamicFilters() {
+            const rows = document.querySelectorAll('.row-main');
+            const buyers = new Set();
+            const years = new Set();
+
+            rows.forEach(row => {
+                if (row.getAttribute('data-buyer')) buyers.add(row.getAttribute('data-buyer'));
+                if (row.getAttribute('data-year')) years.add(row.getAttribute('data-year'));
+            });
+
+            fillSelect('buyerFilter', buyers);
+            fillSelect('yearFilter', years);
+        }
+
+        function fillSelect(id, set) {
+            const select = document.getElementById(id);
+            Array.from(set).sort().forEach(val => {
+                const opt = document.createElement('option');
+                opt.value = val; opt.textContent = val;
+                select.appendChild(opt);
+            });
+        }
+
+        function applyFilters() {
+            const searchVal = document.getElementById('searchInput').value.toLowerCase();
+            const buyerVal = document.getElementById('buyerFilter').value;
+            const yearVal = document.getElementById('yearFilter').value;
+
+            let total = 0;
+            const rows = document.querySelectorAll('.row-main');
+
+            rows.forEach(row => {
+                const text = row.innerText.toLowerCase();
+                const buyer = row.getAttribute('data-buyer');
+                const year = row.getAttribute('data-year');
+                const rowTotal = parseFloat(row.getAttribute('data-total')) || 0;
+
+                const matchesSearch = text.includes(searchVal);
+                const matchesBuyer = !buyerVal || buyer === buyerVal;
+                const matchesYear = !yearVal || year === yearVal;
+
+                // obtener index de forma segura
+                const btn = row.querySelector('button');
+                const onclickVal = btn ? (btn.getAttribute('onclick') || '') : '';
+                const m = onclickVal.match(/\d+/);
+                const index = m ? m[0] : null;
+
+                if (matchesSearch && matchesBuyer && matchesYear) {
+                    row.style.display = "";
+                    total += rowTotal;
+                } else {
+                    row.style.display = "none";
+                    // Cerrar detalles si estaban abiertos
+                    if (index !== null) {
+                        const det = document.getElementById('details-' + index);
+                        const ico = document.getElementById('icon-' + index);
+                        if (det) det.style.display = 'none';
+                        if (ico) ico.className = 'fas fa-plus-circle';
+                    }
+                }
+            });
+
+            document.getElementById('dynamicTotal').innerText =
+                'S/ ' + total.toLocaleString('es-PE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        function toggleDetails(index) {
+            const row = document.getElementById('details-' + index);
+            const icon = document.getElementById('icon-' + index);
+            if (!row || !icon) return;
+
+            const isVisible = row.style.display === 'table-row';
+            row.style.display = isVisible ? 'none' : 'table-row';
+            icon.className = isVisible ? 'fas fa-plus-circle' : 'fas fa-minus-circle';
+        }
+
+        function resetFilters() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('buyerFilter').value = '';
+            document.getElementById('yearFilter').value = '';
+            applyFilters();
+        }
+
+        window.onload = () => {
+            populateDynamicFilters();
+            applyFilters();
+        };
+    </script>
+</body>
+</html>
