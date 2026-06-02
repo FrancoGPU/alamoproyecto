@@ -1,0 +1,49 @@
+services:
+  asistencia-db:
+    image: mysql:8.0
+    container_name: asistencia-db
+    restart: always
+    environment:
+      TZ: America/Lima
+      MYSQL_ROOT_PASSWORD: "R00t_As1st3ncia!2026#Seg-m0Ni1oo"
+      MYSQL_DATABASE: sistema_asistencia
+      MYSQL_USER: asistencia_user
+      MYSQL_PASSWORD: "As1st3ncia_App!2026-m0No"
+    volumes:
+      - asistencia_db_data:/var/lib/mysql
+    ports:
+      - "127.0.0.1:3310:3306"
+    networks:
+      - asistencia-net
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -p$$MYSQL_ROOT_PASSWORD --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  asistencia-app:
+    build:
+      context: .
+    container_name: asistencia-app
+    restart: unless-stopped
+    depends_on:
+      asistencia-db:
+        condition: service_healthy
+    environment:
+      TZ: America/Lima
+      JAVA_TOOL_OPTIONS: -Duser.timezone=America/Lima
+      SPRING_DATASOURCE_URL: jdbc:mysql://asistencia-db:3306/sistema_asistencia?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=America/Lima
+      SPRING_DATASOURCE_USERNAME: asistencia_user
+      SPRING_DATASOURCE_PASSWORD: "As1st3ncia_App!2026-m0No"
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+    ports:
+      - "8083:8080"
+    networks:
+      - asistencia-net
+
+volumes:
+  asistencia_db_data:
+
+networks:
+  asistencia-net:
