@@ -1,0 +1,32 @@
+# Maven
+/target/
+*.class
+*.log
+
+# Spring Boot
+*.pid
+hs_err_pid*
+
+# IDEs
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+.project
+.classpath
+.settings/
+.factorypath
+
+# Build tools
+.gradle/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+
+# Environment
+.env
