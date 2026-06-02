@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<aside th:fragment="navbar(u)" class="sidebar">
+
+  <div class="sidebar-header">
+    <a th:href="@{/cargarmenu}" class="sidebar-logo">
+      <div class="sidebar-logo-mark">A</div>
+      <div class="sidebar-logo-text">ALAMO</div>
+    </a>
+    <span class="sidebar-env">
+      <i class="fa-solid fa-building-user"></i>
+      Interno
+    </span>
+  </div>
+
+  <ul class="menu">
+
+    <li th:if="${u != null and (u.objRol.id_rol == 1 or u.objRol.id_rol == 2 or u.objRol.id_rol == 3 or u.objRol.id_rol == 4)}">
+      <a th:href="@{/cargarPerfil}">
+        <i class="fas fa-user"></i>
+        <span>Mi Perfil</span>
+      </a>
+    </li>
+
+    <li th:if="${u != null and (u.objRol.id_rol == 1 or u.objRol.id_rol == 2 or u.objRol.id_rol == 3 or u.objRol.id_rol == 4)}">
+      <a th:href="@{/cargarRegistro}">
+        <i class="fas fa-clock"></i>
+        <span>Registrar Asistencia</span>
+      </a>
+    </li>
+
+    <li th:if="${u != null and (u.objRol.id_rol == 2 or u.objRol.id_rol == 3 or u.objRol.id_rol == 4)}">
+      <a th:href="@{/cargarMiHistorial}">
+        <i class="fas fa-history"></i>
+        <span>Mi Historial</span>
+      </a>
+    </li>
+
+    <li th:if="${u != null and (u.objRol.id_rol == 1 or u.objRol.id_rol == 3)}">
+      <a th:href="@{/cargarHistorialGeneral}">
+        <i class="fas fa-chart-line"></i>
+        <span>Historial General</span>
+      </a>
+    </li>
+
+    <li th:if="${u != null and (u.objRol.id_rol == 2 or u.objRol.id_rol == 3 or u.objRol.id_rol == 4)}">
+      <a th:href="@{/cargarReporte}">
+        <i class="fas fa-file-lines"></i>
+        <span>Reportes</span>
+      </a>
+    </li>
+
+    <li th:if="${u != null and (u.objRol.id_rol == 1 or u.objRol.id_rol == 3 or u.objRol.id_rol == 4)}">
+      <a th:href="@{/informes}">
+        <i class="fas fa-file-pdf"></i>
+        <span>Informes</span>
+      </a>
+    </li>
+
+    <li th:if="${u != null and (u.objRol.id_rol == 1 or u.objRol.id_rol == 3 or u.objRol.id_rol == 4)}">
+      <a th:href="@{/cargarRevisionUsuarios}">
+        <i class="fas fa-users"></i>
+        <span>Revision de Usuarios</span>
+      </a>
+    </li>
+
+    <li th:if="${u != null and (u.objRol.id_rol == 1 or u.objRol.id_rol == 3)}">
+      <a th:href="@{/cargarUsuarios}">
+        <i class="fas fa-user-plus"></i>
+        <span>Gestion de Usuarios</span>
+      </a>
+    </li>
+
+    <li th:if="${u != null and (u.objRol.id_rol == 1 or u.objRol.id_rol == 3)}">
+      <a th:href="@{/cargarHorarios}" style="display:flex; align-items:center; justify-content:space-between; width:100%;">
+        <div style="display:flex; align-items:center; gap:0.6rem;">
+          <i class="fas fa-calendar-check"></i>
+          <span>Gestion de Horarios</span>
+        </div>
+        <span th:if="${conteoPendientesHorarios != null and conteoPendientesHorarios > 0}"
+              th:text="${conteoPendientesHorarios}"
+              style="background-color:#ef4444; color:white; font-size:0.75rem; font-weight:600; padding:2px 8px; border-radius:999px; line-height:1;">
+        </span>
+      </a>
+    </li>
+
+    <li th:if="${u != null and (u.objRol.id_rol == 1 or u.objRol.id_rol == 3)}">
+      <a th:href="@{/tareas/gestion}">
+        <i class="fas fa-paper-plane"></i>
+        <span>Asignar Tareas</span>
+      </a>
+    </li>
+
+    <li th:if="${u != null}">
+      <a th:href="@{/tareas/workspace}" style="display:flex; align-items:center; justify-content:space-between; width:100%;">
+        <div style="display:flex; align-items:center; gap:0.6rem;">
+          <i class="fas fa-layer-group"></i>
+          <span>Mi Workspace</span>
+        </div>
+        <span th:if="${conteoTareasPendientes != null and conteoTareasPendientes > 0}"
+              th:text="${conteoTareasPendientes}"
+              style="background-color:#ef4444; color:white; font-size:0.75rem; font-weight:600; padding:2px 8px; border-radius:999px; line-height:1;">
+        </span>
+      </a>
+    </li>
+
+    <li th:classappend="${moduloActivo == 'agenda'} ? 'active'"
+        th:if="${u != null and (u.objRol.id_rol == 1 or u.objRol.id_rol == 3 or u.objRol.id_rol == 4)}">
+      <a th:href="@{/agenda}">
+        <i class="fas fa-address-book"></i>
+        <span>Agenda</span>
+      </a>
+    </li>
+
+    <li th:classappend="${moduloActivo == 'inventario'} ? 'active'"
+        th:if="${u != null and (u.objRol.id_rol == 1 or u.objRol.id_rol == 3 or u.objRol.id_rol == 4)}">
+      <a th:href="@{/producto}">
+        <i class="fas fa-boxes-stacked"></i>
+        <span>Gestion Contable</span>
+      </a>
+    </li>
+
+    <li th:classappend="${moduloActivo == 'historial-global'} ? 'active'"
+        th:if="${u != null and (u.objRol.id_rol == 1 or u.objRol.id_rol == 3 or u.objRol.id_rol == 4)}">
+      <a th:href="@{/producto/global}">
+        <i class="fas fa-globe"></i>
+        <span>Historial Productos</span>
+      </a>
+    </li>
+
+    <li th:classappend="${moduloActivo == 'servicios-global'} ? 'active'"
+        th:if="${u != null and (u.objRol.id_rol == 1 or u.objRol.id_rol == 3 or u.objRol.id_rol == 4)}">
+      <a th:href="@{/producto/servicios/global}">
+        <i class="fas fa-receipt"></i>
+        <span>Historial Servicios</span>
+      </a>
+    </li>
+
+    <li th:if="${u != null}">
+      <a th:href="@{/logout}" class="logout">
+        <i class="fas fa-sign-out-alt"></i>
+        <span>Salir</span>
+      </a>
+    </li>
+
+  </ul>
+</aside>
+
+</body>
+</html>

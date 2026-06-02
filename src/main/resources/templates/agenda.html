@@ -1,0 +1,2355 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Agenda de Contactos | ALAMO</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+  <style>
+    :root {
+      --primary: rgb(13, 82, 242);
+      --primary-dark: rgb(0, 0, 128);
+      --gray-bg: #f3f4f6;
+      --gray-soft: #e5e7eb;
+      --gray-text: #4b5563;
+      --text-main: #111827;
+
+      --brand: rgb(13, 82, 242);
+      --bg: #f3f4f6;
+      --card: #ffffff;
+      --text: #111827;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --soft: #f9fafb;
+
+      --accent: #0d52f2;
+      --accent2: #1e3a8a;
+      --accent-soft: rgba(13, 82, 242, .12);
+      --shadow: 0 18px 40px rgba(0, 0, 0, .08);
+      --shadow-soft: 0 10px 28px rgba(0, 0, 0, .06);
+      --radius: 18px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Poppins", sans-serif;
+      background: var(--gray-bg);
+      display: flex;
+    }
+
+    .sidebar {
+      width: 240px;
+      background: #ffffff;
+      border-right: 1px solid var(--gray-soft);
+      color: var(--gray-text);
+      min-height: 100vh;
+      padding: 1.4rem 1.1rem;
+      position: fixed;
+      top: 0;
+      left: 0;
+    }
+
+    .sidebar-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.7rem;
+    }
+
+    .sidebar-logo {
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+      text-decoration: none;
+      color: var(--text-main);
+    }
+
+    .sidebar-logo-mark {
+      width: 32px;
+      height: 32px;
+      border-radius: 0.8rem;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .sidebar-logo-text { font-weight: 600; font-size: 1.02rem; }
+
+    .sidebar-env {
+      font-size: 0.7rem;
+      padding: 0.2rem 0.55rem;
+      border-radius: 999px;
+      border: 1px solid var(--gray-soft);
+      background: #f9fafb;
+      color: var(--gray-text);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .sidebar-env i { color: var(--primary); }
+
+    .menu { list-style: none; padding: 0; margin: 0; }
+    .menu li { margin-bottom: 0.2rem; }
+
+    .menu a {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.55rem 0.6rem;
+      border-radius: 0.6rem;
+      color: var(--gray-text);
+      text-decoration: none;
+      font-size: 0.88rem;
+      transition: background-color 0.12s ease, color 0.12s ease;
+    }
+
+    .menu a i {
+      width: 18px;
+      text-align: center;
+      font-size: 0.95rem;
+      color: var(--primary);
+    }
+
+    .menu a:hover { background: #fef2f2; color: var(--primary-dark); }
+
+    .menu a.logout {
+      margin-top: 0.4rem;
+      border-top: 1px solid var(--gray-soft);
+      padding-top: 0.7rem;
+      color: #b91c1c;
+    }
+    .menu a.logout i { color: #b91c1c; }
+
+    .main-content {
+      margin-left: 240px;
+      padding: 1.8rem 2rem;
+      width: calc(100% - 240px);
+      min-height: 100vh;
+    }
+
+    @media (max-width: 768px) {
+      .main-content { margin-left: 0; width: 100%; }
+      .sidebar { display: none; }
+    }
+
+    .page-title {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--text-main);
+      margin-bottom: 0.2rem;
+      letter-spacing: -0.2px;
+    }
+
+    .page-subtitle {
+      font-size: 0.95rem;
+      color: var(--gray-text);
+      margin-bottom: 1.2rem;
+      opacity: .95;
+    }
+
+    .app {
+      display: grid;
+      grid-template-columns: 320px 1fr 420px;
+      gap: 16px;
+      max-width: 1600px;
+      margin: 0 auto;
+    }
+
+    @media (max-width: 1200px){
+      .app{ grid-template-columns: 320px 1fr; }
+      .detail{ display:none; }
+    }
+    @media (max-width: 900px){
+      .app{ grid-template-columns: 1fr; }
+      .detail{ display:none; }
+    }
+
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .panel .sidebar-header{
+      padding: 16px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 0;
+      display: block;
+    }
+
+    .title{
+      font-size: 1.05rem;
+      font-weight: 800;
+      margin: 0;
+      color: var(--text);
+      letter-spacing: -0.1px;
+    }
+
+    .subtitle{
+      margin: 4px 0 0 0;
+      color: var(--muted);
+      font-size: .92rem;
+    }
+
+    .labels{
+      padding: 10px;
+      max-height: calc(100vh - 250px);
+      overflow: auto;
+    }
+
+    .label-item{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      cursor:pointer;
+      user-select:none;
+      transition: background .12s ease, transform .12s ease, border-color .12s ease;
+      border: 1px solid transparent;
+    }
+    .label-item:hover{ background: var(--soft); transform: translateY(-1px); }
+    .label-item.active{
+      background: rgba(13,82,242,.10);
+      border: 1px solid rgba(13,82,242,.25);
+    }
+
+    .label-left{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-width:0;
+    }
+
+    .dot{
+      width: 12px;
+      height: 12px;
+      border-radius: 999px;
+      background: var(--brand);
+      flex: 0 0 auto;
+    }
+
+    .label-name{
+      font-weight: 700;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      color: var(--text);
+    }
+
+    .main-header{
+      padding: 16px;
+      border-bottom: 1px solid var(--border);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .searchbar{
+      flex: 1 1 420px;
+      min-width: 260px;
+    }
+
+    .searchbar input{
+      height: 48px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      padding-left: 14px;
+    }
+
+    .searchbar input:focus{
+      border-color: rgba(13,82,242,.45);
+      box-shadow: 0 0 0 6px rgba(13,82,242,.12);
+    }
+
+    .btn-big{
+      height: 48px;
+      border-radius: 14px;
+      font-weight: 800;
+      letter-spacing: .1px;
+    }
+
+    .btn-primary{
+      box-shadow: 0 10px 24px rgba(13,82,242,.18);
+    }
+
+    .list{
+      padding: 14px;
+      max-height: calc(100vh - 250px);
+      overflow: auto;
+    }
+
+    .card-contact{
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 16px;
+      background: #fff;
+      box-shadow: 0 8px 18px rgba(0,0,0,.04);
+      transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease;
+      cursor:pointer;
+    }
+    .card-contact:hover{
+      transform: translateY(-1px);
+      box-shadow: 0 14px 26px rgba(0,0,0,.07);
+      border-color: rgba(13,82,242,.22);
+    }
+    .card-contact.active{
+      border-color: rgba(13,82,242,.55);
+      box-shadow: 0 14px 30px rgba(13,82,242,.14);
+    }
+
+    .contact-top{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 12px;
+    }
+
+    .contact-left{
+      display:flex;
+      align-items:center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .avatar{
+      width: 46px;
+      height: 46px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--soft);
+      overflow: hidden;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      flex: 0 0 auto;
+      box-shadow: 0 10px 20px rgba(0,0,0,.06);
+    }
+    .avatar img{
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display:block;
+    }
+    .avatar .fa-user{
+      color:#9ca3af;
+      font-size: 18px;
+    }
+
+    .name{
+      font-weight: 900;
+      font-size: 1.02rem;
+      margin: 0;
+      color: var(--text);
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      max-width: 420px;
+      letter-spacing: -0.2px;
+    }
+
+    .meta{
+      margin: 8px 0 0 0;
+      color: var(--muted);
+      font-size: .93rem;
+      display:flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .pill{
+      background: var(--soft);
+      border: 1px solid rgba(229,231,235,.9);
+      border-radius: 999px;
+      padding: 5px 10px;
+      font-size: .85rem;
+      color: #374151;
+      font-weight: 700;
+    }
+
+    .detail-header{
+      padding: 16px;
+      border-bottom: 1px solid var(--border);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 10px;
+    }
+
+    .detail-body{
+      padding: 18px;
+      max-height: calc(100vh - 250px);
+      overflow:auto;
+    }
+
+    .empty{
+      color: var(--muted);
+      padding: 18px;
+      text-align:center;
+    }
+
+    .detail-grid{
+      display: grid;
+      gap: 12px;
+    }
+
+    .detail-card{
+      border: 1px solid var(--border);
+      background: #fff;
+      border-radius: 18px;
+      padding: 14px;
+      box-shadow: 0 10px 22px rgba(0,0,0,.05);
+      transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease;
+    }
+
+    .detail-card:hover{
+      transform: translateY(-1px);
+      box-shadow: 0 14px 26px rgba(0,0,0,.07);
+      border-color: rgba(13,82,242,.22);
+    }
+
+    .detail-card h6{
+      margin: 0 0 10px 0;
+      font-weight: 900;
+      letter-spacing: -.2px;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      color:#111827;
+    }
+
+    .detail-card h6 i{
+      width: 34px;
+      height: 34px;
+      border-radius: 12px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+
+    .kv{
+      display:grid;
+      grid-template-columns: 160px 1fr;
+      gap: 8px 12px;
+      padding: 10px 0;
+      border-bottom: 1px dashed rgba(229,231,235,.9);
+    }
+
+    .k{ color: #6b7280; font-weight: 900; }
+    .v{ color: #111827; word-break: break-word; font-weight: 500; }
+
+    .detail-photo{
+      border-radius: 20px;
+      overflow:hidden;
+      border: 1px solid var(--border);
+      box-shadow: 0 12px 26px rgba(0,0,0,.08);
+    }
+
+    .modal .form-label{ font-weight: 800; }
+
+    .modal-content{
+      border-radius: 22px;
+      border: 1px solid rgba(229,231,235,.9);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .modal-header{
+      border-bottom: 1px solid rgba(255,255,255,.18);
+      background: linear-gradient(135deg, rgba(13,82,242,.92), rgba(30,58,138,.92));
+      color: #fff;
+    }
+
+    .modal-title{
+      font-weight: 900;
+      letter-spacing: -.2px;
+    }
+
+    .modal-header .btn-close{
+      filter: invert(1);
+      opacity: .85;
+    }
+
+    .modal-body{
+      background: #fbfbfd;
+    }
+
+    .modal .form-control,
+    .modal .form-select,
+    .modal textarea{
+      border-radius: 14px;
+      border: 1px solid rgba(229,231,235,.95);
+      padding: .7rem .8rem;
+      background: #fff;
+    }
+
+    .modal .form-control:focus,
+    .modal .form-select:focus,
+    .modal textarea:focus{
+      border-color: rgba(13,82,242,.55);
+      box-shadow: 0 0 0 6px rgba(13,82,242,.12);
+    }
+
+    .form-section{
+      border: 1px solid rgba(229,231,235,.9);
+      background: #fff;
+      border-radius: 18px;
+      padding: 14px;
+      box-shadow: 0 10px 22px rgba(0,0,0,.04);
+    }
+
+    .form-section-title{
+      font-weight: 900;
+      margin: 0 0 10px 0;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      color: #111827;
+      letter-spacing: -.2px;
+    }
+
+    .form-section-title i{
+      width: 34px;
+      height: 34px;
+      border-radius: 12px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      background: rgba(13,82,242,.12);
+      color: var(--accent);
+    }
+
+    .modal-footer{
+      border-top: 1px solid rgba(229,231,235,.9);
+      background: #ffffff;
+    }
+
+    .state-badge{
+      display:inline-flex;
+      align-items:center;
+      gap:.35rem;
+      font-size:.78rem;
+      font-weight:900;
+      padding:4px 10px;
+      border-radius:999px;
+      border:1px solid var(--border);
+      background:#fff7ed;
+      color:#9a3412;
+    }
+    .state-badge i{ font-size:.8rem; }
+
+    .chips-wrap{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      margin: 10px 0 12px 0;
+    }
+
+    .chip{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      border:1px solid var(--border);
+      background: var(--soft);
+      padding: 7px 11px;
+      border-radius: 999px;
+      font-size: .85rem;
+      font-weight: 900;
+      color:#111827;
+      max-width: 100%;
+    }
+
+    .chip .chip-dot{
+      width:10px; height:10px; border-radius:999px;
+      flex:0 0 auto;
+    }
+
+    .chip .chip-name{
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      max-width: 240px;
+    }
+
+    .chip .chip-x{
+      border:0;
+      background: transparent;
+      color:#6b7280;
+      line-height: 1;
+      padding: 0;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      width: 20px; height: 20px;
+      border-radius: 999px;
+      cursor:pointer;
+    }
+
+    .chip .chip-x:hover{
+      background: rgba(239,68,68,.12);
+      color:#b91c1c;
+    }
+
+    .photo-row{
+      display:flex;
+      align-items:center;
+      gap: 12px;
+    }
+    .photo-preview{
+      width: 54px;
+      height: 54px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--soft);
+      overflow: hidden;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      flex: 0 0 auto;
+      box-shadow: 0 10px 20px rgba(0,0,0,.08);
+    }
+    .photo-preview img{
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display:block;
+    }
+    .photo-preview .fa-user{
+      color:#9ca3af;
+      font-size: 18px;
+    }
+
+    html { scroll-behavior: smooth; }
+  </style>
+</head>
+
+<body>
+
+  <div th:replace="~{fragmentos/sidebar :: navbar(u=${u})}"></div>
+
+  <div class="main-content">
+    <div class="page-title">Agenda de contactos</div>
+    <div class="page-subtitle">Etiquetas + contactos + detalle.</div>
+
+    <div class="app">
+
+      <aside class="panel">
+        <div class="sidebar-header">
+          <p class="title">Etiquetas</p>
+          <p class="subtitle">Haz clic para filtrar contactos</p>
+        </div>
+
+        <div class="labels" id="labelsBox">
+          <div class="empty">Cargando etiquetas…</div>
+        </div>
+      </aside>
+
+      <main class="panel">
+        <div class="main-header">
+          <div class="searchbar">
+            <input class="form-control" id="q" placeholder="Buscar por nombre, DNI, teléfono o correo…" />
+          </div>
+
+          <div class="d-flex gap-2 align-items-center flex-wrap">
+            <div class="form-check form-switch m-0">
+              <input class="form-check-input" type="checkbox" id="chkArchivados">
+              <label class="form-check-label small" for="chkArchivados">Ver archivados</label>
+            </div>
+
+            <button class="btn btn-primary btn-big" id="btnNuevoContacto">+ Nuevo contacto</button>
+            <button class="btn btn-outline-secondary btn-big" id="btnRefrescar">Refrescar</button>
+          </div>
+        </div>
+
+        <div class="list" id="listBox">
+          <div class="empty">Cargando contactos…</div>
+        </div>
+      </main>
+
+      <section class="detail panel">
+        <div class="detail-header">
+          <div>
+            <div class="title">Detalle</div>
+            <div class="subtitle">Selecciona un contacto</div>
+          </div>
+          <div class="d-flex gap-2">
+            <button class="btn btn-outline-secondary btn-big" id="btnGestionEtiquetas" disabled>Etiquetas</button>
+            <button class="btn btn-outline-primary btn-big" id="btnEditar" disabled>Editar</button>
+            <button class="btn btn-outline-danger btn-big" id="btnArchivar" disabled>Archivar</button>
+          </div>
+        </div>
+
+        <div class="detail-body" id="detailBox">
+          <div class="empty">Aquí verás la información del contacto.</div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <!-- MODAL CONTACTO -->
+  <div class="modal fade" id="modalContacto" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalContactoTitle">Nuevo contacto</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+
+        <div class="modal-body">
+          <form id="formContacto" class="row g-3" novalidate>
+            <input type="hidden" id="id_contacto" />
+
+            <!-- Identidad -->
+            <div class="col-12">
+              <div class="form-section">
+                <div class="form-section-title"><i class="fa-solid fa-id-card"></i> Identidad</div>
+                <div class="row g-3">
+
+                  <div class="col-12">
+                    <label class="form-label d-flex align-items-center justify-content-between">
+                      <span>Nombres *</span>
+                      <button class="btn btn-sm btn-outline-primary" type="button" id="btnAddNombre">
+                        <i class="fa-solid fa-plus"></i>
+                      </button>
+                    </label>
+                    <div id="nombreBox" class="d-grid gap-2"></div>
+                    <div class="form-text">Aquí van solo nombres. Los apellidos van separados.</div>
+                  </div>
+
+                  <div class="col-md-6">
+                    <label class="form-label">Primer apellido (paterno)</label>
+                    <input class="form-control" id="apellido_paterno" placeholder="Ej: Pérez" />
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">Segundo apellido (materno)</label>
+                    <input class="form-control" id="apellido_materno" placeholder="Ej: López" />
+                  </div>
+
+                  <div class="col-12">
+                    <label class="form-label d-flex align-items-center justify-content-between">
+                      <span>Alias</span>
+                      <button class="btn btn-sm btn-outline-primary" type="button" id="btnAddAlias">
+                        <i class="fa-solid fa-plus"></i>
+                      </button>
+                    </label>
+                    <div id="aliasBox" class="d-grid gap-2"></div>
+                  </div>
+
+                  <div class="col-md-4">
+                    <label class="form-label">DNI</label>
+                    <input class="form-control" id="dni" maxlength="15" />
+                  </div>
+
+                  <div class="col-md-4">
+                    <label class="form-label">Fecha nacimiento</label>
+                    <input type="date" class="form-control" id="fecha_nacimiento" />
+                  </div>
+
+                  <div class="col-md-4">
+                    <label class="form-label">Edad</label>
+                    <input class="form-control" id="edad" readonly placeholder="—" />
+                  </div>
+
+                </div>
+              </div>
+            </div>
+
+            <!-- Contacto + Foto -->
+            <div class="col-12">
+              <div class="form-section">
+                <div class="form-section-title"><i class="fa-solid fa-phone"></i> Contacto</div>
+                <div class="row g-3">
+
+                  <div class="col-md-6">
+                    <label class="form-label d-flex align-items-center justify-content-between">
+                      <span>Correos</span>
+                      <button class="btn btn-sm btn-outline-primary" type="button" id="btnAddCorreo">
+                        <i class="fa-solid fa-plus"></i>
+                      </button>
+                    </label>
+                    <div id="correoBox" class="d-grid gap-2"></div>
+                    <div class="form-text">Puedes agregar varios correos.</div>
+                  </div>
+
+                  <div class="col-md-3">
+                    <label class="form-label">Teléfono principal</label>
+                    <input class="form-control" id="telefono_principal" />
+                  </div>
+                  <div class="col-md-3">
+                    <label class="form-label">WhatsApp</label>
+                    <input class="form-control" id="celular_whatsapp" />
+                  </div>
+
+                  <div class="col-md-3">
+                    <label class="form-label">Número secundario</label>
+                    <input class="form-control" id="numero_secundario" />
+                  </div>
+                  <div class="col-md-3">
+                    <label class="form-label">Teléfono fijo</label>
+                    <input class="form-control" id="telefono_fijo" />
+                  </div>
+
+                  <div class="col-md-6">
+                    <label class="form-label">Foto</label>
+                    <div class="photo-row">
+                      <div class="photo-preview" id="photoPreview">
+                        <i class="fa-solid fa-user"></i>
+                      </div>
+                      <div class="flex-grow-1">
+                        <input type="file" class="form-control" id="foto_file" accept="image/png,image/jpeg,image/webp" />
+                        <div class="form-text">PNG/JPG/WEBP • Se sube al guardar.</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Ubicación -->
+            <div class="col-12">
+              <div class="form-section">
+                <div class="form-section-title"><i class="fa-solid fa-location-dot"></i> Ubicación</div>
+
+                <div class="row g-3">
+                  <div class="col-md-4">
+                    <label class="form-label">Departamento</label>
+                    <select class="form-select" id="departamento_id">
+                      <option value="">— Selecciona —</option>
+                    </select>
+                    <input type="hidden" id="departamento" />
+                  </div>
+
+                  <div class="col-md-4">
+                    <label class="form-label">Provincia</label>
+                    <select class="form-select" id="provincia_id" disabled>
+                      <option value="">— Selecciona —</option>
+                    </select>
+                    <input type="hidden" id="provincia" />
+                  </div>
+
+                  <div class="col-md-4">
+                    <label class="form-label">Distrito</label>
+                    <select class="form-select" id="distrito_id" disabled>
+                      <option value="">— Selecciona —</option>
+                    </select>
+                    <input type="hidden" id="distrito" />
+                  </div>
+
+                  <div class="col-md-6">
+                    <label class="form-label">Dirección</label>
+                    <input class="form-control" id="direccion" placeholder="Ej: Av. Arequipa 123" />
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">Referencia de dirección</label>
+                    <input class="form-control" id="direccion_exacta" placeholder="Ej: Mz B Lt 10, piso, dpto, referencia..." />
+                  </div>
+                </div>
+
+                <div class="form-text mt-2" id="ubigeoMsg"></div>
+              </div>
+            </div>
+
+            <!-- Laboral -->
+            <div class="col-12">
+              <div class="form-section">
+                <div class="form-section-title"><i class="fa-solid fa-briefcase"></i> Laboral</div>
+                <div class="row g-3">
+
+                  <div class="col-md-4">
+                    <label class="form-label d-flex align-items-center justify-content-between">
+                      <span>Profesión</span>
+                      <button class="btn btn-sm btn-outline-primary" type="button" id="btnAddProfesion">
+                        <i class="fa-solid fa-plus"></i>
+                      </button>
+                    </label>
+                    <div id="profesionBox" class="d-grid gap-2"></div>
+                  </div>
+
+                  <div class="col-md-4">
+                    <label class="form-label d-flex align-items-center justify-content-between">
+                      <span>Cargo</span>
+                      <button class="btn btn-sm btn-outline-primary" type="button" id="btnAddCargo">
+                        <i class="fa-solid fa-plus"></i>
+                      </button>
+                    </label>
+                    <div id="cargoBox" class="d-grid gap-2"></div>
+                    <div class="form-text">Ej: Director, Coordinador, Supervisor</div>
+                  </div>
+
+                  <div class="col-md-4">
+                    <label class="form-label d-flex align-items-center justify-content-between">
+                      <span>Institución / empresa del cargo</span>
+                      <button class="btn btn-sm btn-outline-primary" type="button" id="btnAddInstitucionCargo">
+                        <i class="fa-solid fa-plus"></i>
+                      </button>
+                    </label>
+                    <div id="institucionCargoBox" class="d-grid gap-2"></div>
+                    <div class="form-text">Ej: CAPECO, Municipalidad de Lima, CONAFOVICER</div>
+                  </div>
+
+                  <div class="col-md-6">
+                    <label class="form-label">Fecha inicio de cargo</label>
+                    <input type="date" class="form-control" id="fecha_inicio_cargo" />
+                  </div>
+
+                  <div class="col-md-6">
+                    <label class="form-label">Fecha fin de cargo</label>
+                    <input type="date" class="form-control" id="fecha_fin_cargo" />
+                  </div>
+
+                </div>
+              </div>
+            </div>
+
+            <!-- Notas + Eventos -->
+            <div class="col-12">
+              <div class="form-section">
+                <div class="form-section-title"><i class="fa-solid fa-circle-info"></i> Notas y eventos</div>
+                <div class="row g-3">
+                  <div class="col-md-4">
+                    <label class="form-label">Parentesco - Enrique</label>
+                    <input class="form-control" id="parentesco_enrique" />
+                  </div>
+                  <div class="col-md-4">
+                    <label class="form-label">Lenguaje - Enrique</label>
+                    <input class="form-control" id="lenguaje_enrique" />
+                  </div>
+                  <div class="col-md-4">
+                    <label class="form-label">Deno. - Enrique</label>
+                    <input class="form-control" id="deno_enrique" />
+                  </div>
+
+                  <div class="col-md-12">
+                    <label class="form-label">Referencia</label>
+                    <input class="form-control" id="referencia" placeholder="Ej: conocido por..., recomendado por..." />
+                  </div>
+
+                  <div class="col-md-12">
+                    <label class="form-label">Dato importante</label>
+                    <textarea class="form-control" id="dato_importante" rows="2" placeholder="Hijos, contacto de emergencia, etc."></textarea>
+                  </div>
+
+                  <div class="col-md-12">
+                    <label class="form-label d-flex align-items-center justify-content-between">
+                      <span>Gustos</span>
+                      <button class="btn btn-sm btn-outline-primary" type="button" id="btnAddGusto">
+                        <i class="fa-solid fa-plus"></i>
+                      </button>
+                    </label>
+                    <div id="gustosBox" class="d-grid gap-2"></div>
+                    <div class="form-text">Puedes agregar varios gustos.</div>
+                  </div>
+
+                  <div class="col-md-12">
+                    <label class="form-label">Contactabilidad alterna</label>
+                    <textarea class="form-control" id="contactabilidad_alterna" rows="2" placeholder="Ej: solo WhatsApp, llamar por las tardes…"></textarea>
+                  </div>
+
+                  <div class="col-md-4">
+                    <label class="form-label">¿Asistió a eventos?</label>
+                    <select class="form-select" id="asistio_eventos">
+                      <option value="false">No</option>
+                      <option value="true">Sí</option>
+                    </select>
+                  </div>
+                  <div class="col-md-8">
+                    <label class="form-label">Detalle de eventos</label>
+                    <input class="form-control" id="eventos_detalle" placeholder="Ej: Desayuno 22, EXCON 2024…" />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </form>
+        </div>
+
+        <div class="modal-footer">
+          <div class="me-auto text-muted small" id="msgContacto"></div>
+          <button type="button" class="btn btn-outline-secondary btn-big" data-bs-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-primary btn-big" id="btnGuardarContacto">Guardar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL ETIQUETA -->
+  <div class="modal fade" id="modalEtiqueta" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Nueva etiqueta</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label">Nombre *</label>
+            <input class="form-control" id="etq_nombre" placeholder="Ej: CAPECO" />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Color (opcional)</label>
+            <input class="form-control" id="etq_color" placeholder="#3b82f6 o blue" />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Descripción (opcional)</label>
+            <input class="form-control" id="etq_desc" placeholder="Etiqueta para..." />
+          </div>
+          <div class="text-muted small" id="msgEtiqueta"></div>
+        </div>
+
+        <div class="modal-footer">
+          <button class="btn btn-outline-secondary btn-big" data-bs-dismiss="modal">Cancelar</button>
+          <button class="btn btn-primary btn-big" id="btnGuardarEtiqueta">Guardar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL ASIGNAR / QUITAR ETIQUETA -->
+  <div class="modal fade" id="modalAsignarEtiqueta" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Gestionar etiqueta</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+
+        <div class="modal-body">
+          <input type="hidden" id="asig_id_contacto" />
+          <label class="form-label">Selecciona etiqueta</label>
+          <select class="form-select" id="asig_id_etiqueta"></select>
+          <div class="text-muted small mt-2" id="msgAsignar"></div>
+        </div>
+
+        <div class="modal-footer">
+          <button class="btn btn-outline-secondary btn-big" data-bs-dismiss="modal">Cancelar</button>
+          <button class="btn btn-outline-danger btn-big" id="btnQuitarEtiqueta" type="button" disabled>Quitar</button>
+          <button class="btn btn-primary btn-big" id="btnAsignarEtiqueta" type="button">Asignar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script th:inline="javascript">
+  (() => {
+    const BASE = /*[[@{/}]]*/ "/";
+    const API = (p) => (BASE.endsWith("/") ? BASE.slice(0, -1) : BASE) + p;
+
+    let etiquetas = [];
+    let etiquetasMap = new Map();
+    let contactos = [];
+    let filtroEtiquetaId = null;
+    let seleccionadoId = null;
+    let verArchivados = false;
+
+    let asigEtiquetasActuales = [];
+
+    let fotoFile = null;
+    let fotoPreviewObjectUrl = null;
+
+    let lastAutoWhatsapp = "";
+
+    let ubDeps = [];
+    let ubProvsByDep = new Map();
+    let ubDistsByProv = new Map();
+
+    const modalContacto = new bootstrap.Modal(document.getElementById("modalContacto"));
+    const modalEtiqueta  = new bootstrap.Modal(document.getElementById("modalEtiqueta"));
+    const modalAsignar   = new bootstrap.Modal(document.getElementById("modalAsignarEtiqueta"));
+
+    const $ = (id) => document.getElementById(id);
+
+    function escapeHtml(s){
+      return String(s ?? "")
+        .replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;").replaceAll("'","&#039;");
+    }
+
+    function calcEdad(yyyyMmDd){
+      if(!yyyyMmDd) return "";
+      const [y,m,d] = String(yyyyMmDd).split("-").map(Number);
+      if(!y || !m || !d) return "";
+      const today = new Date();
+      let edad = today.getFullYear() - y;
+      const mm = today.getMonth() + 1;
+      const dd = today.getDate();
+      if (mm < m || (mm === m && dd < d)) edad--;
+      if (edad < 0) return "";
+      return String(edad);
+    }
+
+    function syncEdad(){
+      const fn = $("fecha_nacimiento")?.value || "";
+      const out = $("edad");
+      if(!out) return;
+      out.value = calcEdad(fn) || "";
+    }
+
+    $("fecha_nacimiento")?.addEventListener("change", syncEdad);
+    $("fecha_nacimiento")?.addEventListener("input", syncEdad);
+
+    const SEP = " | ";
+
+    function splitMulti(v){
+      return String(v ?? "")
+        .split(SEP)
+        .map(x => x.trim())
+        .filter(Boolean);
+    }
+
+    function joinMulti(arr){
+      return (arr || [])
+        .map(x => String(x ?? "").trim())
+        .filter(Boolean)
+        .join(SEP);
+    }
+
+    function createRowInput({ type="text", placeholder="", value="", onRemove }){
+      const wrap = document.createElement("div");
+      wrap.className = "d-flex gap-2";
+
+      const input = document.createElement("input");
+      input.className = "form-control";
+      input.type = type;
+      input.placeholder = placeholder;
+      input.value = value || "";
+
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "btn btn-outline-danger";
+      btn.style.borderRadius = "12px";
+      btn.innerHTML = `<i class="fa-solid fa-trash"></i>`;
+      btn.addEventListener("click", () => onRemove?.(wrap));
+
+      wrap.appendChild(input);
+      wrap.appendChild(btn);
+      return wrap;
+    }
+
+    function ensureOneRow(boxEl, opts){
+      if (!boxEl) return;
+      if (boxEl.children.length === 0){
+        boxEl.appendChild(createRowInput({
+          type: opts.type,
+          placeholder: opts.placeholder,
+          value: "",
+          onRemove: (row) => { row.remove(); ensureOneRow(boxEl, opts); }
+        }));
+      }
+    }
+
+    function addRow(boxEl, opts, value=""){
+      if (!boxEl) return;
+      boxEl.appendChild(createRowInput({
+        type: opts.type,
+        placeholder: opts.placeholder,
+        value,
+        onRemove: (row) => { row.remove(); ensureOneRow(boxEl, opts); }
+      }));
+    }
+
+    function setRows(boxEl, opts, values){
+      if (!boxEl) return;
+      boxEl.innerHTML = "";
+      (values && values.length ? values : [""]).forEach(v => addRow(boxEl, opts, v));
+      ensureOneRow(boxEl, opts);
+    }
+
+    function getRows(boxEl){
+      if (!boxEl) return [];
+      return Array.from(boxEl.querySelectorAll("input"))
+        .map(i => i.value.trim())
+        .filter(Boolean);
+    }
+
+    const nombreBox = () => $("nombreBox");
+    const aliasBox = () => $("aliasBox");
+    const correoBox = () => $("correoBox");
+    const cargoBox = () => $("cargoBox");
+    const institucionCargoBox = () => $("institucionCargoBox");
+    const profesionBox = () => $("profesionBox");
+    const gustosBox = () => $("gustosBox");
+
+    const nombreOpts = { type:"text",  placeholder:"Ej: Juan Carlos" };
+    const aliasOpts = { type:"text",  placeholder:"Ej: Pepito" };
+    const correoOpts = { type:"email", placeholder:"Ej: persona@correo.com" };
+    const cargoOpts = { type:"text",  placeholder:"Ej: Director" };
+    const institucionCargoOpts = { type:"text", placeholder:"Ej: CAPECO" };
+    const profesionOpts = { type:"text",  placeholder:"Ej: Ingeniero civil / Abogado / Contador" };
+    const gustosOpts = { type:"text",  placeholder:"Ej: fútbol, café, lectura…" };
+
+    $("btnAddNombre")?.addEventListener("click", () => addRow(nombreBox(), nombreOpts, ""));
+    $("btnAddAlias")?.addEventListener("click", () => addRow(aliasBox(), aliasOpts, ""));
+    $("btnAddCorreo")?.addEventListener("click", () => addRow(correoBox(), correoOpts, ""));
+    $("btnAddCargo")?.addEventListener("click", () => addRow(cargoBox(), cargoOpts, ""));
+    $("btnAddInstitucionCargo")?.addEventListener("click", () => addRow(institucionCargoBox(), institucionCargoOpts, ""));
+    $("btnAddProfesion")?.addEventListener("click", () => addRow(profesionBox(), profesionOpts, ""));
+    $("btnAddGusto")?.addEventListener("click", () => addRow(gustosBox(), gustosOpts, ""));
+
+    function buildFullName(nombresMulti, apPat, apMat){
+      const nombres = splitMulti(nombresMulti).join(" ").trim();
+      const a1 = String(apPat ?? "").trim();
+      const a2 = String(apMat ?? "").trim();
+      return [nombres, a1, a2].filter(Boolean).join(" ").trim();
+    }
+
+    function nombreCompleto(c){
+      return buildFullName(c?.primer_nombre, c?.apellido_paterno, c?.apellido_materno);
+    }
+
+    function badge(text){
+      return `<span class="pill">${escapeHtml(text)}</span>`;
+    }
+
+    async function apiGet(url){
+      const r = await fetch(API(url));
+      if(!r.ok) throw new Error("Error GET " + url);
+      return r.json();
+    }
+
+    async function apiJson(url, method, body){
+      const r = await fetch(API(url), {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: body ? JSON.stringify(body) : null
+      });
+      if(!r.ok){
+        const t = await r.text().catch(()=> "");
+        throw new Error(`Error ${method} ${url}: ${t}`);
+      }
+      if (r.status === 204) return null;
+      return r.json().catch(()=> null);
+    }
+
+    async function apiNoBody(url, method){
+      const r = await fetch(API(url), { method });
+      if(!r.ok){
+        const t = await r.text().catch(()=> "");
+        throw new Error(`Error ${method} ${url}: ${t}`);
+      }
+      return true;
+    }
+
+    async function apiUploadFoto(idContacto, file){
+      const fd = new FormData();
+      fd.append("file", file);
+
+      const r = await fetch(API(`/api/contactos/${idContacto}/foto`), {
+        method: "POST",
+        body: fd
+      });
+
+      if(!r.ok){
+        const t = await r.text().catch(()=> "");
+        throw new Error("Error subiendo foto: " + t);
+      }
+      return r.json().catch(()=> null);
+    }
+
+    function syncWhatsappFromTelefono({ force=false } = {}){
+      const telEl = $("telefono_principal");
+      const waEl  = $("celular_whatsapp");
+      if (!telEl || !waEl) return;
+
+      const tel = (telEl.value || "").trim();
+      const wa  = (waEl.value || "").trim();
+
+      if (!tel) return;
+
+      if (force || !wa || wa === lastAutoWhatsapp){
+        waEl.value = tel;
+        lastAutoWhatsapp = tel;
+      }
+    }
+
+    function onWhatsappManualInput(){
+      const waEl = $("celular_whatsapp");
+      if (!waEl) return;
+      const wa = (waEl.value || "").trim();
+      if (!wa){
+        lastAutoWhatsapp = "";
+        return;
+      }
+      if (wa !== lastAutoWhatsapp){
+        lastAutoWhatsapp = "__MANUAL__";
+      }
+    }
+
+    $("telefono_principal")?.addEventListener("input", () => {
+      const waEl  = $("celular_whatsapp");
+      const wa = (waEl?.value || "").trim();
+      if (lastAutoWhatsapp === "__MANUAL__" && wa) return;
+      syncWhatsappFromTelefono({ force:false });
+    });
+
+    $("telefono_principal")?.addEventListener("change", () => {
+      const waEl  = $("celular_whatsapp");
+      const wa = (waEl?.value || "").trim();
+      if (lastAutoWhatsapp === "__MANUAL__" && wa) return;
+      syncWhatsappFromTelefono({ force:false });
+    });
+
+    $("celular_whatsapp")?.addEventListener("input", onWhatsappManualInput);
+    $("celular_whatsapp")?.addEventListener("change", onWhatsappManualInput);
+
+    function setUbigeoMsg(txt){
+      const el = $("ubigeoMsg");
+      if (!el) return;
+      el.textContent = txt || "";
+    }
+
+    function fillSelect(selectEl, items, placeholder){
+      if (!selectEl) return;
+      selectEl.innerHTML = "";
+      const opt0 = document.createElement("option");
+      opt0.value = "";
+      opt0.textContent = placeholder || "— Selecciona —";
+      selectEl.appendChild(opt0);
+
+      (items || []).forEach(it => {
+        const opt = document.createElement("option");
+        opt.value = it.id;
+        opt.textContent = it.name;
+        selectEl.appendChild(opt);
+      });
+    }
+
+    function getSelectedText(selectEl){
+      if (!selectEl) return "";
+      const o = selectEl.options[selectEl.selectedIndex];
+      return o ? (o.textContent || "").trim() : "";
+    }
+
+    function norm(s){
+      return String(s ?? "")
+        .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+        .replace(/\s+/g, " ")
+        .trim()
+        .toLowerCase();
+    }
+
+    function resetProvDist(){
+      const provSel = $("provincia_id");
+      const distSel = $("distrito_id");
+      fillSelect(provSel, [], "— Selecciona —");
+      fillSelect(distSel, [], "— Selecciona —");
+
+      if (provSel) provSel.disabled = true;
+      if (distSel) distSel.disabled = true;
+
+      const hProv = $("provincia");
+      const hDist = $("distrito");
+      if (hProv) hProv.value = "";
+      if (hDist) hDist.value = "";
+    }
+
+    async function cargarDepartamentosUbigeo(){
+      if (ubDeps.length) return ubDeps;
+      setUbigeoMsg("Cargando departamentos…");
+      ubDeps = await apiGet("/api/ubigeo/departamentos");
+      fillSelect($("departamento_id"), ubDeps, "— Selecciona —");
+      setUbigeoMsg("");
+      return ubDeps;
+    }
+
+    async function cargarProvinciasUbigeo(depId){
+      if (!depId) return [];
+      if (ubProvsByDep.has(depId)) return ubProvsByDep.get(depId);
+
+      setUbigeoMsg("Cargando provincias…");
+      const provs = await apiGet(`/api/ubigeo/provincias?dep=${encodeURIComponent(depId)}`);
+      ubProvsByDep.set(depId, provs);
+      setUbigeoMsg("");
+      return provs;
+    }
+
+    async function cargarDistritosUbigeo(provId){
+      if (!provId) return [];
+      if (ubDistsByProv.has(provId)) return ubDistsByProv.get(provId);
+
+      setUbigeoMsg("Cargando distritos…");
+      const dists = await apiGet(`/api/ubigeo/distritos?prov=${encodeURIComponent(provId)}`);
+      ubDistsByProv.set(provId, dists);
+      setUbigeoMsg("");
+      return dists;
+    }
+
+    function syncUbigeoHiddenFromSelects(){
+      const depSel  = $("departamento_id");
+      const provSel = $("provincia_id");
+      const distSel = $("distrito_id");
+
+      const hDep  = $("departamento");
+      const hProv = $("provincia");
+      const hDist = $("distrito");
+
+      if (hDep)  hDep.value  = depSel?.value  ? getSelectedText(depSel)  : (hDep.value  || "");
+      if (hProv) hProv.value = provSel?.value ? getSelectedText(provSel) : (hProv.value || "");
+      if (hDist) hDist.value = distSel?.value ? getSelectedText(distSel) : (hDist.value || "");
+    }
+
+    $("departamento_id")?.addEventListener("change", async () => {
+      const depSel = $("departamento_id");
+      const depId = depSel?.value || "";
+
+      const hDep = $("departamento");
+      if (hDep) hDep.value = depId ? getSelectedText(depSel) : "";
+
+      resetProvDist();
+      if (!depId) return;
+
+      const provSel = $("provincia_id");
+      const provs = await cargarProvinciasUbigeo(depId);
+      fillSelect(provSel, provs, "— Selecciona —");
+      if (provSel) provSel.disabled = false;
+    });
+
+    $("provincia_id")?.addEventListener("change", async () => {
+      const provSel = $("provincia_id");
+      const provId = provSel?.value || "";
+
+      const hProv = $("provincia");
+      if (hProv) hProv.value = provId ? getSelectedText(provSel) : "";
+
+      const distSel = $("distrito_id");
+      fillSelect(distSel, [], "— Selecciona —");
+      if (distSel) distSel.disabled = true;
+
+      const hDist = $("distrito");
+      if (hDist) hDist.value = "";
+
+      if (!provId) return;
+
+      const dists = await cargarDistritosUbigeo(provId);
+      fillSelect(distSel, dists, "— Selecciona —");
+      if (distSel) distSel.disabled = false;
+    });
+
+    $("distrito_id")?.addEventListener("change", () => {
+      const distSel = $("distrito_id");
+      const distId = distSel?.value || "";
+      const hDist = $("distrito");
+      if (hDist) hDist.value = distId ? getSelectedText(distSel) : "";
+    });
+
+    async function preseleccionarUbigeoPorNombre(depName, provName, distName){
+      await cargarDepartamentosUbigeo();
+
+      const depSel  = $("departamento_id");
+      const provSel = $("provincia_id");
+      const distSel = $("distrito_id");
+
+      const depN  = norm(depName);
+      const provN = norm(provName);
+      const distN = norm(distName);
+
+      let depItem = ubDeps.find(d => norm(d.name) === depN);
+      if (!depItem && depN) depItem = ubDeps.find(d => norm(d.name).includes(depN));
+
+      if (!depItem){
+        if ($("departamento")) $("departamento").value = depName || "";
+        if ($("provincia")) $("provincia").value = provName || "";
+        if ($("distrito")) $("distrito").value = distName || "";
+        return;
+      }
+
+      depSel.value = depItem.id;
+      if ($("departamento")) $("departamento").value = depItem.name;
+
+      resetProvDist();
+
+      const provs = await cargarProvinciasUbigeo(depItem.id);
+      fillSelect(provSel, provs, "— Selecciona —");
+      if (provSel) provSel.disabled = false;
+
+      let provItem = provs.find(p => norm(p.name) === provN);
+      if (!provItem && provN) provItem = provs.find(p => norm(p.name).includes(provN));
+
+      if (!provItem){
+        if ($("provincia")) $("provincia").value = provName || "";
+        if ($("distrito")) $("distrito").value = distName || "";
+        return;
+      }
+
+      provSel.value = provItem.id;
+      if ($("provincia")) $("provincia").value = provItem.name;
+
+      const dists = await cargarDistritosUbigeo(provItem.id);
+      fillSelect(distSel, dists, "— Selecciona —");
+      if (distSel) distSel.disabled = false;
+
+      let distItem = dists.find(d => norm(d.name) === distN);
+      if (!distItem && distN) distItem = dists.find(d => norm(d.name).includes(distN));
+
+      if (distItem){
+        distSel.value = distItem.id;
+        if ($("distrito")) $("distrito").value = distItem.name;
+      } else {
+        if ($("distrito")) $("distrito").value = distName || "";
+      }
+
+      syncUbigeoHiddenFromSelects();
+    }
+
+    function syncBtnQuitar(){
+      const btn = $("btnQuitarEtiqueta");
+      const sel = $("asig_id_etiqueta");
+      if (!btn || !sel) return;
+
+      const idSel = Number(sel.value);
+      const tiene = asigEtiquetasActuales.includes(idSel);
+
+      btn.disabled = verArchivados || !tiene;
+    }
+
+    async function cargarEtiquetas(){
+      etiquetas = await apiGet("/api/etiquetas");
+      etiquetasMap = new Map(etiquetas.map(e => [Number(e.id_etiqueta), e]));
+      renderEtiquetas();
+      renderSelectEtiquetas();
+    }
+
+    async function cargarContactos(){
+      const q = $("q")?.value?.trim() || "";
+
+      if (verArchivados){
+        filtroEtiquetaId = null;
+        contactos = await apiGet(`/api/contactos/archivados?q=${encodeURIComponent(q)}`);
+      } else {
+        if (filtroEtiquetaId) {
+          contactos = await apiGet(`/api/contactos/etiqueta/${filtroEtiquetaId}?q=${encodeURIComponent(q)}`);
+        } else {
+          contactos = await apiGet(`/api/contactos?q=${encodeURIComponent(q)}`);
+        }
+      }
+
+      const countAll = $("countAll");
+      if (countAll) countAll.textContent = contactos.length;
+
+      renderContactos();
+
+      if (seleccionadoId && !contactos.some(c => Number(c.id_contacto) === Number(seleccionadoId))) {
+        seleccionadoId = null;
+        renderDetalle(null);
+      }
+    }
+
+    async function cargarIdsEtiquetasDeContacto(idContacto){
+      if (!idContacto) return [];
+      return apiGet(`/api/contactos/${idContacto}/etiquetas`);
+    }
+
+    function renderEtiquetas(){
+      const box = $("labelsBox");
+      const allActive = !filtroEtiquetaId;
+
+      const allHtml = `
+        <div class="label-item ${allActive ? "active" : ""}" data-id="" id="labelAll">
+          <div class="label-left">
+            <span class="dot" style="background:#111827"></span>
+            <div class="label-name">Todos</div>
+          </div>
+          <span class="badge text-bg-secondary" id="countAll">0</span>
+        </div>
+      `;
+
+      const btnHtml = `
+        <div class="mt-3 px-2">
+          <button class="btn btn-outline-primary w-100 btn-big" id="btnNuevaEtiqueta">
+            + Nueva etiqueta
+          </button>
+        </div>
+      `;
+
+      const labelsHtml = etiquetas.map(e => {
+        const active = Number(e.id_etiqueta) === Number(filtroEtiquetaId);
+        const color = e.color ? e.color : "#0d52f2";
+        return `
+          <div class="label-item ${active ? "active" : ""}" data-id="${e.id_etiqueta}">
+            <div class="label-left">
+              <span class="dot" style="background:${escapeHtml(color)}"></span>
+              <div class="label-name">${escapeHtml(e.nombre)}</div>
+            </div>
+            <span class="badge text-bg-light border"></span>
+          </div>
+        `;
+      }).join("");
+
+      box.innerHTML = allHtml + labelsHtml + btnHtml;
+
+      box.querySelectorAll(".label-item").forEach(x => {
+        x.style.pointerEvents = verArchivados ? "none" : "auto";
+        x.style.opacity = verArchivados ? "0.55" : "1";
+      });
+
+      box.querySelector("#labelAll")?.addEventListener("click", async () => {
+        if (verArchivados) return;
+        filtroEtiquetaId = null;
+        seleccionadoId = null;
+        await renderDetalle(null);
+        await cargarContactos();
+        renderEtiquetas();
+      });
+
+      box.querySelectorAll(".label-item[data-id]:not([data-id=''])").forEach(item => {
+        item.addEventListener("click", async () => {
+          if (verArchivados) return;
+          filtroEtiquetaId = Number(item.dataset.id);
+          seleccionadoId = null;
+          await renderDetalle(null);
+          await cargarContactos();
+          renderEtiquetas();
+        });
+      });
+
+      box.querySelector("#btnNuevaEtiqueta")?.addEventListener("click", () => {
+        $("msgEtiqueta").textContent = "";
+        $("etq_nombre").value = "";
+        $("etq_color").value = "";
+        $("etq_desc").value = "";
+        modalEtiqueta.show();
+      });
+    }
+
+    function renderSelectEtiquetas(){
+      const sel = $("asig_id_etiqueta");
+      if (!sel) return;
+      sel.innerHTML = "";
+      etiquetas.forEach(e => {
+        const opt = document.createElement("option");
+        opt.value = e.id_etiqueta;
+        opt.textContent = e.nombre;
+        sel.appendChild(opt);
+      });
+    }
+
+    function renderContactos(){
+      const box = $("listBox");
+      if (!box) return;
+
+      if (!contactos.length){
+        box.innerHTML = `<div class="empty">No se encontraron contactos.</div>`;
+        return;
+      }
+
+      box.innerHTML = contactos.map(c => {
+        const activo = (Number(c.id_contacto) === Number(seleccionadoId)) ? "active" : "";
+        const n = nombreCompleto(c) || "(Sin nombre)";
+        const telefono = c.telefono_principal || c.celular_whatsapp || "";
+
+        const avatarHtml = c.foto_url
+          ? `<div class="avatar"><img src="${escapeHtml(c.foto_url)}" alt="Foto"></div>`
+          : `<div class="avatar"><i class="fa-solid fa-user"></i></div>`;
+
+        let meta = "";
+        if (telefono) meta += badge("📞 " + telefono);
+
+        splitMulti(c.correo).forEach(x => meta += badge("✉️ " + x));
+        if (c.dni) meta += badge("🪪 " + c.dni);
+
+        splitMulti(c.cargo).forEach(x => meta += badge("💼 " + x));
+        splitMulti(c.institucion_cargo).forEach(x => meta += badge("🏢 " + x));
+        splitMulti(c.profesion).forEach(x => meta += badge("🎓 " + x));
+
+        const btns = verArchivados
+          ? `
+              <button class="btn btn-sm btn-outline-success" data-action="restaurar">
+                <i class="fa-solid fa-rotate-left me-1"></i> Restaurar
+              </button>
+              <button class="btn btn-sm btn-outline-secondary" data-action="ver">Ver detalle</button>
+            `
+          : `
+              <button class="btn btn-sm btn-outline-primary" data-action="asignar">Asignar etiqueta</button>
+              <button class="btn btn-sm btn-outline-secondary" data-action="ver">Ver detalle</button>
+            `;
+
+        const state = verArchivados
+          ? `<span class="state-badge"><i class="fa-solid fa-box-archive"></i> ARCHIVADO</span>`
+          : "";
+
+        return `
+          <div class="card-contact ${activo}" data-id="${c.id_contacto}">
+            <div class="contact-top">
+              <div class="contact-left">
+                ${avatarHtml}
+                <p class="name mb-0">${escapeHtml(n)}</p>
+              </div>
+              ${state}
+            </div>
+
+            <div class="meta">${meta || `<span class="text-muted">Sin datos principales</span>`}</div>
+            <div class="mt-2 d-flex gap-2 flex-wrap">
+              ${btns}
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      box.querySelectorAll(".card-contact").forEach(card => {
+        const id = Number(card.dataset.id);
+
+        card.addEventListener("click", async (ev) => {
+          if (ev.target && ev.target.dataset && ev.target.dataset.action) return;
+          seleccionadoId = id;
+          const c = contactos.find(x => Number(x.id_contacto) === id);
+          await renderDetalle(c);
+          renderContactos();
+        });
+
+        card.querySelectorAll("button[data-action]").forEach(btn => {
+          btn.addEventListener("click", async (ev) => {
+            ev.stopPropagation();
+            const action = btn.dataset.action;
+            const c = contactos.find(x => Number(x.id_contacto) === id);
+            if (!c) return;
+
+            seleccionadoId = id;
+            await renderDetalle(c);
+            renderContactos();
+
+            if (action === "ver") return;
+
+            if (action === "asignar") {
+              await abrirModalGestionEtiqueta(id);
+              return;
+            }
+
+            if (action === "restaurar") {
+              if (!confirm("¿Restaurar este contacto?")) return;
+              await apiNoBody(`/api/contactos/${id}/restaurar`, "PATCH");
+              seleccionadoId = null;
+              await renderDetalle(null);
+              await cargarContactos();
+              return;
+            }
+          });
+        });
+      });
+    }
+
+    async function renderDetalle(c){
+      $("btnEditar").disabled = !c;
+      $("btnArchivar").disabled = !c;
+      $("btnGestionEtiquetas").disabled = !c || verArchivados;
+
+      $("btnEditar").style.display = verArchivados ? "none" : "";
+      $("btnGestionEtiquetas").style.display = verArchivados ? "none" : "";
+
+      $("btnArchivar").classList.toggle("btn-outline-danger", !verArchivados);
+      $("btnArchivar").classList.toggle("btn-outline-success", verArchivados);
+      $("btnArchivar").textContent = verArchivados ? "Restaurar" : "Archivar";
+
+      const box = $("detailBox");
+      if (!box) return;
+
+      if (!c){
+        box.innerHTML = `<div class="empty">Aquí verás la información del contacto.</div>`;
+        return;
+      }
+
+      const foto = c.foto_url
+        ? `<img src="${escapeHtml(c.foto_url)}" alt="Foto" class="img-fluid w-100" style="display:block;">`
+        : "";
+
+      function row(k, v){
+        return `
+          <div class="kv">
+            <div class="k">${escapeHtml(k)}</div>
+            <div class="v">${escapeHtml(v || "-")}</div>
+          </div>
+        `;
+      }
+
+      const chipsHtml = `
+        <div class="chips-wrap" id="chipsBox">
+          <span class="text-muted small">Cargando etiquetas…</span>
+        </div>
+      `;
+
+      box.innerHTML = `
+        ${foto ? `<div class="detail-photo mb-3">${foto}</div>` : ""}
+        ${verArchivados ? `<div class="mb-2"><span class="state-badge"><i class="fa-solid fa-box-archive"></i> ARCHIVADO</span></div>` : ""}
+        ${chipsHtml}
+
+        <div class="detail-grid">
+          <div class="detail-card">
+            <h6><i class="fa-solid fa-id-card"></i> Identidad</h6>
+            ${row("Nombre completo", nombreCompleto(c))}
+            ${row("Nombres", splitMulti(c.primer_nombre).join(", "))}
+            ${row("Apellido paterno", c.apellido_paterno)}
+            ${row("Apellido materno", c.apellido_materno)}
+            ${row("Alias", splitMulti(c.alias).join(", "))}
+            ${row("DNI", c.dni)}
+            ${row("Nacimiento", c.fecha_nacimiento)}
+            ${row("Edad", calcEdad(c.fecha_nacimiento))}
+          </div>
+
+          <div class="detail-card">
+            <h6><i class="fa-solid fa-phone"></i> Contacto</h6>
+            ${row("Correos", splitMulti(c.correo).join(", "))}
+            ${row("Teléfono", c.telefono_principal)}
+            ${row("WhatsApp", c.celular_whatsapp)}
+            ${row("Secundario", c.numero_secundario)}
+            ${row("Fijo", c.telefono_fijo)}
+          </div>
+
+          <div class="detail-card">
+            <h6><i class="fa-solid fa-location-dot"></i> Ubicación</h6>
+            ${row("Zona", [c.departamento, c.provincia, c.distrito].filter(Boolean).join(" / "))}
+            ${row("Dirección", c.direccion)}
+            ${row("Referencia", c.direccion_exacta)}
+          </div>
+
+          <div class="detail-card">
+            <h6><i class="fa-solid fa-briefcase"></i> Laboral</h6>
+            ${row("Profesión", splitMulti(c.profesion).join(", "))}
+            ${row("Cargo", splitMulti(c.cargo).join(", "))}
+            ${row("Institución del cargo", splitMulti(c.institucion_cargo).join(", "))}
+            ${row("Inicio de cargo", c.fecha_inicio_cargo)}
+            ${row("Fin de cargo", c.fecha_fin_cargo)}
+          </div>
+
+          <div class="detail-card">
+            <h6><i class="fa-solid fa-circle-info"></i> Notas</h6>
+            ${row("Referencia", c.referencia)}
+            ${row("Dato importante", c.dato_importante)}
+            ${row("Gustos", splitMulti(c.gustos).join(", "))}
+            ${row("Contactabilidad alterna", c.contactabilidad_alterna)}
+          </div>
+
+          <div class="detail-card">
+            <h6><i class="fa-solid fa-calendar-check"></i> Eventos</h6>
+            ${row("Asistió eventos", (c.asistio_eventos ? "Sí" : "No"))}
+            ${row("Eventos detalle", c.eventos_detalle)}
+            ${row("Parentesco (Enrique)", c.parentesco_enrique)}
+            ${row("Lenguaje (Enrique)", c.lenguaje_enrique)}
+            ${row("Deno. (Enrique)", c.deno_enrique)}
+          </div>
+        </div>
+      `;
+
+      try{
+        const ids = await cargarIdsEtiquetasDeContacto(Number(c.id_contacto));
+        pintarChipsEtiquetas(Number(c.id_contacto), ids);
+      } catch (e){
+        const chipsBox = $("chipsBox");
+        if (chipsBox) chipsBox.innerHTML = `<span class="text-muted small">No se pudo cargar etiquetas.</span>`;
+      }
+    }
+
+    function pintarChipsEtiquetas(idContacto, ids){
+      const chipsBox = $("chipsBox");
+      if (!chipsBox) return;
+
+      const list = (ids || []).map(x => Number(x)).filter(Boolean);
+
+      if (!list.length){
+        chipsBox.innerHTML = `<span class="text-muted small">Sin etiquetas</span>`;
+        return;
+      }
+
+      chipsBox.innerHTML = list.map(idEt => {
+        const et = etiquetasMap.get(idEt);
+        const nombre = et?.nombre ?? ("Etiqueta " + idEt);
+        const color = et?.color ?? "#0d52f2";
+
+        const btnX = verArchivados
+          ? ``
+          : `<button class="chip-x" type="button" title="Quitar etiqueta" data-remove="${idEt}">
+               <i class="fa-solid fa-xmark"></i>
+             </button>`;
+
+        return `
+          <span class="chip" title="${escapeHtml(nombre)}">
+            <span class="chip-dot" style="background:${escapeHtml(color)}"></span>
+            <span class="chip-name">${escapeHtml(nombre)}</span>
+            ${btnX}
+          </span>
+        `;
+      }).join("");
+
+      if (!verArchivados){
+        chipsBox.querySelectorAll("button[data-remove]").forEach(btn => {
+          btn.addEventListener("click", async (ev) => {
+            ev.stopPropagation();
+            const idEtiqueta = Number(btn.dataset.remove);
+            if (!idEtiqueta) return;
+
+            if (!confirm("¿Quitar esta etiqueta del contacto?")) return;
+
+            try{
+              await apiNoBody(`/api/contactos/${idContacto}/etiquetas/${idEtiqueta}`, "DELETE");
+
+              const idsNuevo = await cargarIdsEtiquetasDeContacto(idContacto);
+              pintarChipsEtiquetas(idContacto, idsNuevo);
+
+              if (filtroEtiquetaId && Number(filtroEtiquetaId) === Number(idEtiqueta)){
+                await cargarContactos();
+                if (!contactos.some(c => Number(c.id_contacto) === Number(idContacto))){
+                  seleccionadoId = null;
+                  await renderDetalle(null);
+                }
+              }
+            } catch(e){
+              alert(e.message || "No se pudo quitar la etiqueta.");
+            }
+          });
+        });
+      }
+    }
+
+    function revokePreviewUrl(){
+      if (fotoPreviewObjectUrl) {
+        URL.revokeObjectURL(fotoPreviewObjectUrl);
+        fotoPreviewObjectUrl = null;
+      }
+    }
+
+    function limpiarPreviewFoto(){
+      fotoFile = null;
+      revokePreviewUrl();
+      const input = $("foto_file");
+      if (input) input.value = "";
+      const prev = $("photoPreview");
+      if (prev) prev.innerHTML = `<i class="fa-solid fa-user"></i>`;
+    }
+
+    function setPreviewFotoUrl(url){
+      revokePreviewUrl();
+      const prev = $("photoPreview");
+      if (!prev) return;
+      if (!url) {
+        prev.innerHTML = `<i class="fa-solid fa-user"></i>`;
+        return;
+      }
+      prev.innerHTML = `<img src="${escapeHtml(url)}" alt="Foto">`;
+    }
+
+    function limpiarFormContacto(){
+      $("msgContacto").textContent = "";
+      $("id_contacto").value = "";
+
+      [
+        "dni","telefono_principal","numero_secundario","celular_whatsapp","telefono_fijo",
+        "departamento","provincia","distrito","direccion","direccion_exacta","fecha_nacimiento",
+        "fecha_inicio_cargo","fecha_fin_cargo",
+        "apellido_paterno","apellido_materno",
+        "referencia",
+        "parentesco_enrique","lenguaje_enrique","deno_enrique",
+        "dato_importante","contactabilidad_alterna",
+        "eventos_detalle"
+      ].forEach(id => { if($(id)) $(id).value = ""; });
+
+      lastAutoWhatsapp = "";
+
+      if ($("edad")) $("edad").value = "";
+      $("asistio_eventos").value = "false";
+
+      if ($("departamento_id")) $("departamento_id").value = "";
+      resetProvDist();
+
+      setRows(nombreBox(), nombreOpts, [""]);
+      setRows(aliasBox(), aliasOpts, [""]);
+      setRows(correoBox(), correoOpts, [""]);
+      setRows(cargoBox(), cargoOpts, [""]);
+      setRows(institucionCargoBox(), institucionCargoOpts, [""]);
+      setRows(profesionBox(), profesionOpts, [""]);
+      setRows(gustosBox(), gustosOpts, [""]);
+
+      limpiarPreviewFoto();
+      setUbigeoMsg("");
+    }
+
+    async function cargarFormContacto(c){
+      $("id_contacto").value = c.id_contacto ?? "";
+
+      setRows(nombreBox(), nombreOpts, splitMulti(c.primer_nombre));
+      setRows(aliasBox(), aliasOpts, splitMulti(c.alias));
+      setRows(correoBox(), correoOpts, splitMulti(c.correo));
+
+      $("apellido_paterno").value = c.apellido_paterno ?? "";
+      $("apellido_materno").value = c.apellido_materno ?? "";
+
+      $("dni").value = c.dni ?? "";
+      $("telefono_principal").value = c.telefono_principal ?? "";
+      $("numero_secundario").value = c.numero_secundario ?? "";
+      $("celular_whatsapp").value = c.celular_whatsapp ?? "";
+      $("telefono_fijo").value = c.telefono_fijo ?? "";
+
+      lastAutoWhatsapp = ($("celular_whatsapp")?.value || "").trim() || "";
+      if (!lastAutoWhatsapp){
+        syncWhatsappFromTelefono({ force:true });
+      } else {
+        lastAutoWhatsapp = ($("celular_whatsapp")?.value || "").trim();
+      }
+
+      $("direccion").value = c.direccion ?? "";
+      $("direccion_exacta").value = c.direccion_exacta ?? "";
+      $("fecha_nacimiento").value = c.fecha_nacimiento ?? "";
+      $("fecha_inicio_cargo").value = c.fecha_inicio_cargo ?? "";
+      $("fecha_fin_cargo").value = c.fecha_fin_cargo ?? "";
+      syncEdad();
+
+      setRows(cargoBox(), cargoOpts, splitMulti(c.cargo));
+      setRows(institucionCargoBox(), institucionCargoOpts, splitMulti(c.institucion_cargo));
+      setRows(profesionBox(), profesionOpts, splitMulti(c.profesion));
+
+      $("referencia").value = c.referencia ?? "";
+
+      $("parentesco_enrique").value = c.parentesco_enrique ?? "";
+      $("lenguaje_enrique").value = c.lenguaje_enrique ?? "";
+      $("deno_enrique").value = c.deno_enrique ?? "";
+
+      $("dato_importante").value = c.dato_importante ?? "";
+      setRows(gustosBox(), gustosOpts, splitMulti(c.gustos));
+      $("contactabilidad_alterna").value = c.contactabilidad_alterna ?? "";
+
+      $("asistio_eventos").value = String(!!c.asistio_eventos);
+      $("eventos_detalle").value = c.eventos_detalle ?? "";
+
+      if ($("departamento")) $("departamento").value = c.departamento ?? "";
+      if ($("provincia")) $("provincia").value = c.provincia ?? "";
+      if ($("distrito")) $("distrito").value = c.distrito ?? "";
+
+      await cargarDepartamentosUbigeo();
+      await preseleccionarUbigeoPorNombre(c.departamento, c.provincia, c.distrito);
+      syncUbigeoHiddenFromSelects();
+
+      limpiarPreviewFoto();
+      setPreviewFotoUrl(c.foto_url);
+    }
+
+    function leerFormContacto(){
+      syncUbigeoHiddenFromSelects();
+
+      const nombres  = getRows(nombreBox());
+      const aliasArr = getRows(aliasBox());
+      const correos  = getRows(correoBox());
+
+      const primerNombreMulti = joinMulti(nombres);
+
+      return {
+        primer_nombre: primerNombreMulti.trim(),
+        apellido_paterno: $("apellido_paterno").value.trim() || null,
+        apellido_materno: $("apellido_materno").value.trim() || null,
+        segundo_nombre: null,
+        alias: joinMulti(aliasArr) || null,
+        dni: $("dni").value.trim() || null,
+        correo: joinMulti(correos) || null,
+
+        telefono_principal: $("telefono_principal").value.trim() || null,
+        numero_secundario: $("numero_secundario").value.trim() || null,
+        celular_whatsapp: $("celular_whatsapp").value.trim() || null,
+        telefono_fijo: $("telefono_fijo").value.trim() || null,
+
+        departamento: $("departamento").value.trim() || null,
+        provincia: $("provincia").value.trim() || null,
+        distrito: $("distrito").value.trim() || null,
+
+        direccion: $("direccion").value.trim() || null,
+        direccion_exacta: $("direccion_exacta").value.trim() || null,
+
+        fecha_nacimiento: $("fecha_nacimiento").value || null,
+
+        fecha_inicio_cargo: $("fecha_inicio_cargo").value || null,
+        fecha_fin_cargo: $("fecha_fin_cargo").value || null,
+
+        profesion: joinMulti(getRows(profesionBox())) || null,
+        cargo: joinMulti(getRows(cargoBox())) || null,
+        institucion_cargo: joinMulti(getRows(institucionCargoBox())) || null,
+
+        referencia: $("referencia").value.trim() || null,
+
+        parentesco_enrique: $("parentesco_enrique").value.trim() || null,
+        lenguaje_enrique: $("lenguaje_enrique").value.trim() || null,
+        deno_enrique: $("deno_enrique").value.trim() || null,
+
+        dato_importante: $("dato_importante").value.trim() || null,
+        gustos: joinMulti(getRows(gustosBox())) || null,
+        contactabilidad_alterna: $("contactabilidad_alterna").value.trim() || null,
+
+        asistio_eventos: $("asistio_eventos").value === "true",
+        eventos_detalle: $("eventos_detalle").value.trim() || null
+      };
+    }
+
+    $("foto_file")?.addEventListener("change", () => {
+      const f = $("foto_file").files && $("foto_file").files[0] ? $("foto_file").files[0] : null;
+      fotoFile = f;
+
+      const prev = $("photoPreview");
+      if (!prev) return;
+
+      revokePreviewUrl();
+
+      if (!f) {
+        prev.innerHTML = `<i class="fa-solid fa-user"></i>`;
+        return;
+      }
+
+      fotoPreviewObjectUrl = URL.createObjectURL(f);
+      prev.innerHTML = `<img src="${fotoPreviewObjectUrl}" alt="Foto">`;
+    });
+
+    document.getElementById("modalContacto")?.addEventListener("hidden.bs.modal", () => {
+      revokePreviewUrl();
+      fotoFile = null;
+      const input = $("foto_file");
+      if (input) input.value = "";
+    });
+
+    async function abrirModalGestionEtiqueta(idContacto){
+      if (!idContacto || verArchivados) return;
+
+      $("asig_id_contacto").value = idContacto;
+      $("msgAsignar").textContent = "";
+
+      renderSelectEtiquetas();
+
+      asigEtiquetasActuales = (await cargarIdsEtiquetasDeContacto(idContacto))
+        .map(x => Number(x))
+        .filter(Boolean);
+
+      if (asigEtiquetasActuales.length > 0) {
+        const firstAssigned = asigEtiquetasActuales[0];
+        const optExists = Array.from($("asig_id_etiqueta").options)
+          .some(o => Number(o.value) === Number(firstAssigned));
+        if (optExists) $("asig_id_etiqueta").value = String(firstAssigned);
+      }
+
+      syncBtnQuitar();
+      modalAsignar.show();
+    }
+
+    $("asig_id_etiqueta")?.addEventListener("change", syncBtnQuitar);
+
+    $("btnNuevoContacto")?.addEventListener("click", async () => {
+      verArchivados = false;
+      $("chkArchivados").checked = false;
+      renderEtiquetas();
+      limpiarFormContacto();
+      $("modalContactoTitle").textContent = "Nuevo contacto";
+      await cargarDepartamentosUbigeo();
+      lastAutoWhatsapp = "";
+      modalContacto.show();
+    });
+
+    $("btnGuardarContacto")?.addEventListener("click", async () => {
+      try{
+        $("msgContacto").textContent = "";
+        const body = leerFormContacto();
+
+        if (!body.primer_nombre){
+          $("msgContacto").textContent = "Los nombres son obligatorios.";
+          return;
+        }
+
+        const id = $("id_contacto").value;
+
+        let saved = null;
+        if (!id){
+          saved = await apiJson("/api/contactos", "POST", body);
+        } else {
+          saved = await apiJson(`/api/contactos/${id}`, "PUT", body);
+        }
+
+        if (fotoFile && saved && saved.id_contacto) {
+          try{
+            saved = await apiUploadFoto(saved.id_contacto, fotoFile);
+          } catch (e){
+            $("msgContacto").textContent = (e.message || "No se pudo subir la foto.");
+          }
+        }
+
+        modalContacto.hide();
+        limpiarPreviewFoto();
+        await cargarContactos();
+
+        if (saved && saved.id_contacto && Number(seleccionadoId) === Number(saved.id_contacto)){
+          await renderDetalle(saved);
+        }
+      } catch (e){
+        $("msgContacto").textContent = e.message || "Error al guardar.";
+      }
+    });
+
+    $("btnRefrescar")?.addEventListener("click", async () => {
+      await cargarEtiquetas();
+      await cargarContactos();
+      renderEtiquetas();
+    });
+
+    let tSearch = null;
+    $("q")?.addEventListener("input", () => {
+      clearTimeout(tSearch);
+      tSearch = setTimeout(cargarContactos, 250);
+    });
+
+    $("btnGestionEtiquetas")?.addEventListener("click", async () => {
+      if (!seleccionadoId || verArchivados) return;
+      await abrirModalGestionEtiqueta(Number(seleccionadoId));
+    });
+
+    $("btnEditar")?.addEventListener("click", async () => {
+      if (!seleccionadoId || verArchivados) return;
+      const c = await apiGet(`/api/contactos/${seleccionadoId}`);
+      limpiarFormContacto();
+      await cargarFormContacto(c);
+      $("modalContactoTitle").textContent = "Editar contacto";
+      modalContacto.show();
+    });
+
+    $("btnArchivar")?.addEventListener("click", async () => {
+      if (!seleccionadoId) return;
+
+      if (verArchivados){
+        if (!confirm("¿Restaurar este contacto?")) return;
+        await apiNoBody(`/api/contactos/${seleccionadoId}/restaurar`, "PATCH");
+      } else {
+        if (!confirm("¿Archivar este contacto? (No se elimina, solo se oculta)")) return;
+        await apiNoBody(`/api/contactos/${seleccionadoId}`, "DELETE");
+      }
+
+      seleccionadoId = null;
+      await renderDetalle(null);
+      await cargarContactos();
+      renderEtiquetas();
+    });
+
+    $("chkArchivados")?.addEventListener("change", async () => {
+      verArchivados = $("chkArchivados").checked;
+      seleccionadoId = null;
+      filtroEtiquetaId = null;
+      await renderDetalle(null);
+      renderEtiquetas();
+      await cargarContactos();
+    });
+
+    $("btnGuardarEtiqueta")?.addEventListener("click", async () => {
+      try{
+        $("msgEtiqueta").textContent = "";
+        const nombre = $("etq_nombre").value.trim();
+        if (!nombre){
+          $("msgEtiqueta").textContent = "El nombre es obligatorio.";
+          return;
+        }
+        await apiJson("/api/etiquetas", "POST", {
+          nombre,
+          color: $("etq_color").value.trim() || null,
+          descripcion: $("etq_desc").value.trim() || null
+        });
+        modalEtiqueta.hide();
+        await cargarEtiquetas();
+        renderEtiquetas();
+      } catch(e){
+        $("msgEtiqueta").textContent = e.message || "Error al guardar etiqueta.";
+      }
+    });
+
+    $("btnAsignarEtiqueta")?.addEventListener("click", async () => {
+      try{
+        $("msgAsignar").textContent = "";
+        const idContacto = Number($("asig_id_contacto").value);
+        const idEtiqueta = Number($("asig_id_etiqueta").value);
+        if (!idContacto || !idEtiqueta) return;
+
+        await apiNoBody(`/api/contactos/${idContacto}/etiquetas/${idEtiqueta}`, "POST");
+        $("msgAsignar").textContent = "Etiqueta asignada ✅";
+
+        asigEtiquetasActuales = (await cargarIdsEtiquetasDeContacto(idContacto))
+          .map(x => Number(x))
+          .filter(Boolean);
+
+        syncBtnQuitar();
+
+        if (seleccionadoId && Number(seleccionadoId) === Number(idContacto)){
+          pintarChipsEtiquetas(idContacto, asigEtiquetasActuales);
+        }
+
+        await cargarContactos();
+        renderEtiquetas();
+
+        setTimeout(() => modalAsignar.hide(), 600);
+      } catch(e){
+        $("msgAsignar").textContent = e.message || "Error al asignar.";
+      }
+    });
+
+    $("btnQuitarEtiqueta")?.addEventListener("click", async () => {
+      try{
+        $("msgAsignar").textContent = "";
+        const idContacto = Number($("asig_id_contacto").value);
+        const idEtiqueta = Number($("asig_id_etiqueta").value);
+        if (!idContacto || !idEtiqueta) return;
+
+        if (!confirm("¿Quitar esta etiqueta del contacto?")) return;
+
+        await apiNoBody(`/api/contactos/${idContacto}/etiquetas/${idEtiqueta}`, "DELETE");
+        $("msgAsignar").textContent = "Etiqueta quitada ✅";
+
+        asigEtiquetasActuales = (await cargarIdsEtiquetasDeContacto(idContacto))
+          .map(x => Number(x))
+          .filter(Boolean);
+
+        syncBtnQuitar();
+
+        if (seleccionadoId && Number(seleccionadoId) === Number(idContacto)){
+          pintarChipsEtiquetas(idContacto, asigEtiquetasActuales);
+        }
+
+        await cargarContactos();
+        renderEtiquetas();
+
+        setTimeout(() => modalAsignar.hide(), 600);
+      } catch(e){
+        $("msgAsignar").textContent = e.message || "Error al quitar.";
+      }
+    });
+
+    (async () => {
+      try{
+        setRows(nombreBox(), nombreOpts, [""]);
+        setRows(aliasBox(), aliasOpts, [""]);
+        setRows(correoBox(), correoOpts, [""]);
+        setRows(cargoBox(), cargoOpts, [""]);
+        setRows(institucionCargoBox(), institucionCargoOpts, [""]);
+        setRows(profesionBox(), profesionOpts, [""]);
+        setRows(gustosBox(), gustosOpts, [""]);
+
+        await cargarEtiquetas();
+        await cargarContactos();
+        cargarDepartamentosUbigeo().catch(()=>{});
+      } catch (e){
+        $("listBox").innerHTML = `<div class="empty">No se pudo cargar. Revisa que el backend esté corriendo.</div>`;
+      }
+    })();
+
+  })();
+  </script>
+
+</body>
+</html>

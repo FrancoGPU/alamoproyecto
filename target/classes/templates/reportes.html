@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Subir reporte de asistencia | Control de Asistencia</title>
+
+	<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+
+	<style>
+		:root {
+			--primary: rgb(13, 82, 242);
+			            /* Rojo principal */
+			            --primary-dark: rgb(0, 0, 128);
+			/* Rojo oscuro */
+			--gray-bg: #f3f4f6;
+			/* Fondo general */
+			--gray-soft: #e5e7eb;
+			/* Bordes suaves */
+			--gray-text: #4b5563;
+			/* Texto secundario */
+			--text-main: #111827;
+			/* Texto principal */
+		}
+
+		* {
+			box-sizing: border-box;
+		}
+
+		body {
+			margin: 0;
+			font-family: "Poppins", sans-serif;
+			background: var(--gray-bg);
+			display: flex;
+		}
+
+		/* =============== Sidebar (mismo estilo global) =============== */
+		.sidebar {
+			width: 240px;
+			background: #ffffff;
+			border-right: 1px solid var(--gray-soft);
+			color: var(--gray-text);
+			min-height: 100vh;
+			padding: 1.4rem 1.1rem;
+			position: fixed;
+			top: 0;
+			left: 0;
+		}
+
+		.sidebar-header {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			margin-bottom: 1.7rem;
+		}
+
+		.sidebar-logo {
+			display: flex;
+			align-items: center;
+			gap: 0.55rem;
+			text-decoration: none;
+			color: var(--text-main);
+		}
+
+		.sidebar-logo-mark {
+			width: 32px;
+			height: 32px;
+			border-radius: 0.8rem;
+			background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			color: #ffffff;
+			font-size: 0.9rem;
+			font-weight: 600;
+		}
+
+		.sidebar-logo-text {
+			font-weight: 600;
+			font-size: 1.02rem;
+		}
+
+		.sidebar-env {
+			font-size: 0.7rem;
+			padding: 0.2rem 0.55rem;
+			border-radius: 999px;
+			border: 1px solid var(--gray-soft);
+			background: #f9fafb;
+			color: var(--gray-text);
+			display: inline-flex;
+			align-items: center;
+			gap: 0.3rem;
+		}
+
+		.sidebar-env i {
+			color: var(--primary);
+		}
+
+		.menu {
+			list-style: none;
+			padding: 0;
+			margin: 0;
+		}
+
+		.menu li {
+			margin-bottom: 0.2rem;
+		}
+
+		.menu a {
+			display: flex;
+			align-items: center;
+			gap: 0.6rem;
+			padding: 0.55rem 0.6rem;
+			border-radius: 0.6rem;
+			color: var(--gray-text);
+			text-decoration: none;
+			font-size: 0.88rem;
+			transition: background-color 0.12s ease, color 0.12s ease;
+		}
+
+		.menu a i {
+			width: 18px;
+			text-align: center;
+			font-size: 0.95rem;
+			color: var(--primary);
+		}
+
+		.menu a:hover {
+			background: #fef2f2;
+			color: var(--primary-dark);
+		}
+
+		.menu a.logout {
+			margin-top: 0.4rem;
+			border-top: 1px solid var(--gray-soft);
+			padding-top: 0.7rem;
+			color: #b91c1c;
+		}
+
+		.menu a.logout i {
+			color: #b91c1c;
+		}
+
+		/* =============== Contenido principal =============== */
+		.main-content {
+			margin-left: 240px;
+			padding: 1.8rem 2rem;
+			width: calc(100% - 240px);
+			min-height: 100vh;
+		}
+
+		@media (max-width: 768px) {
+			.main-content {
+				margin-left: 0;
+				width: 100%;
+			}
+
+			.sidebar {
+				display: none;
+			}
+		}
+
+		.page-title {
+			font-size: 1.35rem;
+			font-weight: 600;
+			color: var(--text-main);
+			margin-bottom: 0.35rem;
+		}
+
+		.page-subtitle {
+			font-size: 0.9rem;
+			color: var(--gray-text);
+			margin-bottom: 1.2rem;
+		}
+
+		/* =============== Tarjeta de subida de reporte =============== */
+		.card-upload {
+			background: #ffffff;
+			border-radius: 1rem;
+			border: 1px solid var(--gray-soft);
+			padding: 1.5rem 1.6rem 1.4rem;
+			max-width: 480px;
+			box-shadow: 0 10px 24px rgba(15, 23, 42, 0.05);
+		}
+
+		.card-header {
+			display: flex;
+			align-items: center;
+			gap: 0.55rem;
+			margin-bottom: 0.9rem;
+		}
+
+		.card-icon {
+			width: 32px;
+			height: 32px;
+			border-radius: 999px;
+			background: #fef2f2;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			color: var(--primary);
+		}
+
+		.card-title-text {
+			font-size: 1rem;
+			font-weight: 600;
+			color: var(--text-main);
+		}
+
+		label {
+			display: block;
+			margin-bottom: 0.35rem;
+			font-weight: 500;
+			color: var(--text-main);
+			font-size: 0.9rem;
+		}
+
+		.input-file {
+			padding: 0.6rem 0.75rem;
+			border-radius: 0.7rem;
+			border: 1px solid var(--gray-soft);
+			width: 100%;
+			box-sizing: border-box;
+			background: #f9fafb;
+			font-size: 0.88rem;
+		}
+
+		.input-file:disabled {
+			background: #f3f4f6;
+			cursor: not-allowed;
+			opacity: 0.75;
+		}
+
+		.btn-main {
+			margin-top: 0.85rem;
+			width: 100%;
+			padding: 0.75rem;
+			border: none;
+			border-radius: 999px;
+			background: var(--primary);
+			color: white;
+			font-size: 0.95rem;
+			font-weight: 500;
+			cursor: pointer;
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			gap: 0.5rem;
+			transition: background-color 0.15s ease, transform 0.12s ease, box-shadow 0.12s ease;
+			box-shadow: 0 8px 20px rgba(198, 40, 40, 0.25);
+		}
+
+		.btn-main:hover:not(:disabled) {
+			background: var(--primary-dark);
+			transform: translateY(-1px);
+			box-shadow: 0 7px 18px rgba(142, 0, 0, 0.35);
+		}
+
+		.btn-main:disabled {
+			background: #d1d5db;
+			cursor: not-allowed;
+			box-shadow: none;
+			transform: none;
+		}
+
+		/* =============== Mensajes de info / éxito / error =============== */
+		.info-message {
+			margin-top: 0.8rem;
+			padding: 0.6rem 0.75rem;
+			border-radius: 0.7rem;
+			font-size: 0.86rem;
+		}
+
+		.success {
+			color: #166534;
+			background-color: #ecfdf3;
+			border: 1px solid #bbf7d0;
+		}
+
+		.error {
+			color: #b91c1c;
+			background-color: #fef2f2;
+			border: 1px solid #fecaca;
+		}
+
+		.warning {
+			color: #854d0e;
+			background-color: #fefce8;
+			border: 1px solid #fef3c7;
+		}
+
+		.info-message strong {
+			font-weight: 600;
+		}
+	</style>
+</head>
+
+<body>
+
+	<!-- Sidebar como fragmento -->
+	<div th:replace="~{fragmentos/sidebar :: navbar(u=${u})}"></div>
+
+	<!-- Contenido principal -->
+	<div class="main-content">
+		<div class="page-title">Subir reporte de asistencia</div>
+		<div class="page-subtitle">
+			Carga tu reporte en formato PDF antes de marcar tu hora de salida.
+		</div>
+
+		<div class="card-upload">
+			<div class="card-header">
+				<div class="card-icon">
+					<i class="fa-solid fa-file-arrow-up"></i>
+				</div>
+				<div class="card-title-text">
+					Reporte diario en PDF
+				</div>
+			</div>
+
+			<form th:action="@{/reporte/subir}" method="post" enctype="multipart/form-data" id="reportForm">
+				<label for="archivo">Selecciona el archivo PDF:</label>
+
+				<input type="file" id="archivo" name="archivo" class="input-file" accept=".pdf,application/pdf" required
+					th:disabled="${tieneEntrada == false}">
+
+				<button type="submit" id="submitBtn" class="btn-main" th:disabled="${tieneEntrada == false}">
+					<i class="fa-solid fa-cloud-arrow-up"></i>
+					Subir archivo PDF
+				</button>
+
+				<!-- Aviso de flujo de uso -->
+				<div th:if="${tieneEntrada == false}" class="info-message warning">
+					⚠️ Debes registrar tu <strong>entrada</strong> para poder subir reportes.
+					Una vez marques tu <strong>salida</strong>, ya no podrás cargar más reportes ese día.
+				</div>
+
+				<!-- Mensaje de éxito -->
+				<div th:if="${success != null}" class="info-message success">
+					✅ <strong>Éxito:</strong> <span th:text="${success}"></span>
+				</div>
+
+				<!-- Mensaje de error -->
+				<div th:if="${error != null}" class="info-message error">
+					❌ <strong>Error:</strong> <span th:text="${error}"></span>
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<script>
+		document.getElementById('reportForm').addEventListener('submit', function (e) {
+			const fileInput = document.getElementById('archivo');
+			const file = fileInput.files[0];
+
+			if (!file) {
+				e.preventDefault();
+				alert('Por favor, selecciona un archivo.');
+				return;
+			}
+
+			if (!file.type.match('application/pdf')) {
+				e.preventDefault();
+				alert('Solo se permiten archivos PDF.');
+				return;
+			}
+
+			if (file.size > 50 * 1024 * 1024) { // 50MB
+				e.preventDefault();
+				alert('El archivo no puede superar los 50MB.');
+				return;
+			}
+		});
+	</script>
+
+</body>
+
+</html>

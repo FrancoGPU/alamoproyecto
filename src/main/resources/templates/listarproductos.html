@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventario Global | Control de Asistencia</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+
+    <style>
+        :root {
+            --primary: rgb(13, 82, 242);
+            --primary-dark: rgb(0, 0, 128);
+            --gray-bg: #f3f4f6;
+            --gray-soft: #e5e7eb;
+            --gray-text: #4b5563;
+            --text-main: #111827;
+            --success-green: #10b981;
+            --success-green-dark: #059669;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Poppins", sans-serif;
+            display: flex;
+            background: var(--gray-bg);
+        }
+
+        .sidebar {
+            width: 240px;
+            background: #ffffff;
+            border-right: 1px solid var(--gray-soft);
+            color: var(--gray-text);
+            min-height: 100vh;
+            padding: 1.4rem 1.1rem;
+            position: fixed;
+            top: 0;
+            left: 0;
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+        }
+
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.7rem;
+        }
+
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.55rem;
+            text-decoration: none;
+            color: var(--text-main);
+        }
+
+        .sidebar-logo-mark {
+            width: 32px;
+            height: 32px;
+            border-radius: 0.8rem;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .sidebar-logo-text {
+            font-weight: 600;
+            font-size: 1.02rem;
+        }
+
+        .menu {
+            list-style: none;
+            padding: 0;
+            margin: 1rem 0 0;
+            flex-grow: 1;
+        }
+
+        .menu li {
+            margin-bottom: 0.2rem;
+        }
+
+        .menu a {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.55rem 0.6rem;
+            border-radius: 0.6rem;
+            color: var(--gray-text);
+            text-decoration: none;
+            font-size: 0.88rem;
+            transition: all 0.12s ease;
+        }
+
+        .menu a i {
+            width: 18px;
+            text-align: center;
+            color: var(--primary);
+        }
+
+        .menu a:hover,
+        .menu a.active {
+            background: #fef2f2;
+            color: var(--primary-dark);
+            font-weight: 600;
+        }
+
+        .main-content {
+            margin-left: 240px;
+            padding: 1.8rem 2rem 2.4rem;
+            width: calc(100% - 240px);
+            min-height: 100vh;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+            }
+
+            .sidebar {
+                display: none;
+            }
+        }
+
+        .filter-card {
+            background: #ffffff;
+            padding: 1.2rem;
+            border-radius: 1rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+        }
+
+        .search-wrapper {
+            position: relative;
+            margin-bottom: 1rem;
+        }
+
+        .search-wrapper i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray-text);
+        }
+
+        .search-wrapper input {
+            width: 100%;
+            padding: 0.6rem 1rem 0.6rem 2.5rem;
+            border: 1px solid var(--gray-soft);
+            border-radius: 0.6rem;
+            font-family: inherit;
+            font-size: 0.85rem;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        .search-wrapper input:focus {
+            border-color: var(--primary);
+        }
+
+        .filter-grid-compact {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 0.8rem;
+            align-items: end;
+        }
+
+        .filter-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+        }
+
+        .filter-item label {
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-transform: uppercase;
+        }
+
+        .filter-select {
+            padding: 0.45rem;
+            border: 1px solid var(--gray-soft);
+            border-radius: 0.5rem;
+            font-size: 0.75rem;
+            font-family: inherit;
+            outline: none;
+            background: #fafafa;
+            cursor: pointer;
+        }
+
+        .filter-select:focus {
+            border-color: var(--primary);
+            background: #fff;
+        }
+
+        .filter-actions {
+            display: flex;
+            gap: 0.55rem;
+            align-items: end;
+            flex-wrap: wrap;
+        }
+
+        .btn-reset-small,
+        .btn-search-small,
+        .btn-export-small,
+        .btn-export-outline {
+            height: 34px;
+            padding: 0.45rem 0.8rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.75rem;
+            font-family: inherit;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+            border: 1px solid transparent;
+        }
+
+        .btn-search-small {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: #fff;
+        }
+
+        .btn-search-small:hover {
+            background: var(--primary-dark);
+            border-color: var(--primary-dark);
+        }
+
+        .btn-reset-small {
+            background: #fee2e2;
+            border-color: #fecaca;
+            color: #b91c1c;
+        }
+
+        .btn-reset-small:hover {
+            background: #fecaca;
+        }
+
+        .btn-export-small {
+            background: var(--success-green);
+            border-color: var(--success-green);
+            color: #fff;
+        }
+
+        .btn-export-small:hover {
+            background: var(--success-green-dark);
+            border-color: var(--success-green-dark);
+        }
+
+        .btn-export-outline {
+            background: #ecfdf5;
+            border-color: #a7f3d0;
+            color: #065f46;
+        }
+
+        .btn-export-outline:hover {
+            background: #d1fae5;
+        }
+
+        .total-banner {
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 1rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 10px 20px rgba(13, 82, 242, 0.15);
+            gap: 1rem;
+        }
+
+        .total-label {
+            font-size: 0.85rem;
+            opacity: 0.9;
+            font-weight: 400;
+        }
+
+        .total-amount {
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            text-align: right;
+            white-space: nowrap;
+        }
+
+        .card-container {
+            background: #ffffff;
+            border-radius: 1rem;
+            padding: 1.2rem;
+            box-shadow: 0 10px 24px rgba(15, 23, 42, 0.05);
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8rem;
+        }
+
+        th {
+            background: #fafafa;
+            color: var(--text-main);
+            font-weight: 600;
+            padding: 0.8rem;
+            text-align: left;
+            border-bottom: 2px solid var(--gray-soft);
+        }
+
+        td {
+            padding: 0.8rem;
+            border-bottom: 1px solid var(--gray-soft);
+            vertical-align: middle;
+        }
+
+        .badge {
+            padding: 0.2rem 0.6rem;
+            border-radius: 999px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .badge-prop {
+            background: #e0f2fe;
+            color: #0369a1;
+        }
+
+        .badge-new {
+            background: #ecfdf5;
+            color: #065f46;
+        }
+
+        .badge-used {
+            background: #fffbeb;
+            color: #92400e;
+        }
+
+        .badge-semi {
+            background: #eff6ff;
+            color: #1d4ed8;
+        }
+
+        .row-out-of-stock {
+            background-color: #f9fafb !important;
+            opacity: 0.7;
+        }
+
+        .row-out-of-stock td {
+            color: #9ca3af !important;
+        }
+
+        .row-out-of-stock .badge {
+            filter: grayscale(1);
+            opacity: 0.5;
+        }
+
+        .row-out-of-stock .img-thumb {
+            filter: grayscale(1);
+            opacity: 0.5;
+        }
+
+        .img-stack {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+        }
+
+        .img-thumb {
+            width: 35px;
+            height: 35px;
+            object-fit: cover;
+            border-radius: 4px;
+            border: 1px solid var(--gray-soft);
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .img-thumb:hover {
+            transform: scale(1.2);
+            z-index: 10;
+        }
+
+        .details-row {
+            display: none;
+            background: #fcfcfc;
+        }
+
+        .grid-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+            padding: 1rem;
+            border: 1px solid var(--gray-soft);
+            border-radius: 0.8rem;
+            margin: 10px;
+            background: white;
+        }
+
+        .detail-item b {
+            color: var(--primary);
+            font-size: 0.65rem;
+            display: block;
+            text-transform: uppercase;
+            margin-bottom: 2px;
+        }
+
+        .detail-item span {
+            color: var(--text-main);
+            font-weight: 500;
+        }
+
+        #pager {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            justify-content: flex-end;
+            padding-top: 12px;
+            flex-wrap: wrap;
+        }
+
+        .pager-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 34px;
+            height: 34px;
+            padding: 0.35rem 0.6rem;
+            border-radius: 0.5rem;
+            border: 1px solid var(--gray-soft);
+            background: #fff;
+            color: var(--text-main);
+            text-decoration: none;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .pager-link:hover {
+            border-color: var(--primary);
+            color: var(--primary-dark);
+        }
+
+        .pager-link.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: #fff;
+        }
+
+        .pager-link.disabled {
+            opacity: 0.55;
+            pointer-events: none;
+            cursor: not-allowed;
+        }
+
+        .pager-summary {
+            margin-right: auto;
+            color: var(--gray-text);
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div th:replace="~{fragmentos/sidebar :: navbar(u=${u})}"></div>
+
+    <div class="main-content">
+        <div style="margin-bottom: 1.5rem;">
+            <h1 style="font-size: 1.4rem; margin: 0; color: var(--text-main);">
+                <i class="fas fa-boxes-stacked" style="color: var(--primary);"></i> Historial Global de Activos
+            </h1>
+            <p style="color: var(--gray-text); font-size: 0.85rem;">
+                Consulta detallada con filtros globales, exportación y paginación backend.
+            </p>
+        </div>
+
+        <div class="total-banner">
+            <div>
+                <span class="total-label">Inversión en Bienes Seleccionados</span>
+                <div style="font-size: 0.75rem; opacity: 0.8;">Cálculo basado en filtros aplicados a nivel global</div>
+            </div>
+            <div class="total-amount"
+                 th:text="'S/ ' + ${#numbers.formatDecimal(totalInventarioGlobal != null ? totalInventarioGlobal : 0, 1, 2)}">
+                S/ 0.00
+            </div>
+        </div>
+
+        <form id="filterForm" class="filter-card" th:action="@{/producto/global}" method="get">
+            <input type="hidden" name="page" id="pageField" value="0">
+            <input type="hidden" name="size" id="sizeField" th:value="${pageSize}">
+
+            <div class="search-wrapper">
+                <i class="fas fa-search"></i>
+                <input type="text"
+                       id="searchInput"
+                       name="search"
+                       th:value="${search}"
+                       placeholder="Buscar por Nombre, Serie, Comprador, Local, RUC o Responsable...">
+            </div>
+
+            <div class="filter-grid-compact">
+                <div class="filter-item">
+                    <label>📍 Local</label>
+                    <select id="localFilter" name="local" class="filter-select" onchange="submitFilters()">
+                        <option value="">Todos</option>
+                        <option th:each="item : ${locales}"
+                                th:value="${item}"
+                                th:text="${item}"
+                                th:selected="${item == local}">
+                        </option>
+                    </select>
+                </div>
+
+                <div class="filter-item">
+                    <label>🔑 Propiedad</label>
+                    <select id="propFilter" name="prop" class="filter-select" onchange="submitFilters()">
+                        <option value="">Todos</option>
+                        <option th:each="item : ${propiedades}"
+                                th:value="${item}"
+                                th:text="${item}"
+                                th:selected="${item == prop}">
+                        </option>
+                    </select>
+                </div>
+
+                <div class="filter-item">
+                    <label>👤 Comprador</label>
+                    <select id="buyerFilter" name="buyer" class="filter-select" onchange="submitFilters()">
+                        <option value="">Todos</option>
+                        <option th:each="item : ${compradores}"
+                                th:value="${item}"
+                                th:text="${item}"
+                                th:selected="${item == buyer}">
+                        </option>
+                    </select>
+                </div>
+
+                <div class="filter-item">
+                    <label>🤝 Responsable</label>
+                    <select id="respFilter" name="resp" class="filter-select" onchange="submitFilters()">
+                        <option value="">Todos</option>
+                        <option th:each="item : ${responsables}"
+                                th:value="${item}"
+                                th:text="${item}"
+                                th:selected="${item == resp}">
+                        </option>
+                    </select>
+                </div>
+
+                <div class="filter-item">
+                    <label>🏪 Emisor</label>
+                    <select id="emisorFilter" name="emisor" class="filter-select" onchange="submitFilters()">
+                        <option value="">Todos</option>
+                        <option th:each="item : ${emisores}"
+                                th:value="${item}"
+                                th:text="${item}"
+                                th:selected="${item == emisor}">
+                        </option>
+                    </select>
+                </div>
+
+                <div class="filter-item">
+                    <label>🛠️ Estado</label>
+                    <select id="stateFilter" name="state" class="filter-select" onchange="submitFilters()">
+                        <option value="" th:selected="${state == null or state == ''}">Todos</option>
+                        <option value="nuevo" th:selected="${state == 'nuevo'}">Nuevo</option>
+                        <option value="usado" th:selected="${state == 'usado'}">Usado</option>
+                        <option value="semi nuevo" th:selected="${state == 'semi nuevo'}">Semi Nuevo</option>
+                    </select>
+                </div>
+
+                <div class="filter-item">
+                    <label>📋 Asignado</label>
+                    <select id="assignFilter" name="assign" class="filter-select" onchange="submitFilters()">
+                        <option value="" th:selected="${assign == null or assign == ''}">Ambos</option>
+                        <option value="SI" th:selected="${assign == 'SI'}">Sí</option>
+                        <option value="NO" th:selected="${assign == 'NO'}">No</option>
+                    </select>
+                </div>
+
+                <div class="filter-actions">
+                    <button class="btn-search-small" type="submit">
+                        <i class="fas fa-search"></i> Buscar
+                    </button>
+
+                    <a class="btn-reset-small"
+                       th:href="@{/producto/global(page=0, size=${pageSize})}">
+                        <i class="fas fa-eraser"></i> Limpiar
+                    </a>
+
+                    <a class="btn-export-outline"
+                       th:href="@{/producto/global/exportar}">
+                        <i class="fas fa-file-excel"></i> Exportar todo
+                    </a>
+
+                    <button class="btn-export-small" type="button" onclick="exportarFiltrado()">
+                        <i class="fas fa-file-export"></i> Exportar filtrado
+                    </button>
+                </div>
+            </div>
+        </form>
+
+        <div class="card-container">
+            <table id="inventoryTable">
+                <thead>
+                    <tr>
+                        <th style="width: 30px; text-align: center;">+</th>
+                        <th>Archivos</th>
+                        <th>Concepto / Bien</th>
+                        <th>Propiedad</th>
+                        <th>Local</th>
+                        <th>Estado</th>
+                        <th style="text-align: center;">Cant.</th>
+                        <th>P. Unitario</th>
+                        <th>T. Uso</th>
+                        <th>Total</th>
+                        <th>Acción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <th:block th:if="${productos != null and !#lists.isEmpty(productos)}">
+                        <th:block th:each="p, iter : ${productos}">
+                            <tr class="row-main"
+                                th:classappend="${p.cantidad == 0} ? 'row-out-of-stock' : ''">
+                                <td style="text-align: center;">
+                                    <button type="button"
+                                            style="background:none; border:none; color:var(--primary); cursor:pointer; font-size: 1.1rem;"
+                                            th:attr="onclick='toggleDetails(' + ${iter.index} + ')'">
+                                        <i th:id="'icon-' + ${iter.index}" class="fas fa-plus-square"></i>
+                                    </button>
+                                </td>
+
+                                <td>
+                                    <div class="img-stack">
+                                        <div th:if="${p.fotoFactura != null and p.fotoFactura != ''}">
+                                            <a th:href="@{/uploads/Inventario/{file}(file=${p.fotoFactura})}" target="_blank">
+                                                <img th:src="@{/uploads/Inventario/{file}(file=${p.fotoFactura})}" class="img-thumb" title="Ver Factura" />
+                                            </a>
+                                        </div>
+
+                                        <div th:if="${p.fotoProducto != null and p.fotoProducto != ''}">
+                                            <a th:href="@{/uploads/Inventario/{file}(file=${p.fotoProducto})}" target="_blank">
+                                                <img th:src="@{/uploads/Inventario/{file}(file=${p.fotoProducto})}" class="img-thumb" style="border-color: var(--primary);" title="Ver Producto" />
+                                            </a>
+                                        </div>
+
+                                        <div th:if="${(p.fotoFactura == null or p.fotoFactura == '') and (p.fotoProducto == null or p.fotoProducto == '')}"
+                                             style="color: #cbd5e1;">
+                                            <i class="fas fa-image"></i>
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <div style="font-weight:600; color: var(--text-main);" th:text="${p.nombre ?: '-'}"></div>
+                                    <div style="font-size:0.65rem; color:var(--gray-text);" th:text="${p.codigoFactura ?: 'S/ COMPROBANTE'}"></div>
+                                </td>
+
+                                <td>
+                                    <span class="badge badge-prop" th:text="${p.propiedad ?: 'ALAMO'}"></span>
+                                </td>
+
+                                <td th:text="${p.localDestino ?: '-'}"></td>
+
+                                <td>
+                                    <span th:text="${p.estadoProducto ?: '-'}"
+                                          class="badge"
+                                          th:classappend="${p.estadoProducto == 'nuevo'} ? ' badge-new' : (${p.estadoProducto == 'semi nuevo'} ? ' badge-semi' : ' badge-used')">
+                                    </span>
+                                </td>
+
+                                <td style="text-align: center; font-weight: 600; color: var(--gray-text);" th:text="${p.cantidad ?: 0}"></td>
+
+                                <td style="color: var(--gray-text); font-size: 0.75rem;"
+                                    th:text="${p.precio != null} ? 'S/ ' + ${#numbers.formatDecimal(p.precio, 1, 2)} : 'S/ 0.00'">
+                                </td>
+
+                                <td th:text="${p.tiempoUso ?: '-'}"></td>
+
+                                <td class="total-cell"
+                                    style="font-weight:700; color:var(--primary);"
+                                    th:text="'S/ ' + ${#numbers.formatDecimal((p.precio != null ? p.precio : 0) * (p.cantidad != null ? p.cantidad : 0), 1, 2)}">
+                                </td>
+
+                                <td>
+                                    <a th:href="@{/producto(idIngreso=${p.ingreso.idIngreso}, idProducto=${p.idProducto})}" style="color: #f59e0b;">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                </td>
+                            </tr>
+
+                            <tr th:id="'details-' + ${iter.index}" class="details-row">
+                                <td colspan="11">
+                                    <div class="grid-details">
+                                        <div class="detail-item"><b>Cantidad:</b><span th:text="${p.cantidad ?: 0}"></span></div>
+                                        <div class="detail-item"><b>Precio Unitario:</b><span th:text="${p.precio != null} ? 'S/ ' + ${#numbers.formatDecimal(p.precio, 1, 2)} : 'S/ 0.00'"></span></div>
+                                        <div class="detail-item"><b>Serie / IMEI:</b><span th:text="${p.numeroSerie ?: 'S/N'}"></span></div>
+                                        <div class="detail-item"><b>Responsable:</b><span th:text="${p.responsable ?: 'Sin asignar'}"></span></div>
+                                        <div class="detail-item"><b>Comprador Original:</b><span th:text="${p.comprador ?: '-'}"></span></div>
+                                        <div class="detail-item"><b>Fecha Compra:</b><span th:text="${p.fechaCompra != null ? #temporals.format(p.fechaCompra, 'dd/MM/yyyy') : '-'}"></span></div>
+                                        <div class="detail-item"><b>Medio Pago:</b><span th:text="${p.tipoTransferencia ?: '-'}"></span></div>
+                                        <div class="detail-item"><b>Vendedor (Emisor):</b><span th:text="${p.emisor ?: '-'}"></span></div>
+                                        <div class="detail-item"><b>Cliente (Factura):</b><span th:text="${p.cliente ?: '-'}"></span></div>
+                                        <div class="detail-item"><b>N° RUC emisor:</b><span th:text="${p.numeroRuc ?: '-'}"></span></div>
+                                        <div class="detail-item"><b>Garantía:</b><span th:text="${p.garantia ?: 'No aplica'}"></span></div>
+                                        <div class="detail-item"><b>Descripción Breve:</b><span th:text="${p.descripcionBreve ?: '-'}"></span></div>
+                                        <div class="detail-item"><b>Obs. Detallada:</b><span th:text="${p.descripcionProducto ?: '-'}"></span></div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </th:block>
+                    </th:block>
+
+                    <tr th:if="${productos == null or #lists.isEmpty(productos)}">
+                        <td colspan="11" style="text-align: center; padding: 3rem; color: var(--gray-text);">
+                            No hay coincidencias para los filtros aplicados.
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div id="pager">
+                <div class="pager-summary">
+                    <span th:if="${totalItems > 0}">
+                        Mostrando
+                        <b th:text="${(currentPage * pageSize) + 1}">1</b>
+                        -
+                        <b th:text="${((currentPage + 1) * pageSize) > totalItems ? totalItems : ((currentPage + 1) * pageSize)}">20</b>
+                        de
+                        <b th:text="${totalItems}">0</b>
+                    </span>
+                    <span th:if="${totalItems == 0}">
+                        Mostrando <b>0</b> de <b>0</b>
+                    </span>
+                </div>
+
+                <a class="pager-link"
+                   th:classappend="${currentPage == 0} ? ' disabled'"
+                   th:href="${currentPage == 0} ? '#'
+                        : @{/producto/global(
+                            page=${currentPage - 1},
+                            size=${pageSize},
+                            search=${search},
+                            local=${local},
+                            prop=${prop},
+                            buyer=${buyer},
+                            resp=${resp},
+                            emisor=${emisor},
+                            state=${state},
+                            assign=${assign}
+                        )}">
+                    ◀ Anterior
+                </a>
+
+                <th:block th:if="${totalPages > 0}">
+                    <th:block th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
+                        <a class="pager-link"
+                           th:classappend="${i == currentPage} ? ' active'"
+                           th:href="@{/producto/global(
+                                page=${i},
+                                size=${pageSize},
+                                search=${search},
+                                local=${local},
+                                prop=${prop},
+                                buyer=${buyer},
+                                resp=${resp},
+                                emisor=${emisor},
+                                state=${state},
+                                assign=${assign}
+                           )}"
+                           th:text="${i + 1}">
+                            1
+                        </a>
+                    </th:block>
+                </th:block>
+
+                <a class="pager-link"
+                   th:classappend="${currentPage + 1 >= totalPages} ? ' disabled'"
+                   th:href="${currentPage + 1 >= totalPages} ? '#'
+                        : @{/producto/global(
+                            page=${currentPage + 1},
+                            size=${pageSize},
+                            search=${search},
+                            local=${local},
+                            prop=${prop},
+                            buyer=${buyer},
+                            resp=${resp},
+                            emisor=${emisor},
+                            state=${state},
+                            assign=${assign}
+                        )}">
+                    Siguiente ▶
+                </a>
+
+                <select id="pageSize" class="filter-select" style="width:110px;">
+                    <option value="20" th:selected="${pageSize == 20}">20 / pág</option>
+                    <option value="50" th:selected="${pageSize == 50}">50 / pág</option>
+                    <option value="100" th:selected="${pageSize == 100}">100 / pág</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+        const EXPORTAR_FILTRADO_URL = /*[[@{/producto/global/exportar-filtrado}]]*/ '/producto/global/exportar-filtrado';
+
+        function submitFilters() {
+            document.getElementById('pageField').value = '0';
+            document.getElementById('filterForm').submit();
+        }
+
+        function toggleDetails(index) {
+            const row = document.getElementById('details-' + index);
+            const icon = document.getElementById('icon-' + index);
+            if (!row || !icon) return;
+
+            const isHidden = (row.style.display === 'none' || row.style.display === '');
+            row.style.display = isHidden ? 'table-row' : 'none';
+            icon.className = isHidden ? 'fas fa-minus-square' : 'fas fa-plus-square';
+        }
+
+        function exportarFiltrado() {
+            const params = new URLSearchParams();
+            params.set('search', document.getElementById('searchInput')?.value || '');
+            params.set('local', document.getElementById('localFilter')?.value || '');
+            params.set('prop', document.getElementById('propFilter')?.value || '');
+            params.set('buyer', document.getElementById('buyerFilter')?.value || '');
+            params.set('resp', document.getElementById('respFilter')?.value || '');
+            params.set('emisor', document.getElementById('emisorFilter')?.value || '');
+            params.set('state', document.getElementById('stateFilter')?.value || '');
+            params.set('assign', document.getElementById('assignFilter')?.value || '');
+
+            window.location.href = EXPORTAR_FILTRADO_URL + '?' + params.toString();
+        }
+
+        document.getElementById('pageSize')?.addEventListener('change', function () {
+            document.getElementById('sizeField').value = this.value || '20';
+            document.getElementById('pageField').value = '0';
+            document.getElementById('filterForm').submit();
+        });
+
+        document.getElementById('searchInput')?.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') {
+                document.getElementById('pageField').value = '0';
+            }
+        });
+    </script>
+</body>
+</html>

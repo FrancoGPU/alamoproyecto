@@ -1,0 +1,257 @@
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.4.1)
+
+2026-06-02T00:44:54.599-05:00  INFO 2840 --- [asistencia-alamo] [           main] c.a.a.AsistenciaAlamoApplication         : Starting AsistenciaAlamoApplication v0.0.1-SNAPSHOT using Java 21.0.7 with PID 2840 (C:\Users\User\Desktop\ALAMO\target\asistencia-alamo-0.0.1-SNAPSHOT.jar started by User in C:\Users\User\Desktop\ALAMO)
+2026-06-02T00:44:54.602-05:00  INFO 2840 --- [asistencia-alamo] [           main] c.a.a.AsistenciaAlamoApplication         : No active profile set, falling back to 1 default profile: "default"
+2026-06-02T00:44:55.271-05:00  INFO 2840 --- [asistencia-alamo] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-06-02T00:44:55.368-05:00  INFO 2840 --- [asistencia-alamo] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 85 ms. Found 23 JPA repository interfaces.
+2026-06-02T00:44:55.883-05:00  INFO 2840 --- [asistencia-alamo] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2026-06-02T00:44:55.897-05:00  INFO 2840 --- [asistencia-alamo] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-06-02T00:44:55.898-05:00  INFO 2840 --- [asistencia-alamo] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.34]
+2026-06-02T00:44:55.932-05:00  INFO 2840 --- [asistencia-alamo] [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-06-02T00:44:55.933-05:00  INFO 2840 --- [asistencia-alamo] [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1288 ms
+2026-06-02T00:44:56.081-05:00  INFO 2840 --- [asistencia-alamo] [           main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-06-02T00:44:56.133-05:00  INFO 2840 --- [asistencia-alamo] [           main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.4.Final
+2026-06-02T00:44:56.160-05:00  INFO 2840 --- [asistencia-alamo] [           main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2026-06-02T00:44:56.394-05:00  INFO 2840 --- [asistencia-alamo] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-06-02T00:44:56.418-05:00  INFO 2840 --- [asistencia-alamo] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-06-02T00:44:56.917-05:00  INFO 2840 --- [asistencia-alamo] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@483b7dc4
+2026-06-02T00:44:56.919-05:00  INFO 2840 --- [asistencia-alamo] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-06-02T00:44:56.951-05:00  WARN 2840 --- [asistencia-alamo] [           main] org.hibernate.orm.deprecation            : HHH90000025: MySQL8Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-06-02T00:44:56.952-05:00  WARN 2840 --- [asistencia-alamo] [           main] org.hibernate.orm.deprecation            : HHH90000026: MySQL8Dialect has been deprecated; use org.hibernate.dialect.MySQLDialect instead
+2026-06-02T00:44:56.965-05:00  INFO 2840 --- [asistencia-alamo] [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 8.0
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-06-02T00:44:58.018-05:00  INFO 2840 --- [asistencia-alamo] [           main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+Hibernate: create table tb_actividad (id_actividad integer not null auto_increment, activo bit not null, created_at datetime(6), fase varchar(100), nombre varchar(150) not null, tipo_actividad varchar(100), updated_at datetime(6), id_proyecto integer not null, primary key (id_actividad)) engine=InnoDB
+Hibernate: create table tb_asistencia (id_asistencia integer not null auto_increment, estado_asistencia varchar(50), fecha date not null, hora_entrada time(6), hora_salida time(6), horas_trabajadas decimal(38,2), minutos_extra integer, minutos_tardanza integer, ubicacion varchar(200), id_usuario integer not null, primary key (id_asistencia)) engine=InnoDB
+Hibernate: create table tb_asistencia_audit (id_audit bigint not null auto_increment, accion varchar(50) not null, entrada_antes time(6), entrada_despues time(6), fecha_accion datetime(6) not null, id_asistencia integer not null, ip_actor varchar(45), salida_antes time(6), salida_despues time(6), id_usuario_actor integer not null, primary key (id_audit)) engine=InnoDB
+Hibernate: create table tb_contacto (id_contacto integer not null auto_increment, alias varchar(80), apellido_materno varchar(60), apellido_paterno varchar(60), asistio_eventos bit not null, cargo varchar(120), categoria varchar(80), celular_whatsapp varchar(25), contactabilidad_alterna TEXT, correo varchar(120), date_create datetime(6) not null, date_update datetime(6), dato_importante TEXT, deno_enrique varchar(120), departamento varchar(80), direccion varchar(160), direccion_exacta varchar(255), distrito varchar(80), dni varchar(15), estado bit not null, eventos_detalle TEXT, fecha_fin_cargo date, fecha_inicio_cargo date, fecha_nacimiento date, foto_url varchar(255), gustos TEXT, institucion_cargo varchar(160), lenguaje_enrique varchar(120), numero_secundario varchar(25), parentesco_enrique varchar(120), primer_nombre varchar(60) not null, profesion varchar(120), provincia varchar(80), referencia varchar(200), segundo_nombre varchar(60), telefono_fijo varchar(25), telefono_principal varchar(25), trabajo varchar(120), user_create varchar(50), user_update varchar(50), primary key (id_contacto)) engine=InnoDB
+Hibernate: create table tb_contacto_etiqueta (id_contacto integer not null, id_etiqueta integer not null, date_create datetime(6) not null, primary key (id_contacto, id_etiqueta)) engine=InnoDB
+Hibernate: create table tb_etiqueta (id_etiqueta integer not null auto_increment, color varchar(20), date_create datetime(6) not null, descripcion varchar(120), estado bit not null, nombre varchar(60) not null, primary key (id_etiqueta)) engine=InnoDB
+Hibernate: create table tb_horario (id_horario integer not null auto_increment, dia integer not null, id_turno integer not null, id_usuario integer not null, primary key (id_horario)) engine=InnoDB
+Hibernate: create table tb_informe (id_informe integer not null auto_increment, nombre_archivo varchar(255) not null, ruta_archivo varchar(500) not null, id_asistencia integer, primary key (id_informe)) engine=InnoDB
+Hibernate: create table tb_ingreso (id_ingreso integer not null auto_increment, mes date not null, monto float(53) not null, primary key (id_ingreso)) engine=InnoDB
+Hibernate: create table tb_permiso_extra (id_permiso integer not null auto_increment, estado varchar(20), fecha_aprobacion datetime(6), fecha_solicitud date not null, motivo varchar(255), usado bit, id_admin_aprobador integer, id_usuario integer not null, primary key (id_permiso)) engine=InnoDB
+Hibernate: create table tb_producto (id_producto integer not null auto_increment, aplica_asignacion varchar(2), cantidad integer not null, cliente varchar(150), codigo_factura varchar(50), comprador varchar(100), descripcion_breve varchar(255), descripcion_producto varchar(500), emisor varchar(150), estado_producto varchar(20), fecha_asignacion date, fecha_compra date, foto_factura varchar(255), foto_producto varchar(255), garantia varchar(50), local_destino varchar(100), nombre varchar(100) not null, numero_ruc varchar(20), numero_serie varchar(100), precio float(53) not null, propiedad varchar(100), responsable varchar(100), tiempo_uso varchar(100), tipo_transferencia varchar(50), id_ingreso integer, primary key (id_producto)) engine=InnoDB
+Hibernate: create table tb_revision_informes (id_revision integer not null auto_increment, anio integer not null, mes integer not null, revisado bit not null, updated_at datetime(6), id_usuario integer not null, primary key (id_revision)) engine=InnoDB
+Hibernate: create table tb_rol (id_rol integer not null auto_increment, descripcion varchar(50) not null, primary key (id_rol)) engine=InnoDB
+Hibernate: create table tb_saludos (id_saludo integer not null auto_increment, anio_saludo integer not null, fecha_envio datetime(6), mensaje TEXT not null, mes_saludo integer not null, id_emisor integer not null, id_receptor integer not null, primary key (id_saludo)) engine=InnoDB
+Hibernate: create table tb_servicio (id_servicio integer not null auto_increment, canva float(53), celulares float(53), chatgpt float(53), comida float(53), comprador varchar(100), descripcion varchar(255), fecha date not null, foto_comprobante varchar(255), gasto_restaurante float(53), google_capa float(53), icloud float(53), onedrive float(53), otros float(53), servidor float(53), transporte float(53), id_ingreso integer, primary key (id_servicio)) engine=InnoDB
+Hibernate: create table tb_tarea (id_tarea integer not null auto_increment, activo bit not null, ambito varchar(30), categoria varchar(50), color varchar(20) not null, descripcion TEXT, entregable_nombre varchar(255), entregable_ruta varchar(500), es_privada bit not null, es_proyecto bit not null, estado varchar(20) not null, fase varchar(100), fecha_asignacion datetime(6), fecha_dia date, fecha_finalizacion datetime(6), fecha_inicio datetime(6), fecha_limite datetime(6), id_grupo_masivo varchar(50), observaciones TEXT, prioridad varchar(20) not null, sub_actividad varchar(150), tipo_actividad varchar(100), tipo_origen varchar(30), titulo varchar(150) not null, id_actividad integer, id_creador integer not null, id_proyecto_padre integer, id_responsable integer not null, primary key (id_tarea)) engine=InnoDB
+Hibernate: create table tb_turno (id_turno integer not null, entrada time(6) not null, salida time(6) not null, primary key (id_turno)) engine=InnoDB
+Hibernate: create table tb_usuario (id_usuario integer not null auto_increment, antecedentes_nombre varchar(200), antecedentes_policiales_nombre varchar(200), apellido_materno varchar(60) not null, apellido_paterno varchar(60) not null, banca_movil TEXT, banco TEXT, biografia varchar(255), cargo varchar(60), certiadulto_nombre varchar(200), certificaciones TEXT, certijoven_nombre varchar(200), contrasenia varchar(255) not null, coordenadas varchar(100), correo varchar(80), cuenta_bancaria TEXT, cuenta_interbancaria TEXT, cv_nombre varchar(200), direccion varchar(120), dni varchar(8) not null, estado varchar(60) not null, estado_civil varchar(50), fecha_creacion datetime(6) not null, fecha_ingreso date, fecha_modificacion datetime(6), fecha_nacimiento date, foto_perfil varchar(255), foto_id_nombre varchar(200), foto_id_nombre_trasera varchar(200), grupo_sanguineo varchar(5), id_dep integer, id_dist integer, id_prov integer, idiomas TEXT, instituciones_educativas TEXT, modalidad varchar(20), nacionalidad varchar(50), nivel_educativo varchar(50), nombre_contacto_emergencia TEXT, nombres varchar(60) not null, numero_ruc varchar(11), referencia varchar(150), relacion_contacto_emergencia TEXT, ruta_cv varchar(255), ruta_antecedentes varchar(255), ruta_antecedentes_policiales varchar(255), ruta_certiadulto varchar(255), ruta_certijoven varchar(255), ruta_foto_id varchar(255), ruta_foto_id_trasera varchar(255), secundaria_fin date, secundaria_inicio date, sexo varchar(10), telefono varchar(9), telefono_emergencia TEXT, tiene_antecedentes varchar(2), tipo_contrato varchar(50), tipo_seguro varchar(50), universidad_fin date, universidad_inicio date, id_rol integer not null, primary key (id_usuario)) engine=InnoDB
+Hibernate: create table tb_usuario_certificacion (id_certificacion integer not null auto_increment, archivo_nombre varchar(200), archivo_ruta varchar(255), archivo_tipo varchar(100), codigo varchar(80), created_at datetime(6) not null, entidad varchar(180), fecha_obtencion date, fecha_subida datetime(6), fecha_vencimiento date, horas decimal(6,2), nombre varchar(180) not null, updated_at datetime(6) not null, id_usuario integer not null, primary key (id_certificacion)) engine=InnoDB
+Hibernate: create table tb_usuario_experiencia (id_experiencia integer not null auto_increment, archivo_nombre varchar(200), archivo_ruta varchar(255), archivo_tipo varchar(100), correo_referencia varchar(150), created_at datetime(6) not null, empresa varchar(200) not null, fecha_emision_recibo date, fecha_fin date, fecha_inicio date, fecha_subida datetime(6), funciones TEXT, monto_recibo decimal(10,2), motivo_salida varchar(200), nombre_referencia varchar(150), numero_recibo varchar(50), puesto varchar(150), telefono_referencia varchar(30), tipo_sustento varchar(50), updated_at datetime(6) not null, id_usuario integer not null, primary key (id_experiencia)) engine=InnoDB
+Hibernate: create table tb_usuario_formacion (id_formacion integer not null auto_increment, created_at datetime(6) not null, estado enum ('COMPLETO','EN_CURSO','INCOMPLETO') not null, fecha_fin date, fecha_inicio date, grado varchar(100), institucion varchar(180) not null, nivel enum ('INICIAL','OTRO','POSTGRADO','PRIMARIA','SECUNDARIA','TECNICO','UNIVERSITARIO') not null, programa varchar(180), updated_at datetime(6) not null, id_usuario integer not null, primary key (id_formacion)) engine=InnoDB
+Hibernate: create table tb_usuario_idioma (id_idioma integer not null auto_increment, archivo_nombre varchar(200), archivo_ruta varchar(255), archivo_tipo varchar(100), certificacion varchar(120), fecha_fin date, fecha_inicio date, fecha_subida datetime(6), idioma varchar(60) not null, institucion varchar(150), nivel varchar(30), id_usuario integer not null, primary key (id_idioma)) engine=InnoDB
+Hibernate: alter table tb_actividad drop index uk_act
+Hibernate: alter table tb_actividad add constraint uk_act unique (id_proyecto, nombre)
+Hibernate: alter table tb_contacto drop index UK7tu7vbwk0op978x7x3roenqm5
+Hibernate: alter table tb_contacto add constraint UK7tu7vbwk0op978x7x3roenqm5 unique (dni)
+Hibernate: alter table tb_etiqueta drop index UKe1rsto7g0ii2oqr4j0v7kec1y
+Hibernate: alter table tb_etiqueta add constraint UKe1rsto7g0ii2oqr4j0v7kec1y unique (nombre)
+Hibernate: alter table tb_revision_informes drop index uq_usuario_periodo
+Hibernate: alter table tb_revision_informes add constraint uq_usuario_periodo unique (id_usuario, anio, mes)
+Hibernate: alter table tb_usuario drop index UK62tddsp2gy15w1ci8i1s21pe4
+Hibernate: alter table tb_usuario add constraint UK62tddsp2gy15w1ci8i1s21pe4 unique (dni)
+Hibernate: alter table tb_actividad add constraint FK3yywtrnskl4c5w3m0a3l87wfu foreign key (id_proyecto) references tb_tarea (id_tarea)
+Hibernate: alter table tb_asistencia add constraint FK4ggi7u8peccqy4wcvxswcuhk7 foreign key (id_usuario) references tb_usuario (id_usuario)
+Hibernate: alter table tb_asistencia_audit add constraint FKc2rtni4n6w0pscm219jhs4nvi foreign key (id_usuario_actor) references tb_usuario (id_usuario)
+Hibernate: alter table tb_contacto_etiqueta add constraint FKgsqn8lm7dupagmwo3rj26blay foreign key (id_contacto) references tb_contacto (id_contacto)
+Hibernate: alter table tb_contacto_etiqueta add constraint FKr3a6h34811w4ydqi777xnegvu foreign key (id_etiqueta) references tb_etiqueta (id_etiqueta)
+Hibernate: alter table tb_horario add constraint FKti5fvd3oj8p6vlqh9tlcofaiu foreign key (id_turno) references tb_turno (id_turno)
+Hibernate: alter table tb_horario add constraint FKtpdqbf07243d7ymuugfgyfujj foreign key (id_usuario) references tb_usuario (id_usuario)
+Hibernate: alter table tb_informe add constraint FKp7boecxlix4thlxrna1eyiajy foreign key (id_asistencia) references tb_asistencia (id_asistencia)
+Hibernate: alter table tb_permiso_extra add constraint FKqtw5ika7cd2oi1jtasu3wy9t foreign key (id_admin_aprobador) references tb_usuario (id_usuario)
+Hibernate: alter table tb_permiso_extra add constraint FKd78rsmn7ek7pvco9hyvw70yml foreign key (id_usuario) references tb_usuario (id_usuario)
+Hibernate: alter table tb_producto add constraint FK4cv9m3e3cg7nh721h56cb4uh5 foreign key (id_ingreso) references tb_ingreso (id_ingreso)
+Hibernate: alter table tb_revision_informes add constraint FKk8891mvguwui29fg5bfoesiwb foreign key (id_usuario) references tb_usuario (id_usuario)
+Hibernate: alter table tb_saludos add constraint FK666rau34tng8usamgd47t5ayn foreign key (id_emisor) references tb_usuario (id_usuario)
+Hibernate: alter table tb_saludos add constraint FK5we39ouwesbtj1k25q79mokf8 foreign key (id_receptor) references tb_usuario (id_usuario)
+Hibernate: alter table tb_servicio add constraint FK4la2ut9udvh9v73fhvjttb1uu foreign key (id_ingreso) references tb_ingreso (id_ingreso)
+Hibernate: alter table tb_tarea add constraint FK1f9byrgbctji4w638ghpp7gqd foreign key (id_actividad) references tb_actividad (id_actividad)
+Hibernate: alter table tb_tarea add constraint FK1k4ooy7iigs0y6w4sr27l751u foreign key (id_creador) references tb_usuario (id_usuario)
+Hibernate: alter table tb_tarea add constraint FKbrsmkiyfw7renijf78ue1e571 foreign key (id_proyecto_padre) references tb_tarea (id_tarea)
+Hibernate: alter table tb_tarea add constraint FKebfjho2m01wdeg4b0f54hh61c foreign key (id_responsable) references tb_usuario (id_usuario)
+Hibernate: alter table tb_usuario add constraint FK6mxbmhthgow2y4dv0l13yngc5 foreign key (id_rol) references tb_rol (id_rol)
+Hibernate: alter table tb_usuario_certificacion add constraint FK10frvdljrs3hfbonb1naxpfve foreign key (id_usuario) references tb_usuario (id_usuario)
+Hibernate: alter table tb_usuario_experiencia add constraint FK2i0v8auvri4sp6t2np7y4t5f4 foreign key (id_usuario) references tb_usuario (id_usuario)
+Hibernate: alter table tb_usuario_formacion add constraint FKioarid3l1ppnp3xtxndjml4uc foreign key (id_usuario) references tb_usuario (id_usuario)
+Hibernate: alter table tb_usuario_idioma add constraint FK3isomtbtc9k2pqhvf0iqryq64 foreign key (id_usuario) references tb_usuario (id_usuario)
+2026-06-02T00:44:59.902-05:00  INFO 2840 --- [asistencia-alamo] [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-06-02T00:45:00.199-05:00  INFO 2840 --- [asistencia-alamo] [           main] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-06-02T00:45:02.250-05:00  WARN 2840 --- [asistencia-alamo] [           main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-06-02T00:45:02.275-05:00  INFO 2840 --- [asistencia-alamo] [           main] o.s.b.a.w.s.WelcomePageHandlerMapping    : Adding welcome page: class path resource [static/index.html]
+2026-06-02T00:45:02.684-05:00  INFO 2840 --- [asistencia-alamo] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+2026-06-02T00:45:02.704-05:00  INFO 2840 --- [asistencia-alamo] [           main] c.a.a.AsistenciaAlamoApplication         : Started AsistenciaAlamoApplication in 8.489 seconds (process running for 9.023)
+2026-06-02T00:45:17.283-05:00  INFO 2840 --- [asistencia-alamo] [nio-8080-exec-2] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-06-02T00:45:17.283-05:00  INFO 2840 --- [asistencia-alamo] [nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-06-02T00:45:17.284-05:00  INFO 2840 --- [asistencia-alamo] [nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+Hibernate: select count(pe1_0.id_permiso) from tb_permiso_extra pe1_0 where pe1_0.estado=?
+Hibernate: select count(pe1_0.id_permiso) from tb_permiso_extra pe1_0 where pe1_0.estado=?
+Hibernate: select count(pe1_0.id_permiso) from tb_permiso_extra pe1_0 where pe1_0.estado=?
+Hibernate: select u1_0.id_usuario,u1_0.antecedentes_nombre,u1_0.antecedentes_policiales_nombre,u1_0.apellido_materno,u1_0.apellido_paterno,u1_0.banca_movil,u1_0.banco,u1_0.biografia,u1_0.cargo,u1_0.certiadulto_nombre,u1_0.certificaciones,u1_0.certijoven_nombre,u1_0.contrasenia,u1_0.coordenadas,u1_0.correo,u1_0.cuenta_bancaria,u1_0.cuenta_interbancaria,u1_0.cv_nombre,u1_0.direccion,u1_0.dni,u1_0.estado,u1_0.estado_civil,u1_0.fecha_creacion,u1_0.fecha_ingreso,u1_0.fecha_modificacion,u1_0.fecha_nacimiento,u1_0.foto_perfil,u1_0.foto_id_nombre,u1_0.foto_id_nombre_trasera,u1_0.grupo_sanguineo,u1_0.id_dep,u1_0.id_dist,u1_0.id_prov,u1_0.idiomas,u1_0.instituciones_educativas,u1_0.modalidad,u1_0.nacionalidad,u1_0.nivel_educativo,u1_0.nombre_contacto_emergencia,u1_0.nombres,u1_0.numero_ruc,u1_0.id_rol,u1_0.referencia,u1_0.relacion_contacto_emergencia,u1_0.ruta_cv,u1_0.ruta_antecedentes,u1_0.ruta_antecedentes_policiales,u1_0.ruta_certiadulto,u1_0.ruta_certijoven,u1_0.ruta_foto_id,u1_0.ruta_foto_id_trasera,u1_0.secundaria_fin,u1_0.secundaria_inicio,u1_0.sexo,u1_0.telefono,u1_0.telefono_emergencia,u1_0.tiene_antecedentes,u1_0.tipo_contrato,u1_0.tipo_seguro,u1_0.universidad_fin,u1_0.universidad_inicio from tb_usuario u1_0 where u1_0.dni=? and u1_0.contrasenia=?
+Hibernate: select count(pe1_0.id_permiso) from tb_permiso_extra pe1_0 where pe1_0.estado=?
+Hibernate: select count(pe1_0.id_permiso) from tb_permiso_extra pe1_0 where pe1_0.estado=?
+Hibernate: select count(pe1_0.id_permiso) from tb_permiso_extra pe1_0 where pe1_0.estado=?
+Hibernate: select count(pe1_0.id_permiso) from tb_permiso_extra pe1_0 where pe1_0.estado=?
+Hibernate: select count(pe1_0.id_permiso) from tb_permiso_extra pe1_0 where pe1_0.estado=?
+Hibernate: select count(pe1_0.id_permiso) from tb_permiso_extra pe1_0 where pe1_0.estado=?
+Hibernate: select count(pe1_0.id_permiso) from tb_permiso_extra pe1_0 where pe1_0.estado=?
+Hibernate: select count(pe1_0.id_permiso) from tb_permiso_extra pe1_0 where pe1_0.estado=?
+Hibernate: select count(pe1_0.id_permiso) from tb_permiso_extra pe1_0 where pe1_0.estado=?
+Hibernate: select u1_0.id_usuario,u1_0.antecedentes_nombre,u1_0.antecedentes_policiales_nombre,u1_0.apellido_materno,u1_0.apellido_paterno,u1_0.banca_movil,u1_0.banco,u1_0.biografia,u1_0.cargo,u1_0.certiadulto_nombre,u1_0.certificaciones,u1_0.certijoven_nombre,u1_0.contrasenia,u1_0.coordenadas,u1_0.correo,u1_0.cuenta_bancaria,u1_0.cuenta_interbancaria,u1_0.cv_nombre,u1_0.direccion,u1_0.dni,u1_0.estado,u1_0.estado_civil,u1_0.fecha_creacion,u1_0.fecha_ingreso,u1_0.fecha_modificacion,u1_0.fecha_nacimiento,u1_0.foto_perfil,u1_0.foto_id_nombre,u1_0.foto_id_nombre_trasera,u1_0.grupo_sanguineo,u1_0.id_dep,u1_0.id_dist,u1_0.id_prov,u1_0.idiomas,u1_0.instituciones_educativas,u1_0.modalidad,u1_0.nacionalidad,u1_0.nivel_educativo,u1_0.nombre_contacto_emergencia,u1_0.nombres,u1_0.numero_ruc,u1_0.id_rol,u1_0.referencia,u1_0.relacion_contacto_emergencia,u1_0.ruta_cv,u1_0.ruta_antecedentes,u1_0.ruta_antecedentes_policiales,u1_0.ruta_certiadulto,u1_0.ruta_certijoven,u1_0.ruta_foto_id,u1_0.ruta_foto_id_trasera,u1_0.secundaria_fin,u1_0.secundaria_inicio,u1_0.sexo,u1_0.telefono,u1_0.telefono_emergencia,u1_0.tiene_antecedentes,u1_0.tipo_contrato,u1_0.tipo_seguro,u1_0.universidad_fin,u1_0.universidad_inicio from tb_usuario u1_0 where u1_0.dni=? and u1_0.contrasenia=?
+Hibernate: select r1_0.id_rol,r1_0.descripcion from tb_rol r1_0 where r1_0.id_rol=?
+Hibernate: select count(pe1_0.id_permiso) from tb_permiso_extra pe1_0 where pe1_0.estado=?
+Hibernate: select count(t1_0.id_tarea) from tb_tarea t1_0 join tb_usuario r1_0 on r1_0.id_usuario=t1_0.id_responsable where r1_0.id_usuario=? and t1_0.activo and not(t1_0.es_proyecto) and t1_0.estado<>?
+Hibernate: select count(pe1_0.id_permiso) from tb_permiso_extra pe1_0 where pe1_0.estado=?
+Hibernate: SELECT * FROM tb_usuario WHERE MONTH(fecha_nacimiento) = ? AND estado = 'ACTIVO'
+Hibernate: SELECT * FROM tb_saludos WHERE id_receptor = ? ORDER BY fecha_envio DESC
+2026-06-02T01:09:47.466-05:00 ERROR 2840 --- [asistencia-alamo] [nio-8080-exec-3] org.thymeleaf.TemplateEngine             : [THYMELEAF][http-nio-8080-exec-3] Exception processing template "menu": Error resolving template [fragmentos/sidebar], template might not exist or might not be accessible by any of the configured Template Resolvers (template: "menu" - line 602, col 8)
+
+org.thymeleaf.exceptions.TemplateInputException: Error resolving template [fragmentos/sidebar], template might not exist or might not be accessible by any of the configured Template Resolvers (template: "menu" - line 602, col 8)
+	at org.thymeleaf.engine.TemplateManager.resolveTemplate(TemplateManager.java:869) ~[thymeleaf-3.1.3.RELEASE.jar!/:3.1.3.RELEASE]
+	at org.thymeleaf.engine.TemplateManager.parseStandalone(TemplateManager.java:250) ~[thymeleaf-3.1.3.RELEASE.jar!/:3.1.3.RELEASE]
+	at org.thymeleaf.standard.expression.FragmentExpression.resolveExecutedFragmentExpression(FragmentExpression.java:567) ~[thymeleaf-3.1.3.RELEASE.jar!/:3.1.3.RELEASE]
+	at org.thymeleaf.standard.processor.AbstractStandardFragmentInsertionTagProcessor.computeFragment(AbstractStandardFragmentInsertionTagProcessor.java:419) ~[thymeleaf-3.1.3.RELEASE.jar!/:3.1.3.RELEASE]
+	at org.thymeleaf.standard.processor.AbstractStandardFragmentInsertionTagProcessor.doProcess(AbstractStandardFragmentInsertionTagProcessor.java:115) ~[thymeleaf-3.1.3.RELEASE.jar!/:3.1.3.RELEASE]
+	at org.thymeleaf.processor.element.AbstractAttributeTagProcessor.doProcess(AbstractAttributeTagProcessor.java:74) ~[thymeleaf-3.1.3.RELEASE.jar!/:3.1.3.RELEASE]
+	at org.thymeleaf.processor.element.AbstractElementTagProcessor.process(AbstractElementTagProcessor.java:95) ~[thymeleaf-3.1.3.RELEASE.jar!/:3.1.3.RELEASE]
+	at org.thymeleaf.util.ProcessorConfigurationUtils$ElementTagProcessorWrapper.process(ProcessorConfigurationUtils.java:633) ~[thymeleaf-3.1.3.RELEASE.jar!/:3.1.3.RELEASE]
+	at org.thymeleaf.engine.ProcessorTemplateHandler.handleOpenElement(ProcessorTemplateHandler.java:1314) ~[thymeleaf-3.1.3.RELEASE.jar!/:3.1.3.RELEASE]
+	at org.thymeleaf.engine.OpenElementTag.beHandled(OpenElementTag.java:205) ~[thymeleaf-3.1.3.RELEASE.jar!/:3.1.3.RELEASE]
+	at org.thymeleaf.engine.TemplateModel.process(TemplateModel.java:136) ~[thymeleaf-3.1.3.RELEASE.jar!/:3.1.3.RELEASE]
+	at org.thymeleaf.engine.TemplateManager.parseAndProcess(TemplateManager.java:661) ~[thymeleaf-3.1.3.RELEASE.jar!/:3.1.3.RELEASE]
+	at org.thymeleaf.TemplateEngine.process(TemplateEngine.java:1103) ~[thymeleaf-3.1.3.RELEASE.jar!/:3.1.3.RELEASE]
+	at org.thymeleaf.TemplateEngine.process(TemplateEngine.java:1077) ~[thymeleaf-3.1.3.RELEASE.jar!/:3.1.3.RELEASE]
+	at org.thymeleaf.spring6.view.ThymeleafView.renderFragment(ThymeleafView.java:372) ~[thymeleaf-spring6-3.1.3.RELEASE.jar!/:3.1.3.RELEASE]
+	at org.thymeleaf.spring6.view.ThymeleafView.render(ThymeleafView.java:192) ~[thymeleaf-spring6-3.1.3.RELEASE.jar!/:3.1.3.RELEASE]
+	at org.springframework.web.servlet.DispatcherServlet.render(DispatcherServlet.java:1435) ~[spring-webmvc-6.2.1.jar!/:6.2.1]
+	at org.springframework.web.servlet.DispatcherServlet.processDispatchResult(DispatcherServlet.java:1167) ~[spring-webmvc-6.2.1.jar!/:6.2.1]
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1105) ~[spring-webmvc-6.2.1.jar!/:6.2.1]
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:978) ~[spring-webmvc-6.2.1.jar!/:6.2.1]
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1014) ~[spring-webmvc-6.2.1.jar!/:6.2.1]
+	at org.springframework.web.servlet.FrameworkServlet.doGet(FrameworkServlet.java:903) ~[spring-webmvc-6.2.1.jar!/:6.2.1]
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:564) ~[tomcat-embed-core-10.1.34.jar!/:na]
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:885) ~[spring-webmvc-6.2.1.jar!/:6.2.1]
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:658) ~[tomcat-embed-core-10.1.34.jar!/:na]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:195) ~[tomcat-embed-core-10.1.34.jar!/:na]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140) ~[tomcat-embed-core-10.1.34.jar!/:na]
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:51) ~[tomcat-embed-websocket-10.1.34.jar!/:na]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164) ~[tomcat-embed-core-10.1.34.jar!/:na]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140) ~[tomcat-embed-core-10.1.34.jar!/:na]
+	at com.alamo.asistencia.filter.MobileBlockFilter.doFilterInternal(MobileBlockFilter.java:30) ~[!/:0.0.1-SNAPSHOT]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.2.1.jar!/:6.2.1]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164) ~[tomcat-embed-core-10.1.34.jar!/:na]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140) ~[tomcat-embed-core-10.1.34.jar!/:na]
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100) ~[spring-web-6.2.1.jar!/:6.2.1]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.2.1.jar!/:6.2.1]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164) ~[tomcat-embed-core-10.1.34.jar!/:na]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140) ~[tomcat-embed-core-10.1.34.jar!/:na]
+	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93) ~[spring-web-6.2.1.jar!/:6.2.1]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.2.1.jar!/:6.2.1]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164) ~[tomcat-embed-core-10.1.34.jar!/:na]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140) ~[tomcat-embed-core-10.1.34.jar!/:na]
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201) ~[spring-web-6.2.1.jar!/:6.2.1]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.2.1.jar!/:6.2.1]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164) ~[tomcat-embed-core-10.1.34.jar!/:na]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140) ~[tomcat-embed-core-10.1.34.jar!/:na]
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:167) ~[tomcat-embed-core-10.1.34.jar!/:na]
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:90) ~[tomcat-embed-core-10.1.34.jar!/:na]
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:483) ~[tomcat-embed-core-10.1.34.jar!/:na]
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:115) ~[tomcat-embed-core-10.1.34.jar!/:na]
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:93) ~[tomcat-embed-core-10.1.34.jar!/:na]
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:74) ~[tomcat-embed-core-10.1.34.jar!/:na]
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:344) ~[tomcat-embed-core-10.1.34.jar!/:na]
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:397) ~[tomcat-embed-core-10.1.34.jar!/:na]
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63) ~[tomcat-embed-core-10.1.34.jar!/:na]
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:905) ~[tomcat-embed-core-10.1.34.jar!/:na]
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1741) ~[tomcat-embed-core-10.1.34.jar!/:na]
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52) ~[tomcat-embed-core-10.1.34.jar!/:na]
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1190) ~[tomcat-embed-core-10.1.34.jar!/:na]
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659) ~[tomcat-embed-core-10.1.34.jar!/:na]
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63) ~[tomcat-embed-core-10.1.34.jar!/:na]
+	at java.base/java.lang.Thread.run(Thread.java:1583) ~[na:na]
+
+2026-06-02T01:09:47.470-05:00 ERROR 2840 --- [asistencia-alamo] [nio-8080-exec-3] o.a.c.c.C.[.[.[/].[dispatcherServlet]    : Servlet.service() for servlet [dispatcherServlet] in context with path [] threw exception [Request processing failed: org.thymeleaf.exceptions.TemplateInputException: Error resolving template [fragmentos/sidebar], template might not exist or might not be accessible by any of the configured Template Resolvers (template: "menu" - line 602, col 8)] with root cause
+
+org.thymeleaf.exceptions.TemplateInputException: Error resolving template [fragmentos/sidebar], template might not exist or might not be accessible by any of the configured Template Resolvers (template: "menu" - line 602, col 8)
+	at org.thymeleaf.engine.TemplateManager.resolveTemplate(TemplateManager.java:869) ~[thymeleaf-3.1.3.RELEASE.jar!/:3.1.3.RELEASE]
+	at org.thymeleaf.engine.TemplateManager.parseStandalone(TemplateManager.java:250) ~[thymeleaf-3.1.3.RELEASE.jar!/:3.1.3.RELEASE]
+	at org.thymeleaf.standard.expression.FragmentExpression.resolveExecutedFragmentExpression(FragmentExpression.java:567) ~[thymeleaf-3.1.3.RELEASE.jar!/:3.1.3.RELEASE]
+	at org.thymeleaf.standard.processor.AbstractStandardFragmentInsertionTagProcessor.computeFragment(AbstractStandardFragmentInsertionTagProcessor.java:419) ~[thymeleaf-3.1.3.RELEASE.jar!/:3.1.3.RELEASE]
+	at org.thymeleaf.standard.processor.AbstractStandardFragmentInsertionTagProcessor.doProcess(AbstractStandardFragmentInsertionTagProcessor.java:115) ~[thymeleaf-3.1.3.RELEASE.jar!/:3.1.3.RELEASE]
+	at org.thymeleaf.processor.element.AbstractAttributeTagProcessor.doProcess(AbstractAttributeTagProcessor.java:74) ~[thymeleaf-3.1.3.RELEASE.jar!/:3.1.3.RELEASE]
+	at org.thymeleaf.processor.element.AbstractElementTagProcessor.process(AbstractElementTagProcessor.java:95) ~[thymeleaf-3.1.3.RELEASE.jar!/:3.1.3.RELEASE]
+	at org.thymeleaf.util.ProcessorConfigurationUtils$ElementTagProcessorWrapper.process(ProcessorConfigurationUtils.java:633) ~[thymeleaf-3.1.3.RELEASE.jar!/:3.1.3.RELEASE]
+	at org.thymeleaf.engine.ProcessorTemplateHandler.handleOpenElement(ProcessorTemplateHandler.java:1314) ~[thymeleaf-3.1.3.RELEASE.jar!/:3.1.3.RELEASE]
+	at org.thymeleaf.engine.OpenElementTag.beHandled(OpenElementTag.java:205) ~[thymeleaf-3.1.3.RELEASE.jar!/:3.1.3.RELEASE]
+	at org.thymeleaf.engine.TemplateModel.process(TemplateModel.java:136) ~[thymeleaf-3.1.3.RELEASE.jar!/:3.1.3.RELEASE]
+	at org.thymeleaf.engine.TemplateManager.parseAndProcess(TemplateManager.java:661) ~[thymeleaf-3.1.3.RELEASE.jar!/:3.1.3.RELEASE]
+	at org.thymeleaf.TemplateEngine.process(TemplateEngine.java:1103) ~[thymeleaf-3.1.3.RELEASE.jar!/:3.1.3.RELEASE]
+	at org.thymeleaf.TemplateEngine.process(TemplateEngine.java:1077) ~[thymeleaf-3.1.3.RELEASE.jar!/:3.1.3.RELEASE]
+	at org.thymeleaf.spring6.view.ThymeleafView.renderFragment(ThymeleafView.java:372) ~[thymeleaf-spring6-3.1.3.RELEASE.jar!/:3.1.3.RELEASE]
+	at org.thymeleaf.spring6.view.ThymeleafView.render(ThymeleafView.java:192) ~[thymeleaf-spring6-3.1.3.RELEASE.jar!/:3.1.3.RELEASE]
+	at org.springframework.web.servlet.DispatcherServlet.render(DispatcherServlet.java:1435) ~[spring-webmvc-6.2.1.jar!/:6.2.1]
+	at org.springframework.web.servlet.DispatcherServlet.processDispatchResult(DispatcherServlet.java:1167) ~[spring-webmvc-6.2.1.jar!/:6.2.1]
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1105) ~[spring-webmvc-6.2.1.jar!/:6.2.1]
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:978) ~[spring-webmvc-6.2.1.jar!/:6.2.1]
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1014) ~[spring-webmvc-6.2.1.jar!/:6.2.1]
+	at org.springframework.web.servlet.FrameworkServlet.doGet(FrameworkServlet.java:903) ~[spring-webmvc-6.2.1.jar!/:6.2.1]
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:564) ~[tomcat-embed-core-10.1.34.jar!/:na]
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:885) ~[spring-webmvc-6.2.1.jar!/:6.2.1]
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:658) ~[tomcat-embed-core-10.1.34.jar!/:na]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:195) ~[tomcat-embed-core-10.1.34.jar!/:na]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140) ~[tomcat-embed-core-10.1.34.jar!/:na]
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:51) ~[tomcat-embed-websocket-10.1.34.jar!/:na]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164) ~[tomcat-embed-core-10.1.34.jar!/:na]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140) ~[tomcat-embed-core-10.1.34.jar!/:na]
+	at com.alamo.asistencia.filter.MobileBlockFilter.doFilterInternal(MobileBlockFilter.java:30) ~[!/:0.0.1-SNAPSHOT]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.2.1.jar!/:6.2.1]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164) ~[tomcat-embed-core-10.1.34.jar!/:na]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140) ~[tomcat-embed-core-10.1.34.jar!/:na]
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100) ~[spring-web-6.2.1.jar!/:6.2.1]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.2.1.jar!/:6.2.1]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164) ~[tomcat-embed-core-10.1.34.jar!/:na]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140) ~[tomcat-embed-core-10.1.34.jar!/:na]
+	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93) ~[spring-web-6.2.1.jar!/:6.2.1]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.2.1.jar!/:6.2.1]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164) ~[tomcat-embed-core-10.1.34.jar!/:na]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140) ~[tomcat-embed-core-10.1.34.jar!/:na]
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201) ~[spring-web-6.2.1.jar!/:6.2.1]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.2.1.jar!/:6.2.1]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164) ~[tomcat-embed-core-10.1.34.jar!/:na]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140) ~[tomcat-embed-core-10.1.34.jar!/:na]
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:167) ~[tomcat-embed-core-10.1.34.jar!/:na]
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:90) ~[tomcat-embed-core-10.1.34.jar!/:na]
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:483) ~[tomcat-embed-core-10.1.34.jar!/:na]
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:115) ~[tomcat-embed-core-10.1.34.jar!/:na]
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:93) ~[tomcat-embed-core-10.1.34.jar!/:na]
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:74) ~[tomcat-embed-core-10.1.34.jar!/:na]
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:344) ~[tomcat-embed-core-10.1.34.jar!/:na]
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:397) ~[tomcat-embed-core-10.1.34.jar!/:na]
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63) ~[tomcat-embed-core-10.1.34.jar!/:na]
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:905) ~[tomcat-embed-core-10.1.34.jar!/:na]
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1741) ~[tomcat-embed-core-10.1.34.jar!/:na]
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52) ~[tomcat-embed-core-10.1.34.jar!/:na]
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1190) ~[tomcat-embed-core-10.1.34.jar!/:na]
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659) ~[tomcat-embed-core-10.1.34.jar!/:na]
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63) ~[tomcat-embed-core-10.1.34.jar!/:na]
+	at java.base/java.lang.Thread.run(Thread.java:1583) ~[na:na]
+
+Hibernate: select count(pe1_0.id_permiso) from tb_permiso_extra pe1_0 where pe1_0.estado=?
+Hibernate: select count(t1_0.id_tarea) from tb_tarea t1_0 join tb_usuario r1_0 on r1_0.id_usuario=t1_0.id_responsable where r1_0.id_usuario=? and t1_0.activo and not(t1_0.es_proyecto) and t1_0.estado<>?
+2026-06-02T01:09:47.483-05:00 ERROR 2840 --- [asistencia-alamo] [nio-8080-exec-3] s.e.ErrorMvcAutoConfiguration$StaticView : Cannot render error page for request [/cargarmenu] as the response has already been committed. As a result, the response may have the wrong status code.

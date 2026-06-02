@@ -1,0 +1,3180 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+
+<head>
+	<meta charset="UTF-8">
+	<title>Mi Perfil | Control de Asistencia</title>
+
+	<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+
+	<style>
+		:root {
+			--primary: rgb(13, 82, 242);
+			--primary-dark: rgb(0, 0, 128);
+			--gray-bg: #f3f4f6;
+			--gray-soft: #e5e7eb;
+			--gray-text: #4b5563;
+			--text-main: #111827;
+		}
+
+		* {
+			box-sizing: border-box;
+		}
+
+		body {
+			margin: 0;
+			font-family: "Poppins", sans-serif;
+			background: var(--gray-bg);
+			display: flex;
+		}
+
+		.sidebar {
+			width: 240px;
+			background: #ffffff;
+			border-right: 1px solid var(--gray-soft);
+			color: var(--gray-text);
+			min-height: 100vh;
+			padding: 1.4rem 1.1rem;
+			position: fixed;
+			top: 0;
+			left: 0;
+		}
+
+		.sidebar-header {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			margin-bottom: 1.7rem;
+		}
+
+		.sidebar-logo {
+			display: flex;
+			align-items: center;
+			gap: 0.55rem;
+			text-decoration: none;
+			color: var(--text-main);
+		}
+
+		.sidebar-logo-mark {
+			width: 32px;
+			height: 32px;
+			border-radius: 0.8rem;
+			background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			color: #ffffff;
+			font-size: 0.9rem;
+			font-weight: 600;
+		}
+
+		.sidebar-logo-text {
+			font-weight: 600;
+			font-size: 1.02rem;
+		}
+
+		.sidebar-env {
+			font-size: 0.7rem;
+			padding: 0.2rem 0.55rem;
+			border-radius: 999px;
+			border: 1px solid var(--gray-soft);
+			background: #f9fafb;
+			color: var(--gray-text);
+			display: inline-flex;
+			align-items: center;
+			gap: 0.3rem;
+		}
+
+		.sidebar-env i {
+			color: var(--primary);
+		}
+
+		.menu {
+			list-style: none;
+			padding: 0;
+			margin: 0;
+		}
+
+		.menu li {
+			margin-bottom: 0.2rem;
+		}
+
+		.menu a {
+			display: flex;
+			align-items: center;
+			gap: 0.6rem;
+			padding: 0.55rem 0.6rem;
+			border-radius: 0.6rem;
+			color: var(--gray-text);
+			text-decoration: none;
+			font-size: 0.88rem;
+			transition: background-color 0.12s ease, color 0.12s ease;
+		}
+
+		.menu a i {
+			width: 18px;
+			text-align: center;
+			font-size: 0.95rem;
+			color: var(--primary);
+		}
+
+		.menu a:hover {
+			background: #fef2f2;
+			color: var(--primary-dark);
+		}
+
+		.menu a.logout {
+			margin-top: 0.4rem;
+			border-top: 1px solid var(--gray-soft);
+			padding-top: 0.7rem;
+			color: #b91c1c;
+		}
+
+		.menu a.logout i {
+			color: #b91c1c;
+		}
+
+		.main-content {
+			margin-left: 240px;
+			padding: 1.8rem 2rem;
+			width: calc(100% - 240px);
+			min-height: 100vh;
+		}
+
+		@media (max-width: 768px) {
+			.main-content {
+				margin-left: 0;
+				width: 100%;
+			}
+
+			.sidebar {
+				display: none;
+			}
+		}
+
+		.page-title {
+			font-size: 1.35rem;
+			font-weight: 600;
+			color: var(--text-main);
+			margin-bottom: 0.4rem;
+		}
+
+		.page-subtitle {
+			font-size: 0.9rem;
+			color: var(--gray-text);
+			margin-bottom: 1.4rem;
+		}
+
+		.profile-container {
+			background: #ffffff;
+			border-radius: 1rem;
+			border: 1px solid var(--gray-soft);
+			padding: 1.6rem 1.6rem 1.5rem;
+			max-width: 1100px;
+			box-shadow: 0 10px 24px rgba(15, 23, 42, 0.05);
+		}
+
+		.profile-header {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 1rem 1.5rem;
+			align-items: center;
+			margin-bottom: 1.5rem;
+		}
+
+		.profile-avatar-container {
+			position: relative;
+			width: 100px;
+			height: 100px;
+			cursor: pointer;
+			flex-shrink: 0;
+			transition: transform 0.2s ease;
+		}
+
+		.profile-avatar-container:hover {
+			transform: scale(1.05);
+		}
+
+		.profile-avatar {
+			width: 100%;
+			height: 100%;
+			border-radius: 999px;
+			background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			color: #ffffff;
+			font-size: 2.2rem;
+			overflow: hidden;
+			border: 3px solid white;
+			box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+		}
+
+		.profile-avatar-overlay {
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			background: rgba(0, 0, 0, 0.5);
+			border-radius: 999px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			color: white;
+			opacity: 0;
+			transition: opacity 0.3s ease;
+		}
+
+		.profile-avatar-container:hover .profile-avatar-overlay {
+			opacity: 1;
+		}
+
+		.profile-info {
+			flex: 1;
+			min-width: 220px;
+		}
+
+		.profile-name {
+			font-size: 1.2rem;
+			font-weight: 600;
+			color: var(--text-main);
+		}
+
+		.profile-role {
+			font-size: 0.9rem;
+			color: var(--gray-text);
+			margin-top: 0.2rem;
+		}
+
+		.profile-status {
+			margin-top: 0.35rem;
+			font-size: 0.82rem;
+			display: inline-flex;
+			align-items: center;
+			gap: 0.35rem;
+			padding: 0.18rem 0.6rem;
+			border-radius: 999px;
+			background: #f3f4f6;
+		}
+
+		.profile-status-dot {
+			width: 8px;
+			height: 8px;
+			border-radius: 999px;
+			display: inline-block;
+		}
+
+		.profile-status-activo {
+			background: #bbf7d0;
+		}
+
+		.profile-status-inactivo {
+			background: #fecaca;
+		}
+
+		.profile-bio {
+			margin-top: 0.8rem;
+			padding: 0.85rem 1rem;
+			background: #f8fafc;
+			border: 1px solid var(--gray-soft);
+			border-radius: 0.8rem;
+			color: var(--gray-text);
+			font-size: 0.9rem;
+			line-height: 1.5;
+			max-width: 760px;
+		}
+
+		.profile-bio strong {
+			color: var(--text-main);
+			display: inline-block;
+			margin-bottom: 0.25rem;
+		}
+
+		.section-title {
+			margin-top: 1.2rem;
+			margin-bottom: 0.6rem;
+			font-size: 1rem;
+			font-weight: 600;
+			color: var(--text-main);
+			display: flex;
+			align-items: center;
+			gap: 0.45rem;
+		}
+
+		.section-title i {
+			color: var(--primary);
+		}
+
+		.edit-form-grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+			gap: 1rem 1.5rem;
+			margin-top: 0.5rem;
+			font-size: 0.9rem;
+		}
+
+		.form-group {
+			margin-bottom: 0.5rem;
+		}
+
+		.form-group label {
+			display: block;
+			font-weight: 500;
+			color: var(--gray-text);
+			margin-bottom: 0.2rem;
+			font-size: 0.85rem;
+		}
+
+		.form-group input,
+		.form-group select,
+		.form-group textarea {
+			width: 100%;
+			padding: 0.45rem 0.75rem;
+			border: 1px solid var(--gray-soft);
+			border-radius: 0.4rem;
+			font-size: 0.9rem;
+			color: var(--text-main);
+			transition: border-color 0.15s ease;
+			background: #fff;
+		}
+
+		.form-group textarea {
+			resize: vertical;
+			min-height: 90px;
+		}
+
+		.form-group input[type="file"] {
+			padding: 0.5rem;
+		}
+
+		.form-group input[disabled] {
+			background: #f9fafb;
+			color: #374151;
+			cursor: not-allowed;
+		}
+
+		.btn-main {
+			background: var(--primary);
+			border: none;
+			color: #ffffff;
+			padding: 0.55rem 1.2rem;
+			border-radius: 999px;
+			font-size: 0.88rem;
+			font-weight: 500;
+			display: inline-flex;
+			align-items: center;
+			gap: 0.4rem;
+			cursor: pointer;
+			transition: all 0.2s ease;
+			box-shadow: 0 8px 20px rgba(13, 82, 242, 0.25);
+			text-decoration: none;
+		}
+
+		.btn-main:hover {
+			background: var(--primary-dark);
+			transform: translateY(-1px);
+		}
+
+		.btn-save-all {
+			display: flex;
+			justify-content: center;
+			margin-top: 2rem;
+			padding-top: 1.5rem;
+			border-top: 2px solid var(--gray-soft);
+		}
+
+		.btn-upload-id {
+			background: #22c55e;
+			box-shadow: 0 8px 20px rgba(34, 197, 94, 0.25);
+		}
+
+		.btn-upload-id:hover {
+			background: #16a34a;
+		}
+
+		.alert {
+			padding: 0.8rem;
+			border-radius: 0.5rem;
+			margin-bottom: 1rem;
+			font-size: 0.85rem;
+			display: flex;
+			align-items: center;
+			gap: 0.5rem;
+		}
+
+		.alert-success {
+			background: #ecfdf5;
+			color: #065f46;
+			border: 1px solid #a7f3d0;
+		}
+
+		.alert-error {
+			background: #fef2f2;
+			color: #991b1b;
+			border: 1px solid #fecaca;
+		}
+
+		.cv-section {
+			margin-bottom: 1.5rem;
+			padding: 1.2rem;
+			background: #f9fafb;
+			border-radius: 0.8rem;
+			border: 1px solid var(--gray-soft);
+		}
+
+		.cv-title {
+			font-weight: 600;
+			font-size: 0.9rem;
+			margin-bottom: 0.8rem;
+			display: flex;
+			align-items: center;
+			gap: 0.5rem;
+			color: var(--text-main);
+		}
+
+		.cv-status {
+			font-size: 0.82rem;
+			margin-bottom: 0.8rem;
+			display: flex;
+			align-items: center;
+			gap: 0.4rem;
+			flex-wrap: wrap;
+		}
+
+		.cv-status.updated {
+			color: var(--primary);
+		}
+
+		.cv-upload-form {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 0.8rem;
+			align-items: center;
+		}
+
+		.rows-wrap {
+			grid-column: 1 / -1;
+			background: #f9fafb;
+			border: 1px solid var(--gray-soft);
+			border-radius: 0.8rem;
+			padding: 1rem;
+		}
+
+		.rows-head {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			gap: .8rem;
+			margin-bottom: .6rem;
+			flex-wrap: wrap;
+		}
+
+		.rows-title {
+			color: var(--text-main);
+			font-size: .92rem;
+			font-weight: 600;
+			display: inline-flex;
+			align-items: center;
+			gap: .45rem;
+		}
+
+		.row-card {
+			grid-column: 1 / -1;
+			background: #fff;
+			border: 1px solid var(--gray-soft);
+			border-radius: .8rem;
+			padding: .9rem;
+			margin-bottom: .8rem;
+		}
+
+		.row-card__top {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			gap: .6rem;
+			margin-bottom: .6rem;
+		}
+
+		.row-card__badge {
+			font-size: .8rem;
+			color: var(--gray-text);
+			display: inline-flex;
+			align-items: center;
+			gap: .35rem;
+			background: #f3f4f6;
+			border: 1px solid var(--gray-soft);
+			padding: .2rem .55rem;
+			border-radius: 999px;
+		}
+
+		.btn-trash {
+			border: none;
+			background: #fee2e2;
+			color: #991b1b;
+			border-radius: .6rem;
+			padding: .4rem .65rem;
+			cursor: pointer;
+		}
+
+		.row-fields {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+			gap: .8rem 1rem;
+		}
+
+		.muted-hint {
+			color: var(--gray-text);
+			display: block;
+			margin-top: .35rem;
+			font-size: .82rem;
+		}
+
+		.emg-wrap {
+			grid-column: 1 / -1;
+			background: #f9fafb;
+			border: 1px solid var(--gray-soft);
+			border-radius: .8rem;
+			padding: 1rem;
+		}
+
+		.emg-head {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			gap: .8rem;
+			margin-bottom: .6rem;
+			flex-wrap: wrap;
+		}
+
+		.emg-title {
+			color: var(--text-main);
+			font-size: .92rem;
+			font-weight: 600;
+			display: inline-flex;
+			align-items: center;
+			gap: .45rem;
+		}
+
+		.emg-row {
+			background: #fff;
+			border: 1px solid var(--gray-soft);
+			border-radius: .8rem;
+			padding: .9rem;
+			margin-bottom: .8rem;
+		}
+
+		.emg-row__top {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			gap: .6rem;
+			margin-bottom: .6rem;
+		}
+
+		.emg-row__badge {
+			font-size: .8rem;
+			color: var(--gray-text);
+			display: inline-flex;
+			align-items: center;
+			gap: .35rem;
+			background: #f3f4f6;
+			border: 1px solid var(--gray-soft);
+			padding: .2rem .55rem;
+			border-radius: 999px;
+		}
+
+		.emg-fields {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+			gap: .8rem 1rem;
+		}
+
+		.hidden-bound {
+			display: none !important;
+		}
+
+		.doc-extra-box {
+			grid-column: 1 / -1;
+			background: #f9fafb;
+			border: 1px solid var(--gray-soft);
+			border-radius: 0.8rem;
+			padding: 1rem;
+		}
+
+		.file-current {
+			margin-top: .45rem;
+			font-size: .82rem;
+			color: var(--gray-text);
+		}
+
+		.file-current a {
+			color: var(--primary);
+			text-decoration: none;
+			font-weight: 500;
+		}
+
+		.file-current a:hover {
+			text-decoration: underline;
+		}
+	</style>
+</head>
+
+<body>
+
+	<div th:replace="~{fragmentos/sidebar :: navbar(u=${u})}"></div>
+
+	<div class="main-content">
+		<div class="page-title">Mi Perfil</div>
+		<div class="page-subtitle">
+			Revisa y mantén actualizados tus datos personales y laborales.
+		</div>
+
+		<div class="profile-container">
+
+			<div class="profile-header">
+				<div class="profile-avatar-container"
+					onclick="document.getElementById('fotoPerfilInput').click();" title="Haz clic para cambiar tu foto">
+					<div class="profile-avatar">
+						<img th:if="${u.fotoPerfil}" th:src="@{'/perfil/foto/' + ${u.fotoPerfil}}" alt="Foto de Perfil"
+							style="width: 100%; height: 100%; object-fit: cover;">
+
+						<div th:unless="${u.fotoPerfil}" th:switch="${u.objRol.id_rol}"
+							style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
+							<div th:case="1"><i class="fas fa-user-tie"></i></div>
+							<div th:case="2"><i class="fas fa-users"></i></div>
+							<div th:case="3"><i class="fas fa-headset"></i></div>
+							<div th:case="*"><i class="fas fa-user-circle"></i></div>
+						</div>
+					</div>
+					<div class="profile-avatar-overlay">
+						<i class="fas fa-camera"></i>
+					</div>
+				</div>
+
+				<form id="fotoPerfilForm" th:action="@{/perfil/subir-foto}" method="post" enctype="multipart/form-data"
+					style="display: none;">
+					<input type="hidden" th:if="${_csrf}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+					<input type="file" id="fotoPerfilInput" name="file" accept="image/jpeg, image/png"
+						onchange="document.getElementById('fotoPerfilForm').submit();">
+				</form>
+
+				<div class="profile-info">
+					<div class="profile-name"
+						th:text="${u.nombres} + ' ' + ${u.apellido_paterno} + ' ' + ${u.apellido_materno}">
+					</div>
+					<div class="profile-role">
+						<span th:text="${u.objRol.descripcion}"></span>
+					</div>
+					<div class="profile-status">
+						<span class="profile-status-dot"
+							th:classappend="${u.estado} == 'Activo' ? ' profile-status-activo' : ' profile-status-inactivo'">
+						</span>
+						<span>Estado:</span>
+						<strong th:text="${u.estado}"></strong>
+					</div>
+
+					<div class="profile-bio" th:if="${u.biografia != null and !#strings.isEmpty(u.biografia)}">
+						<strong>Descripción breve</strong><br>
+						<span th:text="${u.biografia}"></span>
+					</div>
+				</div>
+			</div>
+
+			<div th:if="${success}" class="alert alert-success">
+				<i class="fas fa-check-circle"></i> <span th:text="${success}"></span>
+			</div>
+			<div th:if="${error}" class="alert alert-error">
+				<i class="fas fa-exclamation-circle"></i> <span th:text="${error}"></span>
+			</div>
+
+			<form id="perfilForm" th:action="@{/perfil/actualizar-todo}" method="post" enctype="multipart/form-data"
+				th:object="${u}">
+				<input type="hidden" th:if="${_csrf}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
+				<input type="hidden" th:field="*{idUsuario}">
+				<input type="hidden" th:field="*{dni}">
+				<input type="hidden" th:field="*{cargo}">
+				<input type="hidden" th:field="*{estado}">
+
+				<div class="section-title">
+					<i class="fa-solid fa-address-card"></i>
+					<span>1. Datos Personales y Contacto</span>
+				</div>
+
+				<div class="edit-form-grid">
+					<div class="form-group" style="grid-column: 1 / -1;">
+						<label for="biografia">Descripción breve / Biografía</label>
+						<textarea id="biografia" th:field="*{biografia}" maxlength="255"
+							placeholder="Escribe una breve descripción personal o profesional. Ej: Técnico con experiencia en obras civiles, seguridad y trabajo en equipo."></textarea>
+						<small class="muted-hint">Máximo 255 caracteres.</small>
+					</div>
+
+					<div class="form-group">
+						<label>DNI (No Editable)</label>
+						<input type="text" th:value="*{dni}" disabled>
+					</div>
+
+					<div class="form-group">
+						<label for="fecha_nacimiento">Fecha de Nacimiento</label>
+						<input type="date" id="fecha_nacimiento" th:field="*{fecha_nacimiento}" max="">
+					</div>
+
+					<div class="form-group">
+						<label for="edad_calculada">Edad</label>
+						<input type="text" id="edad_calculada" disabled placeholder="Se calculará automáticamente">
+					</div>
+
+					<div class="form-group">
+						<label for="sexo">Sexo</label>
+						<select id="sexo" th:field="*{sexo}">
+							<option value="">Seleccionar</option>
+							<option value="M">Masculino</option>
+							<option value="F">Femenino</option>
+							<option value="Otro">Otro</option>
+						</select>
+					</div>
+
+					<div class="form-group">
+						<label for="estado_civil">Estado Civil</label>
+						<select id="estado_civil" th:field="*{estado_civil}">
+							<option value="">Seleccionar</option>
+							<option value="Soltero">Soltero</option>
+							<option value="Casado">Casado</option>
+							<option value="Divorciado">Divorciado</option>
+							<option value="Viudo">Viudo</option>
+							<option value="Conviviente">Conviviente</option>
+						</select>
+					</div>
+
+					<div class="form-group">
+						<label for="nacionalidad">Nacionalidad</label>
+						<input type="text" id="nacionalidad" th:field="*{nacionalidad}">
+					</div>
+
+					<div class="form-group">
+						<label for="grupo_sanguineo">Grupo Sanguíneo</label>
+						<input type="text" id="grupo_sanguineo" th:field="*{grupo_sanguineo}">
+					</div>
+
+					<div class="form-group">
+						<label for="tipo_seguro">Tipo de Seguro de Salud</label>
+						<select id="tipo_seguro" th:field="*{tipo_seguro}">
+							<option value="">Seleccionar</option>
+							<option value="ESSALUD">ESSALUD</option>
+							<option value="Privado">Privado</option>
+							<option value="SIS">SIS</option>
+							<option value="Otro">Otro</option>
+						</select>
+					</div>
+
+					<div class="form-group">
+						<label for="correo">Correo Electrónico</label>
+						<input type="email" id="correo" th:field="*{correo}">
+					</div>
+
+					<div class="form-group">
+						<label for="telefono">Teléfono Móvil</label>
+						<input type="text" id="telefono" th:field="*{telefono}" maxlength="9" inputmode="numeric">
+					</div>
+
+					<div class="form-group">
+						<label for="id_dep">Departamento</label>
+						<select id="id_dep" th:field="*{id_dep}" th:attr="data-selected=*{id_dep}">
+							<option value="">Seleccionar</option>
+						</select>
+					</div>
+
+					<div class="form-group">
+						<label for="id_prov">Provincia</label>
+						<select id="id_prov" th:field="*{id_prov}" th:attr="data-selected=*{id_prov}" disabled>
+							<option value="">Seleccionar</option>
+						</select>
+					</div>
+
+					<div class="form-group">
+						<label for="id_dist">Distrito</label>
+						<select id="id_dist" th:field="*{id_dist}" th:attr="data-selected=*{id_dist}" disabled>
+							<option value="">Seleccionar</option>
+						</select>
+					</div>
+
+					<div class="form-group" style="grid-column: 1 / -1;">
+						<label for="direccion">Dirección de Residencia</label>
+						<input type="text" id="direccion" th:field="*{direccion}">
+					</div>
+
+					<div class="form-group" style="grid-column: 1 / -1;">
+						<label for="referencia">Referencia</label>
+						<input type="text" id="referencia" th:field="*{referencia}"
+							placeholder="Ej: Frente al mercado, al costado del parque, casa azul con portón negro">
+					</div>
+
+					<div class="form-group" style="grid-column: 1 / -1;">
+						<label for="coordenadas">Coordenadas</label>
+						<input type="text" id="coordenadas" th:field="*{coordenadas}"
+							placeholder="Ej: -12.0464,-77.0428">
+						<small class="muted-hint">Ingresa la latitud y longitud separadas por coma.</small>
+					</div>
+
+					<div class="emg-wrap">
+						<div class="emg-head">
+							<div class="emg-title"><i class="fas fa-ambulance"></i> Contacto(s) de Emergencia</div>
+							<button type="button" class="btn-main" id="addEmgBtn">
+								<i class="fas fa-plus"></i> Agregar contacto
+							</button>
+						</div>
+
+						<div id="emgRows"></div>
+
+						<input class="hidden-bound" type="text" id="nombre_contacto_emergencia"
+							th:field="*{nombre_contacto_emergencia}">
+						<input class="hidden-bound" type="text" id="relacion_contacto_emergencia"
+							th:field="*{relacion_contacto_emergencia}">
+						<input class="hidden-bound" type="text" id="telefono_emergencia"
+							th:field="*{telefono_emergencia}">
+					</div>
+				</div>
+
+				<hr style="border: 0; border-top: 1px solid var(--gray-soft); margin: 1.5rem 0;" />
+
+				<div class="section-title">
+					<i class="fa-solid fa-briefcase"></i>
+					<span>2. Datos Laborales</span>
+				</div>
+				<div class="edit-form-grid">
+					<div class="form-group">
+						<label>Puesto / Cargo (No Editable)</label>
+						<input type="text"
+							th:value="${u.cargo != null && !#strings.isEmpty(u.cargo) ? u.cargo : 'N/A'}" disabled>
+					</div>
+					<div class="form-group">
+						<label>Estado Laboral (No Editable)</label>
+						<input type="text"
+							th:value="${u.estado != null && !#strings.isEmpty(u.estado) ? u.estado : 'N/A'}" disabled>
+					</div>
+					<div class="form-group">
+						<label for="fecha_ingreso">Fecha de Ingreso</label>
+						<input type="date" id="fecha_ingreso" th:field="*{fecha_ingreso}" max="">
+					</div>
+					<div class="form-group">
+						<label for="antiguedad_calculada">Antigüedad</label>
+						<input type="text" id="antiguedad_calculada" disabled placeholder="Se calculará automáticamente">
+					</div>
+					<div class="form-group">
+						<label for="tipo_contrato">Tipo de Contrato</label>
+						<select id="tipo_contrato" th:field="*{tipo_contrato}">
+							<option value="">Seleccionar</option>
+							<option value="Indefinido">Indefinido</option>
+							<option value="Temporal">Temporal</option>
+							<option value="Por Proyecto">Por Proyecto</option>
+							<option value="Servicios">Servicios (Contratista)</option>
+						</select>
+					</div>
+					<div class="form-group">
+						<label for="modalidad">Modalidad</label>
+						<select id="modalidad" th:field="*{modalidad}">
+							<option value="">Seleccionar</option>
+							<option value="Presencial">Presencial</option>
+							<option value="Virtual">Virtual</option>
+						</select>
+					</div>
+					<div class="form-group">
+						<label for="numero_ruc">Número RUC (Opcional)</label>
+						<input type="text" id="numero_ruc" th:field="*{numero_ruc}" maxlength="11"
+							inputmode="numeric">
+					</div>
+				</div>
+
+				<hr style="border: 0; border-top: 1px solid var(--gray-soft); margin: 1.5rem 0;" />
+
+				<div class="section-title">
+					<i class="fa-solid fa-money-check-alt"></i>
+					<span>3. Datos Bancarios (Para Pagos)</span>
+				</div>
+
+				<div class="edit-form-grid">
+					<div class="rows-wrap" style="grid-column: 1 / -1;">
+						<div class="rows-head">
+							<div class="rows-title"><i class="fas fa-building-columns"></i> Cuentas Bancarias</div>
+							<button type="button" class="btn-main" id="addBancoFilaBtn">
+								<i class="fas fa-plus"></i> Agregar banco
+							</button>
+						</div>
+
+						<small class="muted-hint">
+							Agrega varios bancos, con titular, N° de cuenta y CCI. (Se guardan como filas.)
+						</small>
+
+						<div id="bancosRows"></div>
+
+						<textarea class="hidden-bound" id="banco" th:field="*{banco}"></textarea>
+						<textarea class="hidden-bound" id="cuenta_bancaria" th:field="*{cuenta_bancaria}"></textarea>
+						<textarea class="hidden-bound" id="cuenta_interbancaria"
+							th:field="*{cuenta_interbancaria}"></textarea>
+					</div>
+
+					<div class="rows-wrap" style="grid-column: 1 / -1;">
+						<div class="rows-head">
+							<div class="rows-title"><i class="fas fa-mobile-screen"></i> Banca Móvil / Métodos de Pago
+							</div>
+							<button type="button" class="btn-main" id="addMovilFilaBtn">
+								<i class="fas fa-plus"></i> Agregar método
+							</button>
+						</div>
+
+						<small class="muted-hint">
+							Puedes registrar Yape, Plin u otro. Coloca número y titular.
+						</small>
+
+						<div id="movilRows"></div>
+
+						<textarea class="hidden-bound" id="banca_movil" th:field="*{banca_movil}"></textarea>
+					</div>
+				</div>
+
+				<hr style="border: 0; border-top: 1px solid var(--gray-soft); margin: 1.5rem 0;" />
+
+				<div class="section-title">
+					<i class="fa-solid fa-graduation-cap"></i>
+					<span>4. Formación, Capacitación y Experiencia</span>
+				</div>
+
+				<div class="edit-form-grid">
+
+					<div class="rows-wrap">
+						<div class="rows-head">
+							<div class="rows-title"><i class="fas fa-language"></i> Idiomas</div>
+							<button type="button" class="btn-main" id="addIdiomaBtn">
+								<i class="fas fa-plus"></i> Agregar idioma
+							</button>
+						</div>
+
+						<small class="muted-hint">
+							Registra cada idioma con su nivel, certificación, institución, fecha de inicio,
+							fecha de fin y archivo adjunto.
+						</small>
+
+						<div id="idiomasWrap">
+							<div class="row-card idioma-row" th:each="idi, st : ${u.idiomasList}">
+								<div class="row-card__top">
+									<div class="row-card__badge"><i class="fas fa-language"></i> Idioma</div>
+									<button type="button" class="btn-trash js-remove-row" title="Quitar">
+										<i class="fas fa-trash"></i>
+									</button>
+								</div>
+
+								<div class="row-fields">
+									<div class="form-group">
+										<label>Idioma</label>
+										<select class="js-field js-idioma-select" data-field="idioma"
+											th:name="|idiomasList[${st.index}].idioma|"
+											th:attr="data-current=${idi.idioma}">
+											<option value="">Seleccionar</option>
+											<option value="Español">Español</option>
+											<option value="Inglés">Inglés</option>
+											<option value="Quechua">Quechua</option>
+											<option value="Aimara">Aimara</option>
+											<option value="Portugués">Portugués</option>
+											<option value="OTRO">Otro</option>
+										</select>
+										<input type="text" class="js-idioma-otro" placeholder="Especifica el idioma"
+											style="margin-top:.45rem; display:none;">
+									</div>
+
+									<div class="form-group">
+										<label>Nivel</label>
+										<select class="js-field" data-field="nivel"
+											th:name="|idiomasList[${st.index}].nivel|">
+											<option value="">Seleccionar</option>
+											<option value="BASICO" th:selected="${idi.nivel == 'BASICO'}">Básico</option>
+											<option value="INTERMEDIO" th:selected="${idi.nivel == 'INTERMEDIO'}">Intermedio</option>
+											<option value="AVANZADO" th:selected="${idi.nivel == 'AVANZADO'}">Avanzado</option>
+											<option value="NATIVO" th:selected="${idi.nivel == 'NATIVO'}">Nativo</option>
+										</select>
+									</div>
+
+									<div class="form-group">
+										<label>Certificación</label>
+										<input type="text" class="js-field" data-field="certificacion"
+											th:name="|idiomasList[${st.index}].certificacion|"
+											th:value="${idi.certificacion}" placeholder="Ej: TOEFL, Cambridge, DELF">
+									</div>
+
+									<div class="form-group">
+										<label>Institución</label>
+										<select class="js-field js-institucion-select" data-field="institucion"
+											th:name="|idiomasList[${st.index}].institucion|"
+											th:attr="data-current=${idi.institucion}">
+											<option value="">Seleccionar</option>
+											<option value="ICPNA">ICPNA</option>
+											<option value="Británico">Británico</option>
+											<option value="Euroidiomas">Euroidiomas</option>
+											<option value="Idiomas Católica">Idiomas Católica</option>
+											<option value="Centro de Idiomas de la UNMSM">Centro de Idiomas de la UNMSM</option>
+											<option value="OTRO">Otro</option>
+										</select>
+										<input type="text" class="js-institucion-otro"
+											placeholder="Especifica la institución"
+											style="margin-top:.45rem; display:none;">
+									</div>
+
+									<div class="form-group">
+										<label>Fecha inicio</label>
+										<input type="date" class="js-field" data-field="fechaInicio"
+											th:name="|idiomasList[${st.index}].fechaInicio|"
+											th:value="${idi.fechaInicio != null ? #temporals.format(idi.fechaInicio,'yyyy-MM-dd') : ''}">
+									</div>
+
+									<div class="form-group">
+										<label>Fecha fin</label>
+										<input type="date" class="js-field" data-field="fechaFin"
+											th:name="|idiomasList[${st.index}].fechaFin|"
+											th:value="${idi.fechaFin != null ? #temporals.format(idi.fechaFin,'yyyy-MM-dd') : ''}">
+									</div>
+
+									<div class="form-group">
+										<label>Archivo adjunto</label>
+										<input type="file" class="js-idioma-file" accept=".pdf,.jpg,.jpeg,.png">
+										<small class="muted-hint">PDF, JPG, JPEG o PNG.</small>
+
+										<div th:if="${idi.archivoRuta != null and !#strings.isEmpty(idi.archivoRuta)}"
+											style="margin-top:.45rem;">
+											<a th:href="@{'/perfil/idioma/archivo/' + ${idi.idIdioma}}" target="_blank"
+												class="btn-main" style="padding:.45rem .9rem; font-size:.8rem;">
+												<i class="fas fa-paperclip"></i> Ver archivo actual
+											</a>
+										</div>
+									</div>
+								</div>
+
+								<input type="hidden" class="js-field" data-field="idIdioma"
+									th:name="|idiomasList[${st.index}].idIdioma|" th:value="${idi.idIdioma}">
+							</div>
+
+							<div class="row-card idioma-row" th:if="${#lists.isEmpty(u.idiomasList)}">
+								<div class="row-card__top">
+									<div class="row-card__badge"><i class="fas fa-language"></i> Idioma</div>
+									<button type="button" class="btn-trash js-remove-row" title="Quitar">
+										<i class="fas fa-trash"></i>
+									</button>
+								</div>
+
+								<div class="row-fields">
+									<div class="form-group">
+										<label>Idioma</label>
+										<select class="js-field js-idioma-select" data-field="idioma">
+											<option value="">Seleccionar</option>
+											<option value="Español">Español</option>
+											<option value="Inglés">Inglés</option>
+											<option value="Quechua">Quechua</option>
+											<option value="Aimara">Aimara</option>
+											<option value="Portugués">Portugués</option>
+											<option value="OTRO">Otro</option>
+										</select>
+										<input type="text" class="js-idioma-otro" placeholder="Especifica el idioma"
+											style="margin-top:.45rem; display:none;">
+									</div>
+
+									<div class="form-group">
+										<label>Nivel</label>
+										<select class="js-field" data-field="nivel">
+											<option value="">Seleccionar</option>
+											<option value="BASICO">Básico</option>
+											<option value="INTERMEDIO">Intermedio</option>
+											<option value="AVANZADO">Avanzado</option>
+											<option value="NATIVO">Nativo</option>
+										</select>
+									</div>
+
+									<div class="form-group">
+										<label>Certificación</label>
+										<input type="text" class="js-field" data-field="certificacion"
+											placeholder="Ej: TOEFL, Cambridge, DELF">
+									</div>
+
+									<div class="form-group">
+										<label>Institución</label>
+										<select class="js-field js-institucion-select" data-field="institucion">
+											<option value="">Seleccionar</option>
+											<option value="ICPNA">ICPNA</option>
+											<option value="Británico">Británico</option>
+											<option value="Euroidiomas">Euroidiomas</option>
+											<option value="Idiomas Católica">Idiomas Católica</option>
+											<option value="Centro de Idiomas de la UNMSM">Centro de Idiomas de la UNMSM</option>
+											<option value="OTRO">Otro</option>
+										</select>
+										<input type="text" class="js-institucion-otro"
+											placeholder="Especifica la institución"
+											style="margin-top:.45rem; display:none;">
+									</div>
+
+									<div class="form-group">
+										<label>Fecha inicio</label>
+										<input type="date" class="js-field" data-field="fechaInicio">
+									</div>
+
+									<div class="form-group">
+										<label>Fecha fin</label>
+										<input type="date" class="js-field" data-field="fechaFin">
+									</div>
+
+									<div class="form-group">
+										<label>Archivo adjunto</label>
+										<input type="file" class="js-idioma-file" accept=".pdf,.jpg,.jpeg,.png">
+										<small class="muted-hint">PDF, JPG, JPEG o PNG.</small>
+									</div>
+								</div>
+
+								<input type="hidden" class="js-field" data-field="idIdioma" value="">
+							</div>
+						</div>
+					</div>
+
+					<div class="rows-wrap">
+						<div class="rows-head">
+							<div class="rows-title"><i class="fas fa-school"></i> Formación (académica / técnica)</div>
+							<button type="button" class="btn-main" id="addFormacionBtn">
+								<i class="fas fa-plus"></i> Agregar formación
+							</button>
+						</div>
+
+						<div id="formacionesWrap">
+							<div class="row-card formacion-row" th:each="f, st : ${u.formaciones}">
+								<div class="row-card__top">
+									<div class="row-card__badge"><i class="fas fa-layer-group"></i> Registro</div>
+									<button type="button" class="btn-trash js-remove-row" title="Quitar">
+										<i class="fas fa-trash"></i>
+									</button>
+								</div>
+
+								<div class="row-fields">
+									<div class="form-group">
+										<label>Nivel</label>
+										<select class="js-field js-nivel-formacion" data-field="nivel"
+											th:name="|formaciones[${st.index}].nivel|">
+											<option value="">Seleccionar</option>
+											<option value="INICIAL" th:selected="${f.nivel?.name() == 'INICIAL'}">Inicial</option>
+											<option value="PRIMARIA" th:selected="${f.nivel?.name() == 'PRIMARIA'}">Primaria</option>
+											<option value="SECUNDARIA" th:selected="${f.nivel?.name() == 'SECUNDARIA'}">Secundaria</option>
+											<option value="TECNICO" th:selected="${f.nivel?.name() == 'TECNICO'}">Técnico</option>
+											<option value="UNIVERSITARIO" th:selected="${f.nivel?.name() == 'UNIVERSITARIO'}">Universitario</option>
+											<option value="POSTGRADO" th:selected="${f.nivel?.name() == 'POSTGRADO'}">Postgrado</option>
+											<option value="OTRO" th:selected="${f.nivel?.name() == 'OTRO'}">Otro</option>
+										</select>
+									</div>
+
+									<div class="form-group">
+										<label>Institución</label>
+										<input type="text" class="js-field" data-field="institucion"
+											th:name="|formaciones[${st.index}].institucion|"
+											th:value="${f.institucion}" placeholder="Ej: SENATI, UNI, CAPECO...">
+									</div>
+
+									<div class="form-group js-carrera-group">
+										<label>Carrera</label>
+										<select class="js-field js-carrera-select" data-field="programa"
+											th:name="|formaciones[${st.index}].programa|"
+											th:attr="data-current=${f.programa}">
+											<option value="">Seleccionar</option>
+											<option value="Administración">Administración</option>
+											<option value="Contabilidad">Contabilidad</option>
+											<option value="Ingeniería Civil">Ingeniería Civil</option>
+											<option value="Ingeniería Industrial">Ingeniería Industrial</option>
+											<option value="Derecho">Derecho</option>
+											<option value="OTRO">Otro</option>
+										</select>
+										<input type="text" class="js-carrera-otro"
+											placeholder="Especifica la carrera"
+											style="margin-top:.45rem; display:none;">
+									</div>
+
+									<div class="form-group js-grado-group">
+										<label>Grado</label>
+										<select class="js-field js-grado-select" data-field="grado"
+											th:name="|formaciones[${st.index}].grado|"
+											th:attr="data-current=${f.grado}">
+											<option value="">Seleccionar</option>
+											<option value="BACHILLER">Bachiller</option>
+											<option value="TITULADO">Titulado</option>
+											<option value="LICENCIATURA">Licenciatura</option>
+											<option value="COLEGIADO">Colegiado</option>
+											<option value="EGRESADO">Egresado</option>
+											<option value="EN_CURSO">En curso</option>
+											<option value="OTRO">Otro</option>
+										</select>
+										<input type="text" class="js-grado-otro"
+											placeholder="Especifica el grado"
+											style="margin-top:.45rem; display:none;">
+									</div>
+
+									<div class="form-group">
+										<label>Estado</label>
+										<select class="js-field js-estado" data-field="estado"
+											th:name="|formaciones[${st.index}].estado|">
+											<option value="COMPLETO" th:selected="${f.estado?.name() == 'COMPLETO'}">Completo</option>
+											<option value="INCOMPLETO" th:selected="${f.estado?.name() == 'INCOMPLETO'}">Incompleto</option>
+											<option value="EN_CURSO" th:selected="${f.estado?.name() == 'EN_CURSO'}">En curso</option>
+										</select>
+										<small class="muted-hint">Si está "En curso", la fecha fin se deshabilita.</small>
+									</div>
+
+									<div class="form-group">
+										<label>Fecha inicio</label>
+										<input type="date" class="js-field" data-field="fechaInicio"
+											th:name="|formaciones[${st.index}].fechaInicio|"
+											th:value="${f.fechaInicio != null ? #temporals.format(f.fechaInicio,'yyyy-MM-dd') : ''}">
+									</div>
+
+									<div class="form-group">
+										<label>Fecha fin</label>
+										<input type="date" class="js-field js-fecha-fin" data-field="fechaFin"
+											th:name="|formaciones[${st.index}].fechaFin|"
+											th:value="${f.fechaFin != null ? #temporals.format(f.fechaFin,'yyyy-MM-dd') : ''}">
+									</div>
+
+									<input type="hidden" class="js-field" data-field="idFormacion"
+										th:name="|formaciones[${st.index}].idFormacion|" th:value="${f.idFormacion}">
+								</div>
+							</div>
+
+							<div class="row-card formacion-row" th:if="${#lists.isEmpty(u.formaciones)}">
+								<div class="row-card__top">
+									<div class="row-card__badge"><i class="fas fa-layer-group"></i> Registro</div>
+									<button type="button" class="btn-trash js-remove-row" title="Quitar">
+										<i class="fas fa-trash"></i>
+									</button>
+								</div>
+
+								<div class="row-fields">
+									<div class="form-group">
+										<label>Nivel</label>
+										<select class="js-field js-nivel-formacion" data-field="nivel">
+											<option value="">Seleccionar</option>
+											<option value="INICIAL">Inicial</option>
+											<option value="PRIMARIA">Primaria</option>
+											<option value="SECUNDARIA">Secundaria</option>
+											<option value="TECNICO">Técnico</option>
+											<option value="UNIVERSITARIO">Universitario</option>
+											<option value="POSTGRADO">Postgrado</option>
+											<option value="OTRO">Otro</option>
+										</select>
+									</div>
+
+									<div class="form-group">
+										<label>Institución</label>
+										<input type="text" class="js-field" data-field="institucion"
+											placeholder="Ej: SENATI, UNI, CAPECO...">
+									</div>
+
+									<div class="form-group js-carrera-group">
+										<label>Carrera</label>
+										<select class="js-field js-carrera-select" data-field="programa">
+											<option value="">Seleccionar</option>
+											<option value="Administración">Administración</option>
+											<option value="Contabilidad">Contabilidad</option>
+											<option value="Ingeniería Civil">Ingeniería Civil</option>
+											<option value="Ingeniería Industrial">Ingeniería Industrial</option>
+											<option value="Derecho">Derecho</option>
+											<option value="OTRO">Otro</option>
+										</select>
+										<input type="text" class="js-carrera-otro"
+											placeholder="Especifica la carrera"
+											style="margin-top:.45rem; display:none;">
+									</div>
+
+									<div class="form-group js-grado-group">
+										<label>Grado</label>
+										<select class="js-field js-grado-select" data-field="grado">
+											<option value="">Seleccionar</option>
+											<option value="BACHILLER">Bachiller</option>
+											<option value="TITULADO">Titulado</option>
+											<option value="LICENCIATURA">Licenciatura</option>
+											<option value="COLEGIADO">Colegiado</option>
+											<option value="EGRESADO">Egresado</option>
+											<option value="EN_CURSO">En curso</option>
+											<option value="OTRO">Otro</option>
+										</select>
+										<input type="text" class="js-grado-otro"
+											placeholder="Especifica el grado"
+											style="margin-top:.45rem; display:none;">
+									</div>
+
+									<div class="form-group">
+										<label>Estado</label>
+										<select class="js-field js-estado" data-field="estado">
+											<option value="COMPLETO" selected>Completo</option>
+											<option value="INCOMPLETO">Incompleto</option>
+											<option value="EN_CURSO">En curso</option>
+										</select>
+										<small class="muted-hint">Si está "En curso", la fecha fin se deshabilita.</small>
+									</div>
+
+									<div class="form-group">
+										<label>Fecha inicio</label>
+										<input type="date" class="js-field" data-field="fechaInicio">
+									</div>
+
+									<div class="form-group">
+										<label>Fecha fin</label>
+										<input type="date" class="js-field js-fecha-fin" data-field="fechaFin">
+									</div>
+
+									<input type="hidden" class="js-field" data-field="idFormacion" value="">
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="rows-wrap">
+						<div class="rows-head">
+							<div class="rows-title"><i class="fas fa-certificate"></i> Certificaciones y/o Constancias</div>
+							<button type="button" class="btn-main" id="addCertBtn">
+								<i class="fas fa-plus"></i> Agregar certificación
+							</button>
+						</div>
+
+						<div id="certWrap">
+							<div class="row-card cert-row" th:each="c, st : ${u.certificacionesList}">
+								<div class="row-card__top">
+									<div class="row-card__badge"><i class="fas fa-award"></i> Certificación</div>
+									<button type="button" class="btn-trash js-remove-row" title="Quitar">
+										<i class="fas fa-trash"></i>
+									</button>
+								</div>
+
+								<div class="row-fields">
+									<div class="form-group">
+										<label>Nombre del certificado</label>
+										<input type="text" class="js-field" data-field="nombre"
+											th:name="|certificacionesList[${st.index}].nombre|"
+											th:value="${c.nombre}" placeholder="Ej: IPERC, SST, ISO 45001...">
+									</div>
+
+									<div class="form-group">
+										<label>Institución</label>
+										<input type="text" class="js-field" data-field="entidad"
+											th:name="|certificacionesList[${st.index}].entidad|"
+											th:value="${c.entidad}" placeholder="Ej: CAPECO, SENATI, OIT...">
+									</div>
+
+									<div class="form-group">
+										<label>Horas de certificación</label>
+										<input type="number" class="js-field" data-field="horas" step="0.01" min="0"
+											inputmode="decimal" th:name="|certificacionesList[${st.index}].horas|"
+											th:value="${c.horas}">
+										<small class="muted-hint">Acepta decimales (Ej: 12.50).</small>
+									</div>
+
+									<div class="form-group">
+										<label>Fecha inicio</label>
+										<input type="date" class="js-field" data-field="fechaObtencion"
+											th:name="|certificacionesList[${st.index}].fechaObtencion|"
+											th:value="${c.fechaObtencion != null ? #temporals.format(c.fechaObtencion,'yyyy-MM-dd') : ''}">
+									</div>
+
+									<div class="form-group">
+										<label>Fecha fin</label>
+										<input type="date" class="js-field" data-field="fechaVencimiento"
+											th:name="|certificacionesList[${st.index}].fechaVencimiento|"
+											th:value="${c.fechaVencimiento != null ? #temporals.format(c.fechaVencimiento,'yyyy-MM-dd') : ''}">
+									</div>
+
+									<div class="form-group">
+										<label>Archivo adjunto</label>
+										<input type="file" class="js-cert-file" accept=".pdf,.jpg,.jpeg,.png">
+										<small class="muted-hint">PDF, JPG, JPEG o PNG.</small>
+
+										<div th:if="${c.archivoRuta != null and !#strings.isEmpty(c.archivoRuta)}"
+											style="margin-top:.45rem;">
+											<a th:href="@{'/perfil/certificacion/archivo/' + ${c.idCertificacion}}" target="_blank"
+												class="btn-main" style="padding:.45rem .9rem; font-size:.8rem;">
+												<i class="fas fa-paperclip"></i> Ver archivo actual
+											</a>
+										</div>
+									</div>
+								</div>
+
+								<input type="hidden" class="js-field" data-field="idCertificacion"
+									th:name="|certificacionesList[${st.index}].idCertificacion|" th:value="${c.idCertificacion}">
+							</div>
+
+							<div class="row-card cert-row" th:if="${#lists.isEmpty(u.certificacionesList)}">
+								<div class="row-card__top">
+									<div class="row-card__badge"><i class="fas fa-award"></i> Certificación</div>
+									<button type="button" class="btn-trash js-remove-row" title="Quitar">
+										<i class="fas fa-trash"></i>
+									</button>
+								</div>
+
+								<div class="row-fields">
+									<div class="form-group">
+										<label>Nombre</label>
+										<input type="text" class="js-field" data-field="nombre"
+											placeholder="Ej: IPERC, SST, ISO 45001...">
+									</div>
+
+									<div class="form-group">
+										<label>Institución</label>
+										<input type="text" class="js-field" data-field="entidad"
+											placeholder="Ej: CAPECO, SENATI, OIT...">
+									</div>
+
+									<div class="form-group">
+										<label>Horas</label>
+										<input type="number" class="js-field" data-field="horas" step="0.01" min="0"
+											inputmode="decimal" placeholder="Ej: 16.50">
+										<small class="muted-hint">Acepta decimales (Ej: 12.50).</small>
+									</div>
+
+									<div class="form-group">
+										<label>Fecha inicio</label>
+										<input type="date" class="js-field" data-field="fechaObtencion">
+									</div>
+
+									<div class="form-group">
+										<label>Fecha fin</label>
+										<input type="date" class="js-field" data-field="fechaVencimiento">
+									</div>
+
+									<div class="form-group">
+										<label>Archivo adjunto</label>
+										<input type="file" class="js-cert-file" accept=".pdf,.jpg,.jpeg,.png">
+										<small class="muted-hint">PDF, JPG, JPEG o PNG.</small>
+									</div>
+								</div>
+
+								<input type="hidden" class="js-field" data-field="idCertificacion" value="">
+							</div>
+						</div>
+					</div>
+
+					<div class="rows-wrap">
+						<div class="rows-head">
+							<div class="rows-title"><i class="fas fa-briefcase"></i> Experiencia laboral</div>
+							<button type="button" class="btn-main" id="addExperienciaBtn">
+								<i class="fas fa-plus"></i> Agregar experiencia
+							</button>
+						</div>
+
+						<small class="muted-hint">
+							Registra la empresa, puesto, funciones, referencia laboral y archivo de sustento.
+						</small>
+
+						<div id="experienciasWrap">
+							<div class="row-card experiencia-row" th:each="exp, st : ${u.experienciasList}">
+								<div class="row-card__top">
+									<div class="row-card__badge"><i class="fas fa-building"></i> Experiencia</div>
+									<button type="button" class="btn-trash js-remove-row" title="Quitar">
+										<i class="fas fa-trash"></i>
+									</button>
+								</div>
+
+								<div class="row-fields">
+									<div class="form-group">
+										<label>Empresa</label>
+										<input type="text" class="js-field" data-field="empresa"
+											th:name="|experienciasList[${st.index}].empresa|"
+											th:value="${exp.empresa}" placeholder="Ej: Constructora ABC S.A.C.">
+									</div>
+
+									<div class="form-group">
+										<label>Puesto</label>
+										<input type="text" class="js-field" data-field="puesto"
+											th:name="|experienciasList[${st.index}].puesto|"
+											th:value="${exp.puesto}" placeholder="Ej: Operario, Supervisor, Asistente">
+									</div>
+
+									<div class="form-group" style="grid-column: 1 / -1;">
+										<label>Funciones realizadas</label>
+										<textarea class="js-field" data-field="funciones"
+											th:name="|experienciasList[${st.index}].funciones|"
+											placeholder="Ej: Supervisión de cuadrilla, control de materiales, lectura de planos, coordinación en obra."
+											th:text="${exp.funciones}"></textarea>
+									</div>
+
+									<div class="form-group">
+										<label>Fecha inicio</label>
+										<input type="date" class="js-field" data-field="fechaInicio"
+											th:name="|experienciasList[${st.index}].fechaInicio|"
+											th:value="${exp.fechaInicio != null ? #temporals.format(exp.fechaInicio,'yyyy-MM-dd') : ''}">
+									</div>
+
+									<div class="form-group">
+										<label>Fecha fin</label>
+										<input type="date" class="js-field" data-field="fechaFin"
+											th:name="|experienciasList[${st.index}].fechaFin|"
+											th:value="${exp.fechaFin != null ? #temporals.format(exp.fechaFin,'yyyy-MM-dd') : ''}">
+									</div>
+
+									<div class="form-group">
+										<label>Nombre de referencia</label>
+										<input type="text" class="js-field" data-field="nombreReferencia"
+											th:name="|experienciasList[${st.index}].nombreReferencia|"
+											th:value="${exp.nombreReferencia}" placeholder="Ej: Juan Pérez">
+									</div>
+
+									<div class="form-group">
+										<label>Teléfono de referencia</label>
+										<input type="text" class="js-field" data-field="telefonoReferencia"
+											th:name="|experienciasList[${st.index}].telefonoReferencia|"
+											th:value="${exp.telefonoReferencia}" placeholder="Ej: 999888777">
+									</div>
+
+									<div class="form-group">
+										<label>Correo de referencia</label>
+										<input type="email" class="js-field" data-field="correoReferencia"
+											th:name="|experienciasList[${st.index}].correoReferencia|"
+											th:value="${exp.correoReferencia}" placeholder="Ej: referencia@empresa.com">
+									</div>
+
+									<div class="form-group">
+										<label>Archivo adjunto</label>
+										<input type="file" class="js-exp-file" accept=".pdf,.jpg,.jpeg,.png">
+										<small class="muted-hint">PDF, JPG, JPEG o PNG.</small>
+
+										<div th:if="${exp.archivoRuta != null and !#strings.isEmpty(exp.archivoRuta)}"
+											style="margin-top:.45rem;">
+											<a th:href="@{'/perfil/experiencia/archivo/' + ${exp.idExperiencia}}" target="_blank"
+												class="btn-main" style="padding:.45rem .9rem; font-size:.8rem;">
+												<i class="fas fa-paperclip"></i> Ver archivo actual
+											</a>
+										</div>
+									</div>
+								</div>
+
+								<input type="hidden" class="js-field" data-field="idExperiencia"
+									th:name="|experienciasList[${st.index}].idExperiencia|"
+									th:value="${exp.idExperiencia}">
+							</div>
+
+							<div class="row-card experiencia-row" th:if="${#lists.isEmpty(u.experienciasList)}">
+								<div class="row-card__top">
+									<div class="row-card__badge"><i class="fas fa-building"></i> Experiencia</div>
+									<button type="button" class="btn-trash js-remove-row" title="Quitar">
+										<i class="fas fa-trash"></i>
+									</button>
+								</div>
+
+								<div class="row-fields">
+									<div class="form-group">
+										<label>Empresa</label>
+										<input type="text" class="js-field" data-field="empresa"
+											placeholder="Ej: Constructora ABC S.A.C.">
+									</div>
+
+									<div class="form-group">
+										<label>Puesto</label>
+										<input type="text" class="js-field" data-field="puesto"
+											placeholder="Ej: Operario, Supervisor, Asistente">
+									</div>
+
+									<div class="form-group" style="grid-column: 1 / -1;">
+										<label>Funciones realizadas</label>
+										<textarea class="js-field" data-field="funciones"
+											placeholder="Ej: Supervisión de cuadrilla, control de materiales, lectura de planos, coordinación en obra."></textarea>
+									</div>
+
+									<div class="form-group">
+										<label>Fecha inicio</label>
+										<input type="date" class="js-field" data-field="fechaInicio">
+									</div>
+
+									<div class="form-group">
+										<label>Fecha fin</label>
+										<input type="date" class="js-field" data-field="fechaFin">
+									</div>
+
+									<div class="form-group">
+										<label>Nombre de referencia</label>
+										<input type="text" class="js-field" data-field="nombreReferencia"
+											placeholder="Ej: Juan Pérez">
+									</div>
+
+									<div class="form-group">
+										<label>Teléfono de referencia</label>
+										<input type="text" class="js-field" data-field="telefonoReferencia"
+											placeholder="Ej: 999888777">
+									</div>
+
+									<div class="form-group">
+										<label>Correo de referencia</label>
+										<input type="email" class="js-field" data-field="correoReferencia"
+											placeholder="Ej: referencia@empresa.com">
+									</div>
+
+									<div class="form-group">
+										<label>Archivo adjunto</label>
+										<input type="file" class="js-exp-file" accept=".pdf,.jpg,.jpeg,.png">
+										<small class="muted-hint">PDF, JPG, JPEG o PNG.</small>
+									</div>
+								</div>
+
+								<input type="hidden" class="js-field" data-field="idExperiencia" value="">
+							</div>
+						</div>
+					</div>
+
+				</div>
+
+				<hr style="border: 0; border-top: 1px solid var(--gray-soft); margin: 1.5rem 0;" />
+
+				<div class="section-title">
+					<i class="fa-solid fa-folder-open"></i>
+					<span>5. Documentos adicionales</span>
+				</div>
+
+				<div class="edit-form-grid">
+					<div class="doc-extra-box">
+						<div class="row-fields">
+							<div class="form-group">
+								<label for="certijovenFile">Certijoven</label>
+								<input type="file" id="certijovenFile" name="certijovenFile"
+									accept=".pdf,.jpg,.jpeg,.png">
+								<small class="muted-hint">PDF, JPG, JPEG o PNG.</small>
+
+								<div class="file-current"
+									th:if="${u.certijoven_nombre != null and !#strings.isEmpty(u.certijoven_nombre)}">
+									Archivo actual:
+									<a th:href="@{/perfil/certijoven/archivo}" target="_blank"
+										th:text="${u.certijoven_nombre}"></a>
+								</div>
+							</div>
+
+							<div class="form-group">
+								<label for="certiadultoFile">Certiadulto</label>
+								<input type="file" id="certiadultoFile" name="certiadultoFile"
+									accept=".pdf,.jpg,.jpeg,.png">
+								<small class="muted-hint">PDF, JPG, JPEG o PNG.</small>
+
+								<div class="file-current"
+									th:if="${u.certiadulto_nombre != null and !#strings.isEmpty(u.certiadulto_nombre)}">
+									Archivo actual:
+									<a th:href="@{/perfil/certiadulto/archivo}" target="_blank"
+										th:text="${u.certiadulto_nombre}"></a>
+								</div>
+							</div>
+
+							<div class="form-group">
+								<label for="tiene_antecedentes">¿Tiene antecedentes?</label>
+								<select id="tiene_antecedentes" th:field="*{tiene_antecedentes}">
+									<option value="">Seleccionar</option>
+									<option value="SI">Sí</option>
+									<option value="NO">No</option>
+								</select>
+							</div>
+
+							<div class="form-group" id="antecedentesGroup">
+								<label for="antecedentesFile">Archivo de antecedentes penales / judiciales</label>
+								<input type="file" id="antecedentesFile" name="antecedentesFile"
+									accept=".pdf,.jpg,.jpeg,.png">
+								<small class="muted-hint">Este archivo solo se solicita si marcaste "Sí".</small>
+
+								<div class="file-current"
+									th:if="${u.antecedentes_nombre != null and !#strings.isEmpty(u.antecedentes_nombre)}">
+									Archivo actual:
+									<a th:href="@{/perfil/antecedentes/archivo}" target="_blank"
+										th:text="${u.antecedentes_nombre}"></a>
+								</div>
+							</div>
+
+							<div class="form-group">
+								<label for="antecedentesPolicialesFile">Antecedentes policiales</label>
+								<input type="file" id="antecedentesPolicialesFile" name="antecedentesPolicialesFile"
+									accept=".pdf,.jpg,.jpeg,.png">
+								<small class="muted-hint">Adjunta el documento en PDF, JPG, JPEG o PNG.</small>
+
+								<div class="file-current"
+									th:if="${u.antecedentes_policiales_nombre != null and !#strings.isEmpty(u.antecedentes_policiales_nombre)}">
+									Archivo actual:
+									<a th:href="@{/perfil/antecedentes-policiales/archivo}" target="_blank"
+										th:text="${u.antecedentes_policiales_nombre}"></a>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="btn-save-all">
+					<button type="submit" class="btn-main" style="padding: 1rem 3rem; font-size: 1rem;">
+						<i class="fas fa-save"></i> GUARDAR TODOS LOS CAMBIOS
+					</button>
+				</div>
+			</form>
+
+			<hr style="border: 0; border-top: 1px solid var(--gray-soft); margin: 1.5rem 0;" />
+
+			<div class="section-title">
+				<i class="fa-solid fa-file-lines"></i>
+				<span>6. Gestión de Archivos y Documentos</span>
+			</div>
+
+			<div class="cv-section">
+				<div class="cv-title"><i class="fas fa-file-pdf"></i> Currículum Vitae (CV)</div>
+				<div th:if="${u.rutaCV}" class="cv-status updated">
+					<i class="fas fa-check-circle"></i> CV actualizado.
+					<a th:href="@{'/cv/descargar/' + ${u.idUsuario}}" target="_blank">Ver / Descargar</a>
+				</div>
+				<form th:action="@{/cv/subir}" method="post" enctype="multipart/form-data" class="cv-upload-form">
+					<input type="hidden" th:if="${_csrf}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+					<input type="file" name="archivo" accept=".pdf" required>
+					<button type="submit" class="btn-main"><i class="fas fa-upload"></i> Subir CV</button>
+				</form>
+			</div>
+
+			<div class="cv-section">
+				<div class="cv-title"><i class="fas fa-id-card-alt"></i> Foto de DNI (Frontal)</div>
+				<div th:if="${u.ruta_foto_id}" class="cv-status updated">
+					<i class="fas fa-check-circle"></i> Foto cargada.
+					<a th:href="@{'/cv/foto-id-frontal/descargar/' + ${u.idUsuario}}" target="_blank">Ver</a>
+				</div>
+				<form th:action="@{/cv/foto-id-frontal/subir}" method="post" enctype="multipart/form-data"
+					class="cv-upload-form">
+					<input type="hidden" th:if="${_csrf}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+					<input type="file" name="archivo" accept="image/*" required>
+					<button type="submit" class="btn-main btn-upload-id"><i class="fas fa-upload"></i> Subir
+						Frontal</button>
+				</form>
+			</div>
+
+			<div class="cv-section">
+				<div class="cv-title"><i class="fas fa-id-card-alt"></i> Foto de DNI (Trasero)</div>
+				<div th:if="${u.ruta_foto_id_trasera}" class="cv-status updated">
+					<i class="fas fa-check-circle"></i> Foto cargada.
+					<a th:href="@{'/cv/foto-id-trasera/descargar/' + ${u.idUsuario}}" target="_blank">Ver</a>
+				</div>
+				<form th:action="@{/cv/foto-id-trasera/subir}" method="post" enctype="multipart/form-data"
+					class="cv-upload-form">
+					<input type="hidden" th:if="${_csrf}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+					<input type="file" name="archivo" accept="image/*" required>
+					<button type="submit" class="btn-main btn-upload-id"><i class="fas fa-upload"></i> Subir
+						Trasero</button>
+				</form>
+			</div>
+
+			<hr style="border: 0; border-top: 1px solid var(--gray-soft); margin: 1.5rem 0;" />
+
+			<div class="section-title">
+				<i class="fas fa-lock"></i>
+				<span>7. Seguridad y Credenciales</span>
+			</div>
+			<div style="margin-bottom: 1rem;">
+				<a th:href="@{/perfil/cambiar-contrasenia}" class="btn-main">
+					<i class="fas fa-key"></i> Cambiar Contraseña
+				</a>
+			</div>
+		</div>
+	</div>
+
+	<script th:inline="javascript">
+		(() => {
+			"use strict";
+
+			const PERFIL_NOMBRE = (
+				(/*[[${u.nombres}]]*/ "") + " " +
+				(/*[[${u.apellido_paterno}]]*/ "") + " " +
+				(/*[[${u.apellido_materno}]]*/ "")
+			).replace(/\s+/g, " ").trim();
+
+			const byId = (id) => document.getElementById(id);
+			const qsa = (root, sel) => Array.from((root || document).querySelectorAll(sel));
+
+			function escapeHtmlAttr(s) {
+				return String(s ?? "")
+					.replaceAll("&", "&amp;")
+					.replaceAll("<", "&lt;")
+					.replaceAll(">", "&gt;")
+					.replaceAll('"', "&quot;")
+					.replaceAll("'", "&#039;");
+			}
+
+			const form = byId("perfilForm");
+			const formacionesWrap = byId("formacionesWrap");
+			const certWrap = byId("certWrap");
+			const idiomasWrap = byId("idiomasWrap");
+			const experienciasWrap = byId("experienciasWrap");
+
+			const addFormacionBtn = byId("addFormacionBtn");
+			const addCertBtn = byId("addCertBtn");
+			const addIdiomaBtn = byId("addIdiomaBtn");
+			const addExperienciaBtn = byId("addExperienciaBtn");
+
+			const emgRows = byId("emgRows");
+			const addEmgBtn = byId("addEmgBtn");
+
+			const hidEmgNombre = byId("nombre_contacto_emergencia");
+			const hidEmgRelacion = byId("relacion_contacto_emergencia");
+			const hidEmgTelefono = byId("telefono_emergencia");
+
+			const fechaNacimientoInput = byId("fecha_nacimiento");
+			const edadCalculadaInput = byId("edad_calculada");
+			const fechaIngresoInput = byId("fecha_ingreso");
+			const antiguedadCalculadaInput = byId("antiguedad_calculada");
+
+			function diasEnMes(anio, mes) {
+				return new Date(anio, mes + 1, 0).getDate();
+			}
+
+			function calcularDiferenciaExacta(fechaTexto) {
+				if (!fechaTexto) return null;
+
+				const base = new Date(fechaTexto + "T00:00:00");
+				const hoy = new Date();
+
+				if (isNaN(base.getTime())) return null;
+				if (base > hoy) return null;
+
+				let anios = hoy.getFullYear() - base.getFullYear();
+				let meses = hoy.getMonth() - base.getMonth();
+				let dias = hoy.getDate() - base.getDate();
+
+				if (dias < 0) {
+					meses--;
+					const mesAnterior = hoy.getMonth() === 0 ? 11 : hoy.getMonth() - 1;
+					const anioMesAnterior = hoy.getMonth() === 0 ? hoy.getFullYear() - 1 : hoy.getFullYear();
+					dias += diasEnMes(anioMesAnterior, mesAnterior);
+				}
+
+				if (meses < 0) {
+					anios--;
+					meses += 12;
+				}
+
+				if (anios < 0) return null;
+
+				return { anios, meses, dias };
+			}
+
+			function formatearDiferencia(diff) {
+				if (!diff) return "";
+
+				const partes = [];
+
+				if (diff.anios > 0) partes.push(`${diff.anios} año(s)`);
+				if (diff.meses > 0) partes.push(`${diff.meses} mes(es)`);
+				if (diff.dias > 0) partes.push(`${diff.dias} día(s)`);
+
+				if (partes.length === 0) return "0 día(s)";
+				return partes.join(", ");
+			}
+
+			function actualizarEdad() {
+				if (!fechaNacimientoInput || !edadCalculadaInput) return;
+
+				const fecha = fechaNacimientoInput.value;
+				if (!fecha) {
+					edadCalculadaInput.value = "";
+					return;
+				}
+
+				const diff = calcularDiferenciaExacta(fecha);
+				edadCalculadaInput.value = formatearDiferencia(diff);
+			}
+
+			function actualizarAntiguedad() {
+				if (!fechaIngresoInput || !antiguedadCalculadaInput) return;
+
+				const fecha = fechaIngresoInput.value;
+				if (!fecha) {
+					antiguedadCalculadaInput.value = "";
+					return;
+				}
+
+				const diff = calcularDiferenciaExacta(fecha);
+				antiguedadCalculadaInput.value = formatearDiferencia(diff);
+			}
+
+			function safeSplit(val) {
+				const s = String(val ?? "").trim();
+				if (!s) return [];
+				return s.split("||").map(x => x.trim());
+			}
+
+			function sanitizePhone(v) {
+				return String(v ?? "").replace(/\D+/g, "").slice(0, 9);
+			}
+
+			const REL_OPTIONS = [
+				"Mamá",
+				"Papá",
+				"Hijo/a",
+				"Esposo/a",
+				"Esposa/o",
+				"Pareja",
+				"Hermano/a",
+				"Abuelo/a",
+				"Tío/a",
+				"Primo/a",
+				"Suegro/a",
+				"Cuñado/a",
+				"Amigo/a",
+				"Vecino/a"
+			];
+
+			function relOptionsHtml() {
+				const base =
+					`<option value="">Seleccionar</option>` +
+					REL_OPTIONS.map(r => `<option value="${escapeHtmlAttr(r)}">${escapeHtmlAttr(r)}</option>`).join("");
+				return base + `<option value="OTRO">Otro (especificar)</option>`;
+			}
+
+			function makeEmgRow(nombre = "", relacion = "", telefono = "") {
+				const row = document.createElement("div");
+				row.className = "emg-row";
+				row.innerHTML = `
+					<div class="emg-row__top">
+						<div class="emg-row__badge"><i class="fas fa-user-shield"></i> Contacto</div>
+						<button type="button" class="btn-trash js-remove-emg" title="Quitar">
+							<i class="fas fa-trash"></i>
+						</button>
+					</div>
+					<div class="emg-fields">
+						<div class="form-group">
+							<label>Nombre</label>
+							<input type="text" class="js-emg-nombre" placeholder="Ej: Juan Pérez" value="${escapeHtmlAttr(nombre)}">
+						</div>
+
+						<div class="form-group">
+							<label>Relación</label>
+							<select class="js-emg-relacion">
+								${relOptionsHtml()}
+							</select>
+							<input type="text" class="js-emg-relacion-otro" placeholder="Especifica (Ej: Madrina, Tutor)" style="margin-top:.45rem; display:none;">
+							<small class="muted-hint">Si eliges "Otro", escribe la relación.</small>
+						</div>
+
+						<div class="form-group">
+							<label>Teléfono</label>
+							<input type="text" class="js-emg-telefono" inputmode="numeric" maxlength="9" placeholder="9 dígitos" value="${escapeHtmlAttr(telefono)}">
+							<small class="muted-hint">Solo números (9 dígitos).</small>
+						</div>
+					</div>
+				`;
+
+				const tel = row.querySelector(".js-emg-telefono");
+				tel.addEventListener("input", () => {
+					tel.value = sanitizePhone(tel.value);
+				});
+
+				const selRel = row.querySelector(".js-emg-relacion");
+				const inpOtro = row.querySelector(".js-emg-relacion-otro");
+
+				const relVal = String(relacion || "").trim();
+				const isKnown = REL_OPTIONS.includes(relVal);
+
+				if (selRel) {
+					if (isKnown) {
+						selRel.value = relVal;
+						if (inpOtro) {
+							inpOtro.style.display = "none";
+							inpOtro.value = "";
+						}
+					} else if (relVal) {
+						selRel.value = "OTRO";
+						if (inpOtro) {
+							inpOtro.style.display = "block";
+							inpOtro.value = relVal;
+						}
+					} else {
+						selRel.value = "";
+						if (inpOtro) {
+							inpOtro.style.display = "none";
+							inpOtro.value = "";
+						}
+					}
+
+					selRel.addEventListener("change", () => {
+						const v = (selRel.value || "").trim();
+						if (v === "OTRO") {
+							if (inpOtro) {
+								inpOtro.style.display = "block";
+								inpOtro.focus();
+							}
+						} else {
+							if (inpOtro) {
+								inpOtro.style.display = "none";
+								inpOtro.value = "";
+							}
+						}
+					});
+				}
+
+				return row;
+			}
+
+			function loadEmergencyFromHidden() {
+				if (!emgRows) return;
+
+				const nombres = safeSplit(hidEmgNombre?.value);
+				const relaciones = safeSplit(hidEmgRelacion?.value);
+				const telefonos = safeSplit(hidEmgTelefono?.value);
+
+				const maxLen = Math.max(nombres.length, relaciones.length, telefonos.length);
+				emgRows.innerHTML = "";
+
+				if (maxLen === 0) {
+					emgRows.appendChild(makeEmgRow("", "", ""));
+					return;
+				}
+
+				for (let i = 0; i < maxLen; i++) {
+					emgRows.appendChild(
+						makeEmgRow(nombres[i] || "", relaciones[i] || "", telefonos[i] || "")
+					);
+				}
+			}
+
+			function saveEmergencyToHidden() {
+				if (!emgRows || !hidEmgNombre || !hidEmgRelacion || !hidEmgTelefono) return;
+
+				const rows = qsa(emgRows, ".emg-row");
+
+				const nombres = [];
+				const relaciones = [];
+				const telefonos = [];
+
+				rows.forEach(r => {
+					const n = (r.querySelector(".js-emg-nombre")?.value || "").trim();
+
+					const selRel = r.querySelector(".js-emg-relacion");
+					const inpOtro = r.querySelector(".js-emg-relacion-otro");
+
+					let rel = (selRel?.value || "").trim();
+					if (rel === "OTRO") {
+						rel = (inpOtro?.value || "").trim();
+					}
+
+					const tel = sanitizePhone(r.querySelector(".js-emg-telefono")?.value || "");
+
+					if (n || rel || tel) {
+						nombres.push(n);
+						relaciones.push(rel);
+						telefonos.push(tel);
+					}
+				});
+
+				hidEmgNombre.value = nombres.join("||");
+				hidEmgRelacion.value = relaciones.join("||");
+				hidEmgTelefono.value = telefonos.join("||");
+			}
+
+			document.addEventListener("click", (e) => {
+				const btn = e.target.closest(".js-remove-emg");
+				if (!btn) return;
+				const row = btn.closest(".emg-row");
+				if (!row) return;
+
+				row.remove();
+
+				if (qsa(emgRows, ".emg-row").length === 0) {
+					emgRows.appendChild(makeEmgRow("", "", ""));
+				}
+			});
+
+			addEmgBtn?.addEventListener("click", () => {
+				emgRows.appendChild(makeEmgRow("", "", ""));
+			});
+
+			loadEmergencyFromHidden();
+
+			const bancosRows = byId("bancosRows");
+			const movilRows = byId("movilRows");
+			const addBancoFilaBtn = byId("addBancoFilaBtn");
+			const addMovilFilaBtn = byId("addMovilFilaBtn");
+
+			const hidBanco = byId("banco");
+			const hidCuenta = byId("cuenta_bancaria");
+			const hidCci = byId("cuenta_interbancaria");
+			const hidMovil = byId("banca_movil");
+
+			const splitLines = (v) => {
+				const s = String(v ?? "").trim();
+				if (!s) return [];
+				return s.split(/\r?\n/).map(x => x.trim()).filter(x => x);
+			};
+
+			const joinLines = (arr) => arr.map(x => String(x ?? "").trim()).filter(x => x).join("\n");
+
+			const cleanCell = (s) => String(s ?? "")
+				.replaceAll("||", " ")
+				.replaceAll("\n", " ")
+				.replaceAll("\r", " ")
+				.trim();
+
+			const BANK_OPTIONS = [
+				"BCP", "Interbank", "BBVA", "Scotiabank", "Banco de la Nación", "BanBif", "MiBanco", "Pichincha",
+				"Caja Arequipa", "Caja Huancayo", "Caja Piura", "Caja Sullana", "Caja Trujillo", "Otros"
+			];
+
+			const METHOD_OPTIONS = [
+				"Yape", "Plin", "Tunki", "Transferencia", "Depósito", "Efectivo", "Otro"
+			];
+
+			function renderOptions(arr) {
+				return arr.map(v => `<option value="${escapeHtmlAttr(v)}">${escapeHtmlAttr(v)}</option>`).join("");
+			}
+
+			function bancoRowTpl(banco = "", titular = "", cuenta = "", cci = "") {
+				const t = (String(titular ?? "").trim() || PERFIL_NOMBRE);
+
+				const div = document.createElement("div");
+				div.className = "row-card banco-row";
+				div.innerHTML = `
+					<div class="row-card__top">
+						<div class="row-card__badge"><i class="fas fa-university"></i> Banco</div>
+						<button type="button" class="btn-trash js-remove-banco" title="Quitar">
+							<i class="fas fa-trash"></i>
+						</button>
+					</div>
+
+					<div class="row-fields">
+						<div class="form-group">
+							<label>Banco</label>
+							<select class="js-banco">
+								<option value="">Seleccionar</option>
+								${renderOptions(BANK_OPTIONS)}
+							</select>
+						</div>
+
+						<div class="form-group">
+							<label>Titular / A quién depositar</label>
+							<input type="text" class="js-titular" placeholder="Ej: Juan Pérez" value="${escapeHtmlAttr(t)}">
+						</div>
+
+						<div class="form-group">
+							<label>N° de cuenta</label>
+							<input type="text" class="js-cuenta" placeholder="Ej: 191-1234567890" value="${escapeHtmlAttr(cuenta)}">
+						</div>
+
+						<div class="form-group">
+							<label>CCI</label>
+							<input type="text" class="js-cci" placeholder="Ej: 00219100..." value="${escapeHtmlAttr(cci)}">
+						</div>
+					</div>
+				`;
+
+				const sel = div.querySelector(".js-banco");
+				if (sel) sel.value = (banco || "").trim();
+
+				return div;
+			}
+
+			function movilRowTpl(metodo = "", numero = "", titular = "") {
+				const t = (String(titular ?? "").trim() || PERFIL_NOMBRE);
+
+				const div = document.createElement("div");
+				div.className = "row-card movil-row";
+				div.innerHTML = `
+					<div class="row-card__top">
+						<div class="row-card__badge"><i class="fas fa-wallet"></i> Método</div>
+						<button type="button" class="btn-trash js-remove-movil" title="Quitar">
+							<i class="fas fa-trash"></i>
+						</button>
+					</div>
+
+					<div class="row-fields">
+						<div class="form-group">
+							<label>Método</label>
+							<select class="js-metodo">
+								<option value="">Seleccionar</option>
+								${renderOptions(METHOD_OPTIONS)}
+							</select>
+						</div>
+
+						<div class="form-group">
+							<label>Número (celular / cuenta)</label>
+							<input type="text" class="js-numero" inputmode="numeric" placeholder="Ej: 999888777" value="${escapeHtmlAttr(numero)}">
+							<small class="muted-hint">Solo números (si aplica).</small>
+						</div>
+
+						<div class="form-group">
+							<label>Titular / A quién depositar</label>
+							<input type="text" class="js-titular" placeholder="Ej: Juan Pérez" value="${escapeHtmlAttr(t)}">
+						</div>
+					</div>
+				`;
+
+				const sel = div.querySelector(".js-metodo");
+				if (sel) sel.value = (metodo || "").trim();
+
+				const num = div.querySelector(".js-numero");
+				num.addEventListener("input", () => {
+					num.value = String(num.value ?? "").replace(/\D+/g, "").slice(0, 20);
+				});
+
+				return div;
+			}
+
+			function loadBancosFromHidden() {
+				if (!bancosRows || !hidBanco || !hidCuenta || !hidCci) return;
+
+				const bancoLines = splitLines(hidBanco.value);
+				const cuentaLines = splitLines(hidCuenta.value);
+				const cciLines = splitLines(hidCci.value);
+
+				bancosRows.innerHTML = "";
+
+				const maxLen = Math.max(bancoLines.length, cuentaLines.length, cciLines.length);
+
+				if (maxLen === 0) {
+					bancosRows.appendChild(bancoRowTpl("", "", "", ""));
+					return;
+				}
+
+				for (let i = 0; i < maxLen; i++) {
+					const bt = (bancoLines[i] || "");
+					const parts = bt.split("||");
+					const b = (parts[0] || "").trim();
+					const t = (parts[1] || "").trim();
+
+					bancosRows.appendChild(
+						bancoRowTpl(b, t, cuentaLines[i] || "", cciLines[i] || "")
+					);
+				}
+			}
+
+			function loadMovilFromHidden() {
+				if (!movilRows || !hidMovil) return;
+
+				const lines = splitLines(hidMovil.value);
+				movilRows.innerHTML = "";
+
+				if (lines.length === 0) {
+					movilRows.appendChild(movilRowTpl("", "", ""));
+					return;
+				}
+
+				for (const line of lines) {
+					const parts = String(line).split("||");
+					movilRows.appendChild(
+						movilRowTpl(parts[0] || "", parts[1] || "", parts[2] || "")
+					);
+				}
+			}
+
+			function saveBancosToHidden() {
+				if (!bancosRows || !hidBanco || !hidCuenta || !hidCci) return;
+
+				const rows = qsa(bancosRows, ".banco-row");
+
+				const bancoLines = [];
+				const cuentaLines = [];
+				const cciLines = [];
+
+				rows.forEach(r => {
+					const b = cleanCell(r.querySelector(".js-banco")?.value);
+					const t = cleanCell(r.querySelector(".js-titular")?.value);
+					const c = cleanCell(r.querySelector(".js-cuenta")?.value);
+					const i = cleanCell(r.querySelector(".js-cci")?.value);
+
+					if (b || t || c || i) {
+						bancoLines.push([b, t].join("||"));
+						cuentaLines.push(c);
+						cciLines.push(i);
+					}
+				});
+
+				hidBanco.value = joinLines(bancoLines);
+				hidCuenta.value = joinLines(cuentaLines);
+				hidCci.value = joinLines(cciLines);
+			}
+
+			function saveMovilToHidden() {
+				if (!movilRows || !hidMovil) return;
+
+				const rows = qsa(movilRows, ".movil-row");
+				const lines = [];
+
+				rows.forEach(r => {
+					const metodo = cleanCell(r.querySelector(".js-metodo")?.value);
+					const numero = cleanCell(r.querySelector(".js-numero")?.value);
+					const titular = cleanCell(r.querySelector(".js-titular")?.value);
+
+					if (metodo || numero || titular) {
+						lines.push([metodo, numero, titular].join("||"));
+					}
+				});
+
+				hidMovil.value = joinLines(lines);
+			}
+
+			addBancoFilaBtn?.addEventListener("click", () => {
+				bancosRows?.appendChild(bancoRowTpl("", "", "", ""));
+			});
+
+			addMovilFilaBtn?.addEventListener("click", () => {
+				movilRows?.appendChild(movilRowTpl("", "", ""));
+			});
+
+			function wireEstadoRow(row) {
+				const estado = row.querySelector(".js-estado");
+				const fin = row.querySelector(".js-fecha-fin");
+				if (!estado || !fin) return;
+
+				const apply = () => {
+					const v = (estado.value || "").trim();
+					const on = v === "EN_CURSO";
+					fin.disabled = on;
+					if (on) fin.value = "";
+				};
+
+				estado.addEventListener("change", apply);
+				apply();
+			}
+
+			function wireIdiomaCustomRow(row) {
+				if (!row) return;
+
+				const idiomaSelect = row.querySelector(".js-idioma-select");
+				const idiomaOtro = row.querySelector(".js-idioma-otro");
+
+				const instSelect = row.querySelector(".js-institucion-select");
+				const instOtro = row.querySelector(".js-institucion-otro");
+
+				function syncIdiomaInicial() {
+					if (!idiomaSelect) return;
+
+					const current = (idiomaSelect.getAttribute("data-current") || idiomaSelect.value || "").trim();
+					const allowed = ["Español", "Inglés", "Quechua", "Aimara", "Portugués"];
+
+					if (current && allowed.includes(current)) {
+						idiomaSelect.value = current;
+						if (idiomaOtro) {
+							idiomaOtro.style.display = "none";
+							idiomaOtro.value = "";
+						}
+					} else if (current) {
+						idiomaSelect.value = "OTRO";
+						if (idiomaOtro) {
+							idiomaOtro.style.display = "block";
+							idiomaOtro.value = current;
+						}
+					}
+				}
+
+				function syncInstitucionInicial() {
+					if (!instSelect) return;
+
+					const current = (instSelect.getAttribute("data-current") || instSelect.value || "").trim();
+					const allowed = [
+						"ICPNA",
+						"Británico",
+						"Euroidiomas",
+						"Idiomas Católica",
+						"Centro de Idiomas de la UNMSM"
+					];
+
+					if (current && allowed.includes(current)) {
+						instSelect.value = current;
+						if (instOtro) {
+							instOtro.style.display = "none";
+							instOtro.value = "";
+						}
+					} else if (current) {
+						instSelect.value = "OTRO";
+						if (instOtro) {
+							instOtro.style.display = "block";
+							instOtro.value = current;
+						}
+					}
+				}
+
+				function toggleIdiomaOtro() {
+					if (!idiomaSelect || !idiomaOtro) return;
+
+					if (idiomaSelect.value === "OTRO") {
+						idiomaOtro.style.display = "block";
+					} else {
+						idiomaOtro.style.display = "none";
+						idiomaOtro.value = "";
+					}
+				}
+
+				function toggleInstitucionOtro() {
+					if (!instSelect || !instOtro) return;
+
+					if (instSelect.value === "OTRO") {
+						instOtro.style.display = "block";
+					} else {
+						instOtro.style.display = "none";
+						instOtro.value = "";
+					}
+				}
+
+				syncIdiomaInicial();
+				syncInstitucionInicial();
+
+				idiomaSelect?.addEventListener("change", toggleIdiomaOtro);
+				instSelect?.addEventListener("change", toggleInstitucionOtro);
+
+				toggleIdiomaOtro();
+				toggleInstitucionOtro();
+			}
+
+			function wireNivelFormacionRow(row) {
+				const nivel = row.querySelector(".js-nivel-formacion");
+				const carreraGroup = row.querySelector(".js-carrera-group");
+				const carreraSelect = row.querySelector(".js-carrera-select");
+				const carreraOtro = row.querySelector(".js-carrera-otro");
+
+				const gradoGroup = row.querySelector(".js-grado-group");
+				const gradoSelect = row.querySelector(".js-grado-select");
+				const gradoOtro = row.querySelector(".js-grado-otro");
+
+				if (!nivel || !carreraGroup || !carreraSelect || !carreraOtro || !gradoGroup || !gradoSelect || !gradoOtro) return;
+
+				const nivelesConCarrera = ["TECNICO", "UNIVERSITARIO", "POSTGRADO", "OTRO"];
+				const carrerasPermitidas = [
+					"Administración",
+					"Contabilidad",
+					"Ingeniería Civil",
+					"Ingeniería Industrial",
+					"Derecho"
+				];
+
+				const gradosPermitidos = [
+					"BACHILLER",
+					"TITULADO",
+					"LICENCIATURA",
+					"COLEGIADO",
+					"EGRESADO",
+					"EN_CURSO"
+				];
+
+				function syncCarreraInicial() {
+					const current = (carreraSelect.getAttribute("data-current") || carreraSelect.value || "").trim();
+
+					if (current && carrerasPermitidas.includes(current)) {
+						carreraSelect.value = current;
+						carreraOtro.style.display = "none";
+						carreraOtro.value = "";
+					} else if (current) {
+						carreraSelect.value = "OTRO";
+						carreraOtro.style.display = "block";
+						carreraOtro.value = current;
+					}
+				}
+
+				function syncGradoInicial() {
+					const current = (gradoSelect.getAttribute("data-current") || gradoSelect.value || "").trim();
+
+					if (current && gradosPermitidos.includes(current)) {
+						gradoSelect.value = current;
+						gradoOtro.style.display = "none";
+						gradoOtro.value = "";
+					} else if (current) {
+						gradoSelect.value = "OTRO";
+						gradoOtro.style.display = "block";
+						gradoOtro.value = current;
+					}
+				}
+
+				function toggleCarreraOtro() {
+					if (carreraSelect.value === "OTRO") {
+						carreraOtro.style.display = "block";
+					} else {
+						carreraOtro.style.display = "none";
+						carreraOtro.value = "";
+					}
+				}
+
+				function toggleGradoOtro() {
+					if (gradoSelect.value === "OTRO") {
+						gradoOtro.style.display = "block";
+					} else {
+						gradoOtro.style.display = "none";
+						gradoOtro.value = "";
+					}
+				}
+
+				function apply() {
+					const value = (nivel.value || "").trim();
+					const mostrarCarrera = nivelesConCarrera.includes(value);
+					const mostrarGrado = value === "UNIVERSITARIO";
+
+					carreraGroup.style.display = mostrarCarrera ? "" : "none";
+					gradoGroup.style.display = mostrarGrado ? "" : "none";
+
+					if (!mostrarCarrera) {
+						carreraSelect.value = "";
+						carreraOtro.value = "";
+						carreraOtro.style.display = "none";
+					} else {
+						toggleCarreraOtro();
+					}
+
+					if (!mostrarGrado) {
+						gradoSelect.value = "";
+						gradoOtro.value = "";
+						gradoOtro.style.display = "none";
+					} else {
+						toggleGradoOtro();
+					}
+				}
+
+				syncCarreraInicial();
+				syncGradoInicial();
+
+				nivel.addEventListener("change", apply);
+				carreraSelect.addEventListener("change", toggleCarreraOtro);
+				gradoSelect.addEventListener("change", toggleGradoOtro);
+
+				apply();
+			}
+
+			function wireRow(row) {
+				wireEstadoRow(row);
+				wireIdiomaCustomRow(row);
+				wireNivelFormacionRow(row);
+			}
+
+			qsa(document, ".formacion-row, .idioma-row").forEach(wireRow);
+
+			function createFormacionRow() {
+				const div = document.createElement("div");
+				div.className = "row-card formacion-row";
+				div.innerHTML = `
+					<div class="row-card__top">
+						<div class="row-card__badge"><i class="fas fa-layer-group"></i> Registro</div>
+						<button type="button" class="btn-trash js-remove-row" title="Quitar"><i class="fas fa-trash"></i></button>
+					</div>
+
+					<div class="row-fields">
+						<div class="form-group">
+							<label>Nivel</label>
+							<select class="js-field js-nivel-formacion" data-field="nivel">
+								<option value="">Seleccionar</option>
+								<option value="INICIAL">Inicial</option>
+								<option value="PRIMARIA">Primaria</option>
+								<option value="SECUNDARIA">Secundaria</option>
+								<option value="TECNICO">Técnico</option>
+								<option value="UNIVERSITARIO">Universitario</option>
+								<option value="POSTGRADO">Postgrado</option>
+								<option value="OTRO">Otro</option>
+							</select>
+						</div>
+
+						<div class="form-group">
+							<label>Institución</label>
+							<input type="text" class="js-field" data-field="institucion" placeholder="Ej: SENATI, UNI, CAPECO...">
+						</div>
+
+						<div class="form-group js-carrera-group">
+							<label>Carrera</label>
+							<select class="js-field js-carrera-select" data-field="programa">
+								<option value="">Seleccionar</option>
+								<option value="Administración">Administración</option>
+								<option value="Contabilidad">Contabilidad</option>
+								<option value="Ingeniería Civil">Ingeniería Civil</option>
+								<option value="Ingeniería Industrial">Ingeniería Industrial</option>
+								<option value="Derecho">Derecho</option>
+								<option value="OTRO">Otro</option>
+							</select>
+							<input type="text" class="js-carrera-otro"
+								placeholder="Especifica la carrera"
+								style="margin-top:.45rem; display:none;">
+						</div>
+
+						<div class="form-group js-grado-group">
+							<label>Grado</label>
+							<select class="js-field js-grado-select" data-field="grado">
+								<option value="">Seleccionar</option>
+								<option value="BACHILLER">Bachiller</option>
+								<option value="TITULADO">Titulado</option>
+								<option value="LICENCIATURA">Licenciatura</option>
+								<option value="COLEGIADO">Colegiado</option>
+								<option value="EGRESADO">Egresado</option>
+								<option value="EN_CURSO">En curso</option>
+								<option value="OTRO">Otro</option>
+							</select>
+							<input type="text" class="js-grado-otro"
+								placeholder="Especifica el grado"
+								style="margin-top:.45rem; display:none;">
+						</div>
+
+						<div class="form-group">
+							<label>Estado</label>
+							<select class="js-field js-estado" data-field="estado">
+								<option value="COMPLETO" selected>Completo</option>
+								<option value="INCOMPLETO">Incompleto</option>
+								<option value="EN_CURSO">En curso</option>
+							</select>
+							<small class="muted-hint">Si está "En curso", la fecha fin se deshabilita.</small>
+						</div>
+
+						<div class="form-group">
+							<label>Fecha inicio</label>
+							<input type="date" class="js-field" data-field="fechaInicio">
+						</div>
+
+						<div class="form-group">
+							<label>Fecha fin</label>
+							<input type="date" class="js-field js-fecha-fin" data-field="fechaFin">
+						</div>
+
+						<input type="hidden" class="js-field" data-field="idFormacion" value="">
+					</div>
+				`;
+				return div;
+			}
+
+			function createCertRow() {
+				const div = document.createElement("div");
+				div.className = "row-card cert-row";
+				div.innerHTML = `
+					<div class="row-card__top">
+						<div class="row-card__badge"><i class="fas fa-award"></i> Certificación</div>
+						<button type="button" class="btn-trash js-remove-row" title="Quitar"><i class="fas fa-trash"></i></button>
+					</div>
+
+					<div class="row-fields">
+						<div class="form-group">
+							<label>Nombre</label>
+							<input type="text" class="js-field" data-field="nombre" placeholder="Ej: IPERC, SST, ISO 45001...">
+						</div>
+						<div class="form-group">
+							<label>Institución</label>
+							<input type="text" class="js-field" data-field="entidad" placeholder="Ej: CAPECO, SENATI, OIT...">
+						</div>
+
+						<div class="form-group">
+							<label>Horas</label>
+							<input type="number" class="js-field" data-field="horas" step="0.01" min="0" inputmode="decimal" placeholder="Ej: 16.50">
+							<small class="muted-hint">Acepta decimales (Ej: 12.50).</small>
+						</div>
+
+						<div class="form-group">
+							<label>Fecha inicio</label>
+							<input type="date" class="js-field" data-field="fechaObtencion">
+						</div>
+
+						<div class="form-group">
+							<label>Fecha fin</label>
+							<input type="date" class="js-field" data-field="fechaVencimiento">
+						</div>
+
+						<div class="form-group">
+							<label>Archivo adjunto</label>
+							<input type="file" class="js-cert-file" accept=".pdf,.jpg,.jpeg,.png">
+							<small class="muted-hint">PDF, JPG, JPEG o PNG.</small>
+						</div>
+					</div>
+
+					<input type="hidden" class="js-field" data-field="idCertificacion" value="">
+				`;
+				return div;
+			}
+
+			function createIdiomaRow() {
+				const div = document.createElement("div");
+				div.className = "row-card idioma-row";
+				div.innerHTML = `
+					<div class="row-card__top">
+						<div class="row-card__badge"><i class="fas fa-language"></i> Idioma</div>
+						<button type="button" class="btn-trash js-remove-row" title="Quitar"><i class="fas fa-trash"></i></button>
+					</div>
+
+					<div class="row-fields">
+						<div class="form-group">
+							<label>Idioma</label>
+							<select class="js-field js-idioma-select" data-field="idioma">
+								<option value="">Seleccionar</option>
+								<option value="Español">Español</option>
+								<option value="Inglés">Inglés</option>
+								<option value="Quechua">Quechua</option>
+								<option value="Aimara">Aimara</option>
+								<option value="Portugués">Portugués</option>
+								<option value="OTRO">Otro</option>
+							</select>
+							<input type="text" class="js-idioma-otro"
+								placeholder="Especifica el idioma"
+								style="margin-top:.45rem; display:none;">
+						</div>
+
+						<div class="form-group">
+							<label>Nivel</label>
+							<select class="js-field" data-field="nivel">
+								<option value="">Seleccionar</option>
+								<option value="BASICO">Básico</option>
+								<option value="INTERMEDIO">Intermedio</option>
+								<option value="AVANZADO">Avanzado</option>
+								<option value="NATIVO">Nativo</option>
+							</select>
+						</div>
+
+						<div class="form-group">
+							<label>Certificación</label>
+							<input type="text" class="js-field" data-field="certificacion" placeholder="Ej: TOEFL, Cambridge, DELF">
+						</div>
+
+						<div class="form-group">
+							<label>Institución</label>
+							<select class="js-field js-institucion-select" data-field="institucion">
+								<option value="">Seleccionar</option>
+								<option value="ICPNA">ICPNA</option>
+								<option value="Británico">Británico</option>
+								<option value="Euroidiomas">Euroidiomas</option>
+								<option value="Idiomas Católica">Idiomas Católica</option>
+								<option value="Centro de Idiomas de la UNMSM">Centro de Idiomas de la UNMSM</option>
+								<option value="OTRO">Otro</option>
+							</select>
+							<input type="text" class="js-institucion-otro"
+								placeholder="Especifica la institución"
+								style="margin-top:.45rem; display:none;">
+						</div>
+
+						<div class="form-group">
+							<label>Fecha inicio</label>
+							<input type="date" class="js-field" data-field="fechaInicio">
+						</div>
+
+						<div class="form-group">
+							<label>Fecha fin</label>
+							<input type="date" class="js-field" data-field="fechaFin">
+						</div>
+
+						<div class="form-group">
+							<label>Archivo adjunto</label>
+							<input type="file" class="js-idioma-file" accept=".pdf,.jpg,.jpeg,.png">
+							<small class="muted-hint">PDF, JPG, JPEG o PNG.</small>
+						</div>
+					</div>
+
+					<input type="hidden" class="js-field" data-field="idIdioma" value="">
+				`;
+				return div;
+			}
+
+			function createExperienciaRow() {
+				const div = document.createElement("div");
+				div.className = "row-card experiencia-row";
+				div.innerHTML = `
+					<div class="row-card__top">
+						<div class="row-card__badge"><i class="fas fa-building"></i> Experiencia</div>
+						<button type="button" class="btn-trash js-remove-row" title="Quitar"><i class="fas fa-trash"></i></button>
+					</div>
+
+					<div class="row-fields">
+						<div class="form-group">
+							<label>Empresa</label>
+							<input type="text" class="js-field" data-field="empresa" placeholder="Ej: Constructora ABC S.A.C.">
+						</div>
+
+						<div class="form-group">
+							<label>Puesto</label>
+							<input type="text" class="js-field" data-field="puesto" placeholder="Ej: Operario, Supervisor, Asistente">
+						</div>
+
+						<div class="form-group" style="grid-column: 1 / -1;">
+							<label>Funciones realizadas</label>
+							<textarea class="js-field" data-field="funciones"
+								placeholder="Ej: Supervisión de cuadrilla, control de materiales, lectura de planos, coordinación en obra."></textarea>
+						</div>
+
+						<div class="form-group">
+							<label>Fecha inicio</label>
+							<input type="date" class="js-field" data-field="fechaInicio">
+						</div>
+
+						<div class="form-group">
+							<label>Fecha fin</label>
+							<input type="date" class="js-field" data-field="fechaFin">
+						</div>
+
+						<div class="form-group">
+							<label>Nombre de referencia</label>
+							<input type="text" class="js-field" data-field="nombreReferencia" placeholder="Ej: Juan Pérez">
+						</div>
+
+						<div class="form-group">
+							<label>Teléfono de referencia</label>
+							<input type="text" class="js-field" data-field="telefonoReferencia" placeholder="Ej: 999888777">
+						</div>
+
+						<div class="form-group">
+							<label>Correo de referencia</label>
+							<input type="email" class="js-field" data-field="correoReferencia" placeholder="Ej: referencia@empresa.com">
+						</div>
+
+						<div class="form-group">
+							<label>Archivo adjunto</label>
+							<input type="file" class="js-exp-file" accept=".pdf,.jpg,.jpeg,.png">
+							<small class="muted-hint">PDF, JPG, JPEG o PNG.</small>
+						</div>
+					</div>
+
+					<input type="hidden" class="js-field" data-field="idExperiencia" value="">
+				`;
+				return div;
+			}
+
+			function renumberRows() {
+				const formRows = qsa(formacionesWrap, ".formacion-row");
+				formRows.forEach((row, i) => {
+					qsa(row, ".js-field").forEach((el) => {
+						const field = el.getAttribute("data-field");
+						if (!field) return;
+						el.name = `formaciones[${i}].${field}`;
+					});
+				});
+
+				const certRows = qsa(certWrap, ".cert-row");
+				certRows.forEach((row, i) => {
+					qsa(row, ".js-field").forEach((el) => {
+						const field = el.getAttribute("data-field");
+						if (!field) return;
+						el.name = `certificacionesList[${i}].${field}`;
+					});
+
+					const fileInput = row.querySelector(".js-cert-file");
+					if (fileInput) {
+						fileInput.name = "certificacionesFiles";
+					}
+				});
+
+				const idiomaRows = qsa(idiomasWrap, ".idioma-row");
+				idiomaRows.forEach((row, i) => {
+					qsa(row, ".js-field").forEach((el) => {
+						const field = el.getAttribute("data-field");
+						if (!field) return;
+						el.name = `idiomasList[${i}].${field}`;
+					});
+
+					const fileInput = row.querySelector(".js-idioma-file");
+					if (fileInput) {
+						fileInput.name = "idiomasFiles";
+					}
+				});
+
+				const experienciaRows = qsa(experienciasWrap, ".experiencia-row");
+				experienciaRows.forEach((row, i) => {
+					qsa(row, ".js-field").forEach((el) => {
+						const field = el.getAttribute("data-field");
+						if (!field) return;
+						el.name = `experienciasList[${i}].${field}`;
+					});
+
+					const fileInput = row.querySelector(".js-exp-file");
+					if (fileInput) {
+						fileInput.name = "experienciasFiles";
+					}
+				});
+			}
+
+			function removeEmptyTemplateIfNeeded(container, rowSelector) {
+				const rows = qsa(container, rowSelector);
+				if (rows.length !== 1) return null;
+
+				const row = rows[0];
+				const fields = qsa(row, ".js-field");
+				const hasAnyValue = fields.some(el => (el.value || "").trim() !== "");
+				return hasAnyValue ? null : row;
+			}
+
+			addFormacionBtn?.addEventListener("click", () => {
+				const maybeTemplate = removeEmptyTemplateIfNeeded(formacionesWrap, ".formacion-row");
+				if (maybeTemplate) {
+					wireRow(maybeTemplate);
+					renumberRows();
+					return;
+				}
+
+				const row = createFormacionRow();
+				formacionesWrap.appendChild(row);
+				wireRow(row);
+				renumberRows();
+			});
+
+			addCertBtn?.addEventListener("click", () => {
+				const maybeTemplate = removeEmptyTemplateIfNeeded(certWrap, ".cert-row");
+				if (maybeTemplate) {
+					renumberRows();
+					return;
+				}
+
+				const row = createCertRow();
+				certWrap.appendChild(row);
+				renumberRows();
+			});
+
+			addIdiomaBtn?.addEventListener("click", () => {
+				const maybeTemplate = removeEmptyTemplateIfNeeded(idiomasWrap, ".idioma-row");
+				if (maybeTemplate) {
+					wireRow(maybeTemplate);
+					renumberRows();
+					return;
+				}
+
+				const row = createIdiomaRow();
+				idiomasWrap.appendChild(row);
+				wireRow(row);
+				renumberRows();
+			});
+
+			addExperienciaBtn?.addEventListener("click", () => {
+				const maybeTemplate = removeEmptyTemplateIfNeeded(experienciasWrap, ".experiencia-row");
+				if (maybeTemplate) {
+					renumberRows();
+					return;
+				}
+
+				const row = createExperienciaRow();
+				experienciasWrap.appendChild(row);
+				renumberRows();
+			});
+
+			document.addEventListener("click", (e) => {
+				const rb = e.target.closest(".js-remove-banco");
+				if (rb) {
+					rb.closest(".banco-row")?.remove();
+					if (qsa(bancosRows, ".banco-row").length === 0) {
+						bancosRows.appendChild(bancoRowTpl("", "", "", ""));
+					}
+				}
+
+				const rm = e.target.closest(".js-remove-movil");
+				if (rm) {
+					rm.closest(".movil-row")?.remove();
+					if (qsa(movilRows, ".movil-row").length === 0) {
+						movilRows.appendChild(movilRowTpl("", "", ""));
+					}
+				}
+
+				const rem = e.target.closest(".js-remove-row");
+				if (rem) {
+					const row = rem.closest(".formacion-row, .cert-row, .idioma-row, .experiencia-row");
+					row?.remove();
+					renumberRows();
+
+					if (formacionesWrap && qsa(formacionesWrap, ".formacion-row").length === 0) {
+						const rowF = createFormacionRow();
+						formacionesWrap.appendChild(rowF);
+						wireRow(rowF);
+						renumberRows();
+					}
+
+					if (certWrap && qsa(certWrap, ".cert-row").length === 0) {
+						const rowC = createCertRow();
+						certWrap.appendChild(rowC);
+						renumberRows();
+					}
+
+					if (idiomasWrap && qsa(idiomasWrap, ".idioma-row").length === 0) {
+						const rowI = createIdiomaRow();
+						idiomasWrap.appendChild(rowI);
+						wireRow(rowI);
+						renumberRows();
+					}
+
+					if (experienciasWrap && qsa(experienciasWrap, ".experiencia-row").length === 0) {
+						const rowE = createExperienciaRow();
+						experienciasWrap.appendChild(rowE);
+						renumberRows();
+					}
+				}
+			});
+
+			loadBancosFromHidden();
+			loadMovilFromHidden();
+
+			if (!form || !formacionesWrap || !certWrap || !idiomasWrap || !experienciasWrap) {
+				if (form) {
+					form.addEventListener("submit", () => {
+						saveEmergencyToHidden();
+						saveBancosToHidden();
+						saveMovilToHidden();
+					});
+				}
+				return;
+			}
+
+			const selDep = byId("id_dep");
+			const selProv = byId("id_prov");
+			const selDist = byId("id_dist");
+			const selectAntecedentes = byId("tiene_antecedentes");
+			const antecedentesGroup = byId("antecedentesGroup");
+			const antecedentesFile = byId("antecedentesFile");
+
+			function toggleAntecedentes() {
+				if (!selectAntecedentes || !antecedentesGroup) return;
+				const valor = (selectAntecedentes.value || "").trim().toUpperCase();
+
+				if (valor === "SI") {
+					antecedentesGroup.style.display = "";
+				} else {
+					antecedentesGroup.style.display = "none";
+					if (antecedentesFile) antecedentesFile.value = "";
+				}
+			}
+
+			selectAntecedentes?.addEventListener("change", toggleAntecedentes);
+			toggleAntecedentes();
+
+			function getSelectedAttr(el) {
+				return el?.getAttribute("data-selected") || "";
+			}
+
+			async function fetchJson(url) {
+				try {
+					const r = await fetch(url, { headers: { "Accept": "application/json" } });
+					if (!r.ok) return [];
+					return await r.json();
+				} catch (e) {
+					return [];
+				}
+			}
+
+			function setOptions(select, items, placeholder = "Seleccionar") {
+				if (!select) return;
+				select.innerHTML = `<option value="">${placeholder}</option>`;
+				for (const it of items) {
+					const opt = document.createElement("option");
+					opt.value = String(it.id);
+					opt.textContent = it.name;
+					select.appendChild(opt);
+				}
+			}
+
+			function clearAndDisable(select) {
+				if (!select) return;
+				setOptions(select, [], "Seleccionar");
+				select.value = "";
+				select.disabled = true;
+			}
+
+			async function loadDepartamentos(selectedDepId = "") {
+				const deps = await fetchJson("/api/ubigeo/departamentos");
+				setOptions(selDep, deps);
+				if (selectedDepId) {
+					selDep.value = String(selectedDepId);
+				}
+			}
+
+			async function loadProvincias(depId, selectedProvId = "") {
+				if (!depId) {
+					clearAndDisable(selProv);
+					clearAndDisable(selDist);
+					return;
+				}
+
+				selProv.disabled = false;
+				const provs = await fetchJson(`/api/ubigeo/provincias?dep=${encodeURIComponent(depId)}`);
+				setOptions(selProv, provs);
+
+				if (selectedProvId) {
+					selProv.value = String(selectedProvId);
+				}
+			}
+
+			async function loadDistritos(provId, selectedDistId = "") {
+				if (!provId) {
+					clearAndDisable(selDist);
+					return;
+				}
+
+				selDist.disabled = false;
+				const dists = await fetchJson(`/api/ubigeo/distritos?prov=${encodeURIComponent(provId)}`);
+				setOptions(selDist, dists);
+
+				if (selectedDistId) {
+					selDist.value = String(selectedDistId);
+				}
+			}
+
+			selDep?.addEventListener("change", async () => {
+				const depId = selDep.value;
+				await loadProvincias(depId, "");
+				clearAndDisable(selDist);
+			});
+
+			selProv?.addEventListener("change", async () => {
+				const provId = selProv.value;
+				await loadDistritos(provId, "");
+			});
+
+			(async () => {
+				if (!selDep || !selProv || !selDist) return;
+
+				const depIni = getSelectedAttr(selDep);
+				const provIni = getSelectedAttr(selProv);
+				const distIni = getSelectedAttr(selDist);
+
+				await loadDepartamentos(depIni);
+
+				if (depIni) {
+					await loadProvincias(depIni, provIni);
+				} else {
+					clearAndDisable(selProv);
+					clearAndDisable(selDist);
+					return;
+				}
+
+				if (provIni) {
+					await loadDistritos(provIni, distIni);
+				} else {
+					clearAndDisable(selDist);
+				}
+
+				selProv.disabled = !selDep.value;
+				selDist.disabled = !selProv.value;
+			})();
+
+			if (fechaNacimientoInput) {
+				fechaNacimientoInput.max = new Date().toISOString().split("T")[0];
+				fechaNacimientoInput.addEventListener("change", actualizarEdad);
+				fechaNacimientoInput.addEventListener("input", actualizarEdad);
+				actualizarEdad();
+			}
+
+			if (fechaIngresoInput) {
+				fechaIngresoInput.max = new Date().toISOString().split("T")[0];
+				fechaIngresoInput.addEventListener("change", actualizarAntiguedad);
+				fechaIngresoInput.addEventListener("input", actualizarAntiguedad);
+				actualizarAntiguedad();
+			}
+
+			form.addEventListener("submit", () => {
+				qsa(idiomasWrap, ".idioma-row").forEach(row => {
+					const idiomaSelect = row.querySelector(".js-idioma-select");
+					const idiomaOtro = row.querySelector(".js-idioma-otro");
+					const instSelect = row.querySelector(".js-institucion-select");
+					const instOtro = row.querySelector(".js-institucion-otro");
+
+					if (idiomaSelect && idiomaOtro && idiomaSelect.value === "OTRO") {
+						idiomaSelect.value = (idiomaOtro.value || "").trim();
+					}
+
+					if (instSelect && instOtro && instSelect.value === "OTRO") {
+						instSelect.value = (instOtro.value || "").trim();
+					}
+				});
+
+				qsa(formacionesWrap, ".formacion-row").forEach(row => {
+					const carreraSelect = row.querySelector(".js-carrera-select");
+					const carreraOtro = row.querySelector(".js-carrera-otro");
+					const gradoSelect = row.querySelector(".js-grado-select");
+					const gradoOtro = row.querySelector(".js-grado-otro");
+
+					if (carreraSelect && carreraOtro && carreraSelect.value === "OTRO") {
+						carreraSelect.value = (carreraOtro.value || "").trim();
+					}
+
+					if (gradoSelect && gradoOtro && gradoSelect.value === "OTRO") {
+						gradoSelect.value = (gradoOtro.value || "").trim();
+					}
+				});
+
+				renumberRows();
+				saveEmergencyToHidden();
+				saveBancosToHidden();
+				saveMovilToHidden();
+			});
+
+			renumberRows();
+		})();
+	</script>
+
+</body>
+
+</html>
