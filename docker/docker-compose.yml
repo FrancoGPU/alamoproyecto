@@ -1,49 +1,49 @@
 services:
-  asistencia-db:
-    image: mysql:8.0
-    container_name: asistencia-db
+  alquiler-db:
+    image: postgres:16
+    container_name: alquiler-db
     restart: always
     environment:
       TZ: America/Lima
-      MYSQL_ROOT_PASSWORD: "R00t_As1st3ncia!2026#Seg-m0Ni1oo"
-      MYSQL_DATABASE: sistema_asistencia
-      MYSQL_USER: asistencia_user
-      MYSQL_PASSWORD: "As1st3ncia_App!2026-m0No"
+      POSTGRES_DB: sistema_alquiler
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
     volumes:
-      - asistencia_db_data:/var/lib/mysql
+      - alquiler_db_data:/var/lib/postgresql/data
     ports:
-      - "127.0.0.1:3310:3306"
+      - "127.0.0.1:5432:5432"
     networks:
-      - asistencia-net
+      - alquiler-net
     healthcheck:
-      test: ["CMD-SHELL", "mysqladmin ping -h localhost -p$$MYSQL_ROOT_PASSWORD --silent"]
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER"]
       interval: 10s
       timeout: 5s
       retries: 10
       start_period: 30s
 
-  asistencia-app:
+  alquiler-app:
     build:
       context: .
-    container_name: asistencia-app
+    container_name: alquiler-app
     restart: unless-stopped
     depends_on:
-      asistencia-db:
+      alquiler-db:
         condition: service_healthy
     environment:
       TZ: America/Lima
       JAVA_TOOL_OPTIONS: -Duser.timezone=America/Lima
-      SPRING_DATASOURCE_URL: jdbc:mysql://asistencia-db:3306/sistema_asistencia?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=America/Lima
-      SPRING_DATASOURCE_USERNAME: asistencia_user
-      SPRING_DATASOURCE_PASSWORD: "As1st3ncia_App!2026-m0No"
+      SPRING_DATASOURCE_URL: jdbc:postgresql://alquiler-db:5432/sistema_alquiler
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
     ports:
       - "8083:8080"
     networks:
-      - asistencia-net
+      - alquiler-net
+
 
 volumes:
-  asistencia_db_data:
+  alquiler_db_data:
 
 networks:
-  asistencia-net:
+  alquiler-net:
