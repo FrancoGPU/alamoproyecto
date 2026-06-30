@@ -1,0 +1,18 @@
+.plate-badge {
+  background: linear-gradient(135deg, #fef08a 0%, #facc15 100%);
+  color: #1e293b;
+  font-family: monospace, sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 4px;
+  border: 2px solid #1e293b;
+  box-shadow: var(--shadow-sm);
+  display: inline-block;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.vehicle-plate {
+  white-space: nowrap;
+}

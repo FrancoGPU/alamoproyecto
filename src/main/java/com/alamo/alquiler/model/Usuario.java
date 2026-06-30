@@ -32,7 +32,7 @@ public class Usuario {
     @Column(name = "contrasena_hash", nullable = false, length = 255)
     private String contrasenaHash;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_rol", nullable = false)
     private Rol rol;
 }

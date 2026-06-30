@@ -29,7 +29,7 @@ public class Vehiculo {
     @Column(name = "anio")
     private Integer anio;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_categoria", nullable = false)
     private CategoriaVehiculo categoria;
 }
