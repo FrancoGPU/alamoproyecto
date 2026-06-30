@@ -39,7 +39,7 @@ export const Dashboard: React.FC = () => {
           contratoService.getAll().catch(() => []),
         ]);
 
-        const totalIngresos = contratos.reduce((acc, curr) => acc + (Number(curr.montoTotal) || 0), 0);
+        const totalIngresos = contratos.reduce((acc: number, curr: any) => acc + (Number(curr.montoTotal) || 0), 0);
 
         setStats({
           usuarios: usuarios.length,
