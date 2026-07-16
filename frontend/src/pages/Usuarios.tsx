@@ -9,9 +9,12 @@ import {
   X, 
   UserPlus, 
   AlertTriangle,
-  UserCheck
+  UserCheck,
+  Download,
+  FileText
 } from 'lucide-react';
 import './Usuarios.css';
+import api from '../services/api';
 
 export const Usuarios: React.FC = () => {
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
@@ -138,6 +141,29 @@ export const Usuarios: React.FC = () => {
     }
   };
 
+  const handleDownload = async (format: 'excel' | 'pdf') => {
+    try {
+      const response = await api.get(`/reportes/usuarios/${format}`, {
+        responseType: 'blob',
+      });
+      const blob = new Blob([response.data], {
+        type: format === 'excel' 
+          ? 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' 
+          : 'application/pdf',
+      });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `reporte_usuarios.${format === 'excel' ? 'xlsx' : 'pdf'}`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (error) {
+      console.error('Error al descargar el reporte', error);
+      alert('No se pudo descargar el reporte.');
+    }
+  };
+
   const filteredUsuarios = usuarios.filter(u => {
     const term = searchTerm.toLowerCase();
     return (
@@ -182,6 +208,16 @@ export const Usuarios: React.FC = () => {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
+        </div>
+        <div className="export-actions" style={{ display: 'flex', gap: '8px', marginLeft: 'auto' }}>
+          <button className="btn btn-secondary" onClick={() => handleDownload('excel')} title="Exportar a Excel">
+            <Download size={16} />
+            <span>Excel</span>
+          </button>
+          <button className="btn btn-secondary" onClick={() => handleDownload('pdf')} title="Exportar a PDF">
+            <FileText size={16} />
+            <span>PDF</span>
+          </button>
         </div>
       </div>
 

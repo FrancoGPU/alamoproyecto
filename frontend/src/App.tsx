@@ -9,6 +9,7 @@ import { Usuarios } from './pages/Usuarios';
 import { Vehiculos } from './pages/Vehiculos';
 import { Contratos } from './pages/Contratos';
 import { Configuracion } from './pages/Configuracion';
+import { Soporte } from './pages/Soporte';
 
 const AppContent: React.FC = () => {
   const { user, isLoading } = useAuth();
@@ -39,6 +40,7 @@ const AppContent: React.FC = () => {
             <Route path="/vehiculos" element={<Vehiculos />} />
             <Route path="/contratos" element={<Contratos />} />
             <Route path="/configuracion" element={<Configuracion />} />
+            <Route path="/soporte" element={<Soporte />} />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </main>

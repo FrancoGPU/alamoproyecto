@@ -32,7 +32,7 @@
 
 ## Paso 6: Validación
 - [x] Ajustar `application.properties` para PostgreSQL
-- [ ] Ejecutar `mvn test` y/o `mvn spring-boot:run` (en tu entorno local o Jenkins)
-- [ ] Verificar endpoints con Postman/curl
+- [x] Ejecutar `mvn test` y/o `mvn spring-boot:run` (en tu entorno local o Jenkins)
+- [x] Verificar endpoints con Postman/curl
 
 

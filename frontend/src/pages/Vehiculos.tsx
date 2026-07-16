@@ -9,9 +9,12 @@ import {
   X, 
   Car, 
   AlertTriangle,
-  FolderOpen
+  FolderOpen,
+  Download,
+  FileText
 } from 'lucide-react';
 import './Vehiculos.css';
+import api from '../services/api';
 
 export const Vehiculos: React.FC = () => {
   const [vehiculos, setVehiculos] = useState<Vehiculo[]>([]);
@@ -135,6 +138,29 @@ export const Vehiculos: React.FC = () => {
     }
   };
 
+  const handleDownload = async (format: 'excel' | 'pdf') => {
+    try {
+      const response = await api.get(`/reportes/vehiculos/${format}`, {
+        responseType: 'blob',
+      });
+      const blob = new Blob([response.data], {
+        type: format === 'excel' 
+          ? 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' 
+          : 'application/pdf',
+      });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `reporte_vehiculos.${format === 'excel' ? 'xlsx' : 'pdf'}`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (error) {
+      console.error('Error al descargar el reporte', error);
+      alert('No se pudo descargar el reporte.');
+    }
+  };
+
   const filteredVehiculos = vehiculos.filter(v => {
     const term = searchTerm.toLowerCase();
     return (
@@ -179,6 +205,16 @@ export const Vehiculos: React.FC = () => {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
+        </div>
+        <div className="export-actions" style={{ display: 'flex', gap: '8px', marginLeft: 'auto' }}>
+          <button className="btn btn-secondary" onClick={() => handleDownload('excel')} title="Exportar a Excel">
+            <Download size={16} />
+            <span>Excel</span>
+          </button>
+          <button className="btn btn-secondary" onClick={() => handleDownload('pdf')} title="Exportar a PDF">
+            <FileText size={16} />
+            <span>PDF</span>
+          </button>
         </div>
       </div>
 

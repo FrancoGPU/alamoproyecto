@@ -8,7 +8,8 @@ import {
   FileText, 
   Settings, 
   LogOut,
-  ShieldAlert
+  ShieldAlert,
+  LifeBuoy
 } from 'lucide-react';
 import './Sidebar.css';
 
@@ -68,6 +69,14 @@ export const Sidebar: React.FC = () => {
         >
           <Settings size={20} />
           <span>Configuración</span>
+        </NavLink>
+
+        <NavLink 
+          to="/soporte" 
+          className={({ isActive }) => `menu-item ${isActive ? 'active' : ''}`}
+        >
+          <LifeBuoy size={20} />
+          <span>Soporte</span>
         </NavLink>
       </nav>
 
