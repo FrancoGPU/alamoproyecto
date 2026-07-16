@@ -50,10 +50,9 @@ alamo-proyecto/
 │
 └── docs/                                # DOCUMENTACIÓN TÉCNICA CENTRAL
     ├── README.md                        # Índice de documentación
+    ├── RENTACAR_ARQUITECTURA.md         # Modelo Entidad-Relación y de datos
     ├── manual_desarrollador.md          # Guía técnica para desarrolladores
-    ├── manual_usuario.md                # Guía de uso de la interfaz
-    ├── PLAN_RESPONSIVE.md               # Diseño adaptable y Mobile-First
-    └── PLAN_FILTROS_ANALITICAS.md       # Lógica de disponibilidad y gráficas
+    └── manual_usuario.md                # Guía de uso de la interfaz
 ```
 
 ---

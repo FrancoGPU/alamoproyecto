@@ -20,31 +20,8 @@ Esta es la carpeta central de documentación del proyecto final para **Álamo Re
 * Funcionamiento del calculador dinámico de tarifas en el formulario de contratos de alquiler.
 * Instrucciones para descargar reportes consolidados en formatos **Excel** y **PDF**.
 * Uso de la mesa de soporte técnico integrado para reportar y resolver incidentes.
-
-### 📋 [Guía de Gestión de Actividades y Calidad](file:///c:/Users/ASUS/OneDrive%20-%20Universidad%20Tecnologica%20del%20Peru/Documents/Proyecto%20Universidad/Alamo-1/docs/guia_gestion_actividades.md)
-* Fundamentación teórica sobre el control de calidad mediante Pull Requests (PR) e integración continua.
-* Plantillas listas para copiar y pegar para la creación de **GitHub Issues** (Reportes de Bugs, Mejoras y Tareas JUnit).
-* Guía de organización del tablero ágil (Kanban de GitHub Projects) y definición de Hitos (Milestones).
-
-### 📐 [Arquitectura de Expansión de Base de Datos (MER)](file:///c:/Users/ASUS/OneDrive%20-%20Universidad%20Tecnologica%20del%20Peru/Documents/Proyecto%20Universidad/Alamo-1/docs/RENTACAR_ARQUITECTURA.md)
-* Modelo Entidad-Relación (MER lógico) detallando las llaves primarias y foráneas de la base de datos de alquileres.
-* Explicación sobre la separación de dominios entre usuarios internos de la empresa y clientes arrendatarios.
-
-### 🔔 [Plan de Implementación de Notificaciones Reales](file:///c:/Users/ASUS/OneDrive%20-%20Universidad%20Tecnologica%20del%20Peru/Documents/Proyecto%20Universidad/Alamo-1/docs/PLAN_NOTIFICACIONES.md)
-* Planificación técnica y diseño del modelo JPA, controladores y endpoints de la mesa de notificaciones en la base de datos.
-* Estrategias de polling en el frontend React e integración en tiempo real en segundo plano.
-
-### 📈 [Plan de Expansión: Disponibilidad y Analíticas](file:///c:/Users/ASUS/OneDrive%20-%20Universidad%20Tecnologica%20del%20Peru/Documents/Proyecto%20Universidad/Alamo-1/docs/PLAN_FILTROS_ANALITICAS.md)
-* Diseño técnico del algoritmo de exclusión temporal en base de datos para filtrar la disponibilidad de vehículos.
-* Plan de instalación e integración de la librería Recharts en React para diagramar métricas comerciales en el Dashboard.
-
-### 📱 [Plan de Expansión: Diseño Responsivo (Mobile-First)](file:///c:/Users/ASUS/OneDrive%20-%20Universidad%20Tecnologica%20del%20Peru/Documents/Proyecto%20Universidad/Alamo-1/docs/PLAN_RESPONSIVE.md)
-* Estrategia de menú hamburguesa lateral colapsable e overlay translúcido para celulares.
-* Rediseño responsivo de tablas de datos y compactación del encabezado en pantallas táctiles de menos de 768px.
-
-### 📝 [Plan de Expansión: Estados de Contratos y Búsqueda Avanzada](file:///c:/Users/ASUS/OneDrive%20-%20Universidad%20Tecnologica%20del%20Peru/Documents/Proyecto%20Universidad/Alamo-1/docs/PLAN_ESTADOS_CONTRATOS.md)
-* Gestión de ciclo de vida del alquiler (Activo, Finalizado, Cancelado) a nivel de JPA Entity y API Rest.
-* Flujo de trabajo en ramas locales de Git para consolidar Pull Requests (PR) independientes.
+### 📐 [Arquitectura de Datos y MER](file:///c:/Users/ASUS/OneDrive%20-%20Universidad%20Tecnologica%20del%20Peru/Documents/Proyecto%20Universidad/Alamo-1/docs/RENTACAR_ARQUITECTURA.md)
+* Modelo Entidad-Relación (MER lógico y físico) detallando las tablas físicas, llaves primarias, llaves foráneas y mapeos JPA de persistencia.
 
 ---
 
