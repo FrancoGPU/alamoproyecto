@@ -188,21 +188,46 @@ classDiagram
 
 ## 🔀 7. Flujo de Control de Ramas en Git (Git Branching Model)
 
-Para mantener un flujo de trabajo académico y ordenado que garantice la calidad e integración continua de las entregas de cada colaborador, se sigue el siguiente modelo de ramas y Pull Requests (PR):
+El proyecto utiliza un modelo de control de versiones unificado que vincula los entornos locales, el repositorio remoto en GitHub y los servidores de Integración y Despliegue Continuo (CI/CD) para asegurar la calidad y estabilidad de cada entrega:
 
 ```mermaid
 graph TD
-    subgraph Repositorio_Remoto [GitHub Remotes]
-        main[Rama main <br/>Producción / Despliegues estables]
-        develop[Rama develop <br/>Rama de integración grupal]
-        feat[Rama feat/frontend-react <br/>Rama de características]
-        repair[Rama repair <br/>Hotfixes y reparaciones rápidas]
-
-        feat -->|Pull Request & JUnit CI OK| develop
-        develop -->|Pull Request de Entrega| main
-        repair -->|Pull Request Directo| main
-        repair -->|Sincronización posterior| develop
+    subgraph Desarrollador_Local [Entorno Local de Trabajo]
+        DevWork[Modificaciones de Código]
+        LocalGit[Git Local: rama feat/frontend-react]
+        DevWork -->|git commit| LocalGit
     end
+
+    subgraph GitHub_Remote [Repositorio Remoto en GitHub]
+        R_Feat[Rama: feat/frontend-react]
+        R_Dev[Rama: develop]
+        R_Main[Rama: main]
+        R_Repair[Rama: repair]
+        
+        PR_Dev{Pull Request <br/> feat/frontend-react ➜ develop}
+        PR_Main{Pull Request <br/> develop ➜ main}
+        
+        R_Feat -->|Abrir PR en GitHub| PR_Dev
+        PR_Dev -->|Aprobado & JUnit 13/13 OK| R_Dev
+        R_Dev -->|Abrir PR de Hito| PR_Main
+        PR_Main -->|Merge de Entrega Grupal| R_Main
+        
+        R_Repair -->|Hotfix PR Directo| R_Main
+        R_Repair -->|Sincronización Automática| R_Dev
+    end
+
+    subgraph Plataformas_Despliegue [Infraestructura & CI/CD]
+        Actions[GitHub Actions <br/> Compila backend y corre tests]
+        Vercel[Vercel Serverless CD <br/> Servidor Edge del Frontend]
+        Render[Render Cloud CD <br/> Contenedor Docker del Backend]
+        DB[(PostgreSQL Database Cloud)]
+    end
+
+    LocalGit -->|git push| R_Feat
+    PR_Dev -->|Trigger en PR| Actions
+    R_Main -->|Trigger CD Auto| Vercel
+    R_Main -->|Trigger CD Auto| Render
+    Render -->|Conexión JDBC / Entorno| DB
 ```
 
 ### Descripción del Flujo de Trabajo (Git Flow)
