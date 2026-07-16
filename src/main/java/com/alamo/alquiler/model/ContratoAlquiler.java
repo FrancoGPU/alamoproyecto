@@ -61,5 +61,15 @@ public class ContratoAlquiler {
             inverseJoinColumns = @JoinColumn(name = "id_servicio")
     )
     private List<Servicio> servicios = new ArrayList<>();
+
+    @Column(name = "estado", length = 30)
+    private String estado;
+
+    @PrePersist
+    public void prePersist() {
+        if (this.estado == null) {
+            this.estado = "ACTIVO";
+        }
+    }
 }
 

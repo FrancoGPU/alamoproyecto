@@ -39,6 +39,7 @@ export interface ContratoAlquiler {
   seguro?: Seguro;
   contratoSeguro?: ContratoSeguro;
   servicios: Servicio[];
+  estado?: string;
 }
 
 export const contratoService = {

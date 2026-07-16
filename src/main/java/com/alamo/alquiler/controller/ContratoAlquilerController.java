@@ -60,10 +60,12 @@ public class ContratoAlquilerController extends AbstractCrudController<ContratoA
     @Override
     public void eliminar(Integer id) {
         repo.findById(id).ifPresent(c -> {
+            c.setEstado("RESCINDIDO");
+            repo.save(c);
             try {
                 Notificacion notif = Notificacion.builder()
                         .titulo("Contrato Cancelado")
-                        .mensaje("Contrato " + c.getCodigo() + " rescindido/eliminado.")
+                        .mensaje("Contrato " + c.getCodigo() + " marcado como rescindido/cancelado.")
                         .tipo("CONTRATO")
                         .build();
                 notificacionRepo.save(notif);
@@ -71,6 +73,5 @@ public class ContratoAlquilerController extends AbstractCrudController<ContratoA
                 e.printStackTrace();
             }
         });
-        super.eliminar(id);
     }
 }

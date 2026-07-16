@@ -403,6 +403,7 @@ export const Contratos: React.FC = () => {
                 <th>Inicio</th>
                 <th>Fin</th>
                 <th>Total</th>
+                <th>Estado</th>
                 <th>Acciones</th>
               </tr>
             </thead>
@@ -420,19 +421,33 @@ export const Contratos: React.FC = () => {
                   <td>{c.fechaInicio}</td>
                   <td>{c.fechaFin}</td>
                   <td className="price-td">S/. {Number(c.montoTotal).toFixed(2)}</td>
+                  <td>
+                    {c.estado === 'RESCINDIDO' ? (
+                      <span className="badge-danger" style={{ padding: '4px 8px', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 600, backgroundColor: 'rgba(239, 68, 68, 0.1)', color: '#ef4444' }}>
+                        Rescindido
+                      </span>
+                    ) : (
+                      <span className="badge-success" style={{ padding: '4px 8px', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 600, backgroundColor: 'rgba(16, 185, 129, 0.1)', color: '#10b981' }}>
+                        Activo
+                      </span>
+                    )}
+                  </td>
                   <td className="actions-cell" style={{ display: 'flex', gap: '8px' }}>
                     <button 
                       className="action-icon-btn edit" 
-                      style={{ color: '#6366f1', backgroundColor: 'rgba(99, 102, 241, 0.1)', border: 'none', padding: '6px', borderRadius: '4px', cursor: 'pointer' }}
+                      style={{ color: '#6366f1', backgroundColor: 'rgba(99, 102, 241, 0.1)', border: 'none', padding: '6px', borderRadius: '4px', cursor: 'pointer', opacity: c.estado === 'RESCINDIDO' ? 0.5 : 1 }}
                       onClick={() => handleOpenEditModal(c)}
                       title="Editar Contrato"
+                      disabled={c.estado === 'RESCINDIDO'}
                     >
                       <Edit size={16} />
                     </button>
                     <button 
                       className="action-icon-btn delete" 
+                      style={{ opacity: c.estado === 'RESCINDIDO' ? 0.5 : 1 }}
                       onClick={() => c.idContrato && handleDelete(c.idContrato)}
                       title="Rescindir Contrato"
+                      disabled={c.estado === 'RESCINDIDO'}
                     >
                       <Trash2 size={16} />
                     </button>
