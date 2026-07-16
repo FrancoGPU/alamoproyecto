@@ -42,6 +42,10 @@ Esta es la carpeta central de documentación del proyecto final para **Álamo Re
 * Estrategia de menú hamburguesa lateral colapsable e overlay translúcido para celulares.
 * Rediseño responsivo de tablas de datos y compactación del encabezado en pantallas táctiles de menos de 768px.
 
+### 📝 [Plan de Expansión: Estados de Contratos y Búsqueda Avanzada](file:///c:/Users/ASUS/OneDrive%20-%20Universidad%20Tecnologica%20del%20Peru/Documents/Proyecto%20Universidad/Alamo-1/docs/PLAN_ESTADOS_CONTRATOS.md)
+* Gestión de ciclo de vida del alquiler (Activo, Finalizado, Cancelado) a nivel de JPA Entity y API Rest.
+* Flujo de trabajo en ramas locales de Git para consolidar Pull Requests (PR) independientes.
+
 ---
 
 ## ⚡ Guía de Inicio Rápido en Desarrollo Local
