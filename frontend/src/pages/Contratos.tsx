@@ -16,7 +16,8 @@ import {
   User,
   Car,
   Trash2,
-  Download
+  Download,
+  Edit
 } from 'lucide-react';
 import './Contratos.css';
 import api from '../services/api';
@@ -212,6 +213,22 @@ export const Contratos: React.FC = () => {
       idContratoSeguro: contratosSeguro[0]?.idContratoSeguro?.toString() || '',
       serviciosSeleccionados: [],
     });
+    setSelectedContrato(null);
+    setIsModalOpen(true);
+  };
+
+  const handleOpenEditModal = (contrato: ContratoAlquiler) => {
+    setSelectedContrato(contrato);
+    setFormData({
+      idCliente: contrato.cliente?.idUsuario?.toString() || '',
+      idVehiculo: contrato.vehiculo?.idVehiculo?.toString() || '',
+      fechaInicio: contrato.fechaInicio || '',
+      fechaFin: contrato.fechaFin || '',
+      idSeguro: contrato.seguro?.idSeguro?.toString() || '',
+      idHorario: contrato.horario?.idHorario?.toString() || '',
+      idContratoSeguro: contrato.contratoSeguro?.idContratoSeguro?.toString() || '',
+      serviciosSeleccionados: contrato.servicios?.map(s => s.idServicio || 0) || [],
+    });
     setIsModalOpen(true);
   };
 
@@ -259,23 +276,28 @@ export const Contratos: React.FC = () => {
       return;
     }
 
-    const uniqueCode = `ALAMO-${Date.now().toString().slice(-6)}-${formData.idVehiculo}`;
+    const uniqueCode = selectedContrato ? selectedContrato.codigo : `ALAMO-${Date.now().toString().slice(-6)}-${formData.idVehiculo}`;
 
     const payload: ContratoAlquiler = {
+      idContrato: selectedContrato ? selectedContrato.idContrato : undefined,
       codigo: uniqueCode,
       fechaInicio: formData.fechaInicio,
       fechaFin: formData.fechaFin,
       montoTotal: precioCalculado,
       vehiculo: car,
       cliente: client,
-      seguro: ins,
-      horario: sched,
-      contratoSeguro: insContract,
+      seguro: ins || undefined,
+      horario: sched || undefined,
+      contratoSeguro: insContract || undefined,
       servicios: selectedServs,
     };
 
     try {
-      await contratoService.create(payload);
+      if (selectedContrato && selectedContrato.idContrato) {
+        await api.put(`/contratos-alquiler/${selectedContrato.idContrato}`, payload);
+      } else {
+        await contratoService.create(payload);
+      }
       setIsModalOpen(false);
       fetchDatos();
     } catch (err) {
@@ -379,7 +401,15 @@ export const Contratos: React.FC = () => {
                   <td>{c.fechaInicio}</td>
                   <td>{c.fechaFin}</td>
                   <td className="price-td">S/. {Number(c.montoTotal).toFixed(2)}</td>
-                  <td className="actions-cell">
+                  <td className="actions-cell" style={{ display: 'flex', gap: '8px' }}>
+                    <button 
+                      className="action-icon-btn edit" 
+                      style={{ color: '#6366f1', backgroundColor: 'rgba(99, 102, 241, 0.1)', border: 'none', padding: '6px', borderRadius: '4px', cursor: 'pointer' }}
+                      onClick={() => handleOpenEditModal(c)}
+                      title="Editar Contrato"
+                    >
+                      <Edit size={16} />
+                    </button>
                     <button 
                       className="action-icon-btn delete" 
                       onClick={() => c.idContrato && handleDelete(c.idContrato)}
@@ -400,7 +430,7 @@ export const Contratos: React.FC = () => {
         <div className="modal-overlay">
           <div className="modal-content large fade-in">
             <div className="modal-header">
-              <h3>Registrar Contrato de Alquiler</h3>
+              <h3>{selectedContrato ? 'Editar Contrato de Alquiler' : 'Registrar Contrato de Alquiler'}</h3>
               <button className="modal-close" onClick={() => setIsModalOpen(false)}>
                 <X size={20} />
               </button>

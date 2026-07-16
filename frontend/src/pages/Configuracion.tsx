@@ -152,37 +152,69 @@ export const Configuracion: React.FC = () => {
 
       // 8. Seed Contratos de Alquiler
       if (seedClient1 && seedCar1) {
+        // Enero
         await api.post('/contratos-alquiler', {
           codigo: 'ALAMO-SEED-01',
-          fechaInicio: '2026-06-01',
-          fechaFin: '2026-06-05',
-          montoTotal: 200.00,
+          fechaInicio: '2026-01-05',
+          fechaFin: '2026-01-10',
+          montoTotal: 380.00,
           vehiculo: seedCar1,
           cliente: seedClient1,
           servicios: []
         }).catch(() => {});
-      }
 
-      if (seedClient2 && seedCar2) {
+        // Febrero
         await api.post('/contratos-alquiler', {
           codigo: 'ALAMO-SEED-02',
-          fechaInicio: '2026-06-10',
-          fechaFin: '2026-06-15',
-          montoTotal: 475.00,
+          fechaInicio: '2026-02-12',
+          fechaFin: '2026-02-18',
+          montoTotal: 570.00,
           vehiculo: seedCar2,
           cliente: seedClient2,
           servicios: []
         }).catch(() => {});
-      }
 
-      if (seedClient1 && seedCar3) {
+        // Marzo
         await api.post('/contratos-alquiler', {
           codigo: 'ALAMO-SEED-03',
-          fechaInicio: '2026-06-20',
-          fechaFin: '2026-06-25',
-          montoTotal: 875.00,
+          fechaInicio: '2026-03-02',
+          fechaFin: '2026-03-08',
+          montoTotal: 850.00,
           vehiculo: seedCar3,
           cliente: seedClient1,
+          servicios: []
+        }).catch(() => {});
+
+        // Abril
+        await api.post('/contratos-alquiler', {
+          codigo: 'ALAMO-SEED-04',
+          fechaInicio: '2026-04-15',
+          fechaFin: '2026-04-20',
+          montoTotal: 620.00,
+          vehiculo: seedCar2,
+          cliente: seedClient2,
+          servicios: []
+        }).catch(() => {});
+
+        // Mayo
+        await api.post('/contratos-alquiler', {
+          codigo: 'ALAMO-SEED-05',
+          fechaInicio: '2026-05-10',
+          fechaFin: '2026-05-16',
+          montoTotal: 1250.00,
+          vehiculo: seedCar3,
+          cliente: seedClient1,
+          servicios: []
+        }).catch(() => {});
+
+        // Junio
+        await api.post('/contratos-alquiler', {
+          codigo: 'ALAMO-SEED-06',
+          fechaInicio: '2026-06-01',
+          fechaFin: '2026-06-05',
+          montoTotal: 1550.00,
+          vehiculo: seedCar3,
+          cliente: seedClient2,
           servicios: []
         }).catch(() => {});
       }
