@@ -38,6 +38,10 @@ Esta es la carpeta central de documentación del proyecto final para **Álamo Re
 * Diseño técnico del algoritmo de exclusión temporal en base de datos para filtrar la disponibilidad de vehículos.
 * Plan de instalación e integración de la librería Recharts en React para diagramar métricas comerciales en el Dashboard.
 
+### 📱 [Plan de Expansión: Diseño Responsivo (Mobile-First)](file:///c:/Users/ASUS/OneDrive%20-%20Universidad%20Tecnologica%20del%20Peru/Documents/Proyecto%20Universidad/Alamo-1/docs/PLAN_RESPONSIVE.md)
+* Estrategia de menú hamburguesa lateral colapsable e overlay translúcido para celulares.
+* Rediseño responsivo de tablas de datos y compactación del encabezado en pantallas táctiles de menos de 768px.
+
 ---
 
 ## ⚡ Guía de Inicio Rápido en Desarrollo Local

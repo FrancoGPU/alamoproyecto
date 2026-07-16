@@ -654,6 +654,20 @@ export const Contratos: React.FC = () => {
                 <span>Monto Total Cobrado</span>
                 <h3>S/. {Number(selectedContrato.montoTotal).toFixed(2)}</h3>
               </div>
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '10px' }}>
+                <button 
+                  className="btn btn-primary" 
+                  onClick={() => {
+                    setIsDetailModalOpen(false);
+                    handleOpenEditModal(selectedContrato);
+                  }}
+                  style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
+                >
+                  <Edit size={16} />
+                  <span>Editar Contrato</span>
+                </button>
+              </div>
             </div>
           </div>
         </div>
