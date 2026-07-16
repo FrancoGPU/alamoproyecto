@@ -30,6 +30,10 @@ Esta es la carpeta central de documentación del proyecto final para **Álamo Re
 * Modelo Entidad-Relación (MER lógico) detallando las llaves primarias y foráneas de la base de datos de alquileres.
 * Explicación sobre la separación de dominios entre usuarios internos de la empresa y clientes arrendatarios.
 
+### 🔔 [Plan de Implementación de Notificaciones Reales](file:///c:/Users/ASUS/OneDrive%20-%20Universidad%20Tecnologica%20del%20Peru/Documents/Proyecto%20Universidad/Alamo-1/docs/PLAN_NOTIFICACIONES.md)
+* Planificación técnica y diseño del modelo JPA, controladores y endpoints de la mesa de notificaciones en la base de datos.
+* Estrategias de polling en el frontend React e integración en tiempo real en segundo plano.
+
 ---
 
 ## ⚡ Guía de Inicio Rápido en Desarrollo Local

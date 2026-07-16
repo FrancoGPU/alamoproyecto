@@ -1,5 +1,5 @@
 # ============================
-# Etapa 1: Construcción del JAR con Maven (Java 21)
+# Etapa 1: Construccion del JAR con Maven (Java 21)
 # ============================
 FROM maven:3.9.6-eclipse-temurin-21 AS build
 WORKDIR /app
