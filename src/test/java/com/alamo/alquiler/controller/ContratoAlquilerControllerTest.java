@@ -11,6 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import com.alamo.alquiler.repository.NotificacionRepository;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -31,6 +32,9 @@ public class ContratoAlquilerControllerTest {
 
     @MockitoBean
     private ContratoAlquilerRepository repository;
+
+    @MockitoBean
+    private NotificacionRepository notificacionRepo;
 
     @Autowired
     private ObjectMapper objectMapper;

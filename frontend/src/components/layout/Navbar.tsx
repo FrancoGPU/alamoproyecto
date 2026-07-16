@@ -9,12 +9,15 @@ import {
   BellOff
 } from 'lucide-react';
 import './Navbar.css';
+import api from '../../services/api';
 
-interface Notification {
-  id: number;
-  text: string;
-  read: boolean;
-  time: string;
+interface NotificationItem {
+  idNotificacion: number;
+  titulo: string;
+  mensaje: string;
+  leido: boolean;
+  tipo: string;
+  fechaCreacion?: string;
 }
 
 export const Navbar: React.FC = () => {
@@ -23,11 +26,22 @@ export const Navbar: React.FC = () => {
   const [showNotifications, setShowNotifications] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const [notifications, setNotifications] = useState<Notification[]>([
-    { id: 1, text: 'Contrato ALAMO-SEED-01 generado con éxito.', read: false, time: 'Hace 5m' },
-    { id: 2, text: 'Mantenimiento preventivo sugerido para BMW X5.', read: false, time: 'Hace 1h' },
-    { id: 3, text: 'Nuevo colaborador registrado: Franco Paolo.', read: false, time: 'Hace 2h' },
-  ]);
+  const [notifications, setNotifications] = useState<NotificationItem[]>([]);
+
+  const fetchNotifications = async () => {
+    try {
+      const response = await api.get('/notificaciones/recientes');
+      setNotifications(response.data);
+    } catch (e) {
+      console.error("Error al cargar notificaciones:", e);
+    }
+  };
+
+  useEffect(() => {
+    fetchNotifications();
+    const intervalNotif = setInterval(fetchNotifications, 10000); // Polling cada 10s
+    return () => clearInterval(intervalNotif);
+  }, []);
 
   useEffect(() => {
     const timer = setInterval(() => setTime(new Date()), 1000);
@@ -80,14 +94,40 @@ export const Navbar: React.FC = () => {
     });
   };
 
-  const unreadCount = notifications.filter(n => !n.read).length;
-
-  const handleMarkAsRead = (id: number) => {
-    setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n));
+  const formatNotificationTime = (dateStr?: string) => {
+    if (!dateStr) return 'Hace un momento';
+    try {
+      const date = new Date(dateStr);
+      const diffMs = Date.now() - date.getTime();
+      const diffMins = Math.floor(diffMs / 60000);
+      if (diffMins < 1) return 'Hace un momento';
+      if (diffMins < 60) return `Hace ${diffMins}m`;
+      const diffHours = Math.floor(diffMins / 60);
+      if (diffHours < 24) return `Hace ${diffHours}h`;
+      return date.toLocaleDateString();
+    } catch (e) {
+      return 'Recientemente';
+    }
   };
 
-  const handleMarkAllAsRead = () => {
-    setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+  const unreadCount = notifications.filter(n => !n.leido).length;
+
+  const handleMarkAsRead = async (id: number) => {
+    try {
+      await api.put(`/notificaciones/${id}/leer`);
+      setNotifications(prev => prev.map(n => n.idNotificacion === id ? { ...n, leido: true } : n));
+    } catch (e) {
+      console.error("Error al marcar como leída:", e);
+    }
+  };
+
+  const handleMarkAllAsRead = async () => {
+    try {
+      await api.put('/notificaciones/leer-todas');
+      setNotifications(prev => prev.map(n => ({ ...n, leido: true })));
+    } catch (e) {
+      console.error("Error al marcar todas como leídas:", e);
+    }
   };
 
   return (
@@ -143,14 +183,15 @@ export const Navbar: React.FC = () => {
                   <div className="notifications-list">
                     {notifications.map(n => (
                       <div 
-                        key={n.id} 
-                        className={`notification-item ${n.read ? 'read' : 'unread'}`}
-                        onClick={() => handleMarkAsRead(n.id)}
+                        key={n.idNotificacion} 
+                        className={`notification-item ${n.leido ? 'read' : 'unread'}`}
+                        onClick={() => handleMarkAsRead(n.idNotificacion)}
                       >
                         <div className="item-dot-indicator"></div>
                         <div className="item-content">
-                          <p className="notification-text">{n.text}</p>
-                          <span className="notification-time">{n.time}</span>
+                          <strong className="notification-title" style={{ fontSize: '0.85rem', color: 'var(--text-primary)', display: 'block', marginBottom: '2px' }}>{n.titulo}</strong>
+                          <p className="notification-text" style={{ margin: 0, fontSize: '0.8rem' }}>{n.mensaje}</p>
+                          <span className="notification-time">{formatNotificationTime(n.fechaCreacion)}</span>
                         </div>
                       </div>
                     ))}
